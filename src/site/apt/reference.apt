@@ -1,0 +1,180 @@
+PAFDoc
+
+   可以标注在类及类方法上
+
+   *title：文档标题
+
+   *desc: 文档描述
+
+   *version: 版本(版本日期枚举)，已被ver替代
+
+   *ver: 版本(版本日期字符串), 推荐使用ver代替version
+
+   标注在类上用来说明整个类的功能
+
++---------------
+   @PAFDoc(title = "预付费卡", desc = "预付费卡相关接口，包含绑卡、解绑、查询等。", author = "Yang.Du", version = VERSION.V150122)
+   public class PrepaidCardController extends BaseController
++---------------
+
+   标注在方法上用来说明整个方法的功能
+
++---------------
+   @PAFDoc(title = "预付卡绑卡", desc = "壹钱包-资产界面,可以给用户绑定预付卡。", author = "Yang.Du", version = VERSION.V150122)
+   public  @ResponseBody
+      BindPrepaidCardResponse bindCard(@RequestBody PrepaidCardRequest req, HttpServletRequest httpRequest, HttpServletResponse httpResponse)
++---------------
+
+
+PAFField
+
+   用于标注类Field
+
+   *required： 表示此字段是否必须，枚举值
+
+   *ver: 版本(版本日期字符串)
+
+   *desc: 描述
+
+   *memo: 备注
+
++-------------------------
+public class SetPaypwdAndSubmitOnH5Request extends H5BaseReq {
+    @PAFField(desc="支付密码强度",memo="A: 强,B: 中, C: 弱, D: 极弱, S:简易, 默认为B", required=REQUIRED.N)
+    private String payPasswdStrength = "B";
+}
++---------------------------
+
+PAFFields
+
+   用于标注类的Field，当一个field 需要根据不同场景产生不同文档时
+
+   *contexts： 场景列表
+
+   *fields: PAField[] 针对上面场景，使用指定的PAFField
+
++-------------------------
+public class PrepaidCardRequest extends BaseRequest{
+
+    /**
+     * @name cardId 卡号
+     */
+    @MTPField(logMode=LogMode.SENSITIVE)
+    @PAFFields(contexts = {"bindCard","getCardsSummaryInfo","getPrePayCardList","queryPrepaidCardInfo","unbindCard"}
+    ,fields = {@PAFField(desc="卡号",required=REQUIRED.Y)})
+    private String cardNo;
+
+    /**
+     * @name cardPwd 密码
+     */
+    @PAFFields(contexts = {"bindCard","getCardsSummaryInfo","getPrePayCardList","queryPrepaidCardInfo","unbindCard"}
+            ,fields = {@PAFField(desc="卡密码",required=REQUIRED.Y),@PAFField(desc="卡密码",required=REQUIRED.N),
+            @PAFField(desc="卡密码",required=REQUIRED.N),@PAFField(desc="卡密码",required=REQUIRED.N),@PAFField(desc="支付密码",required=REQUIRED.Y)})
+    @MTPField(logMode=LogMode.SENSITIVE)
+    private String cardPwd;
+}
++---------------------------
+
+
+PAFInput
+
+   用于标注方法，表示方法的输入参数
+
+   *name: 参数名称列表
+
+   *desc: 描述列表
+
+   *memo: 参数备注列表
+
+   *required: 参数是否必备列表
+
+   *ver: 版本列表
+
++-------------------------------
+  @PAFDoc(title = "分享送代金券(壹钱包APP渠道)", desc = "分享送代金券(壹钱包APP渠道)", author = "Yang.Du", version = VERSION.V140821)
+  @PAFRetCode({"1000(成功领券)","1113(已被领光)","1114(您已领取)","1125(该设备领券数达上限)","1120(用户券已过期)",})
+  @PAFInput(name={"callback","phoneNo"},desc={"回调函数","手机号码"},required={REQUIRED.Y,REQUIRED.Y})
+  @PAFOutput(name={"resultCode","resultMsg"},desc={"返回码 ","返回结果"},required={REQUIRED.Y,REQUIRED.Y})
+  @RequestMapping(value = "/h5/op_claim_coupon_activity_from_app.jsonp", method = RequestMethod.GET)
+  public void claimCouponAfterShareFromApp(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
+
+  }
++-----------------------------------
+
+PAFOutput
+
+  用于标注方法，表示方法的输出
+
+  *name：名称列表
+
+  *desc: 描述列表
+
+  *memo: 参数备注列表
+
+  *required: 参数是否必备列表
+
+  *ver: 版本列表
+
++-------------------------------
+  @PAFDoc(title = "分享送代金券(壹钱包APP渠道)", desc = "分享送代金券(壹钱包APP渠道)", author = "Yang.Du", version = VERSION.V140821)
+  @PAFRetCode({"1000(成功领券)","1113(已被领光)","1114(您已领取)","1125(该设备领券数达上限)","1120(用户券已过期)",})
+  @PAFInput(name={"callback","phoneNo"},desc={"回调函数","手机号码"},required={REQUIRED.Y,REQUIRED.Y})
+  @PAFOutput(name={"resultCode","resultMsg"},desc={"返回码 ","返回结果"},required={REQUIRED.Y,REQUIRED.Y})
+  @RequestMapping(value = "/h5/op_claim_coupon_activity_from_app.jsonp", method = RequestMethod.GET)
+  public void claimCouponAfterShareFromApp(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
+
+  }
++-----------------------------------
+
+PAFRetCode
+
+  用于标注方法，表示方法的返回码。值为返回码、消息类别。
+
++-------------------------------
+  @PAFDoc(title = "分享送代金券(壹钱包APP渠道)", desc = "分享送代金券(壹钱包APP渠道)", author = "Yang.Du", version = VERSION.V140821)
+  @PAFRetCode({"1000(成功领券)","1113(已被领光)","1114(您已领取)","1125(该设备领券数达上限)","1120(用户券已过期)",})
+  @PAFInput(name={"callback","phoneNo"},desc={"回调函数","手机号码"},required={REQUIRED.Y,REQUIRED.Y})
+  @PAFOutput(name={"resultCode","resultMsg"},desc={"返回码 ","返回结果"},required={REQUIRED.Y,REQUIRED.Y})
+  @RequestMapping(value = "/h5/op_claim_coupon_activity_from_app.jsonp", method = RequestMethod.GET)
+  public void claimCouponAfterShareFromApp(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
+
+  }
++-----------------------------------
+
+
+产生文档
+
+   在工程根目录运行<<mvn gendoc:gendoc>>, 即可产生文档。 但有时需要突出最新修改的情况，可以使用<<mvn gendoc:gendoc -Dversion=20150205,20150212>>突出特定时间版本
+
+设置配置文件
+
+   为了产生接口文档，需要在工程的resources目录中自定义文档的配置文件doc_config/dochelper_config.xml
+
++-------------------------------
+  <?xml version="1.0" encoding="utf-8" ?>
+  <documnet title = "MTP-接口文档" savepath="doc" cat="docfull">
+  	<!-- block 属性介绍
+  		name:  块名称(如引言、P1xiey)
+  		type:  只可以取 preface(引言) content(协议) appendix（附录） 三个之一;
+  		ftl:   指向resources/doctftl/下的freemarker文件名;
+  		target:需要导出协议的目标， 到包名即可.-->
+      <block type="content" ftl="detail" name="注册、登陆、登出、TOKEN">
+          <target>com.pinganfu.mtp.web.controller.p1.LoginController</target>
+          <target>com.pinganfu.mtp.web.controller.p1.LogoutController</target>
+      </block>
+      <block type="content" ftl="detail" target="com.pinganfu.mtp.web.controller.common" name="Common协议"/>
+      <block type="preface" ftl="preface" name="引言"/>
+  </document>
++-----------------------------------
+
+  block中的所有target子元素均在产生的文档的同一类别下，block的target属性可以指定特定包名
+
+  savepath用来指定文档的保存路径。 cat用来指定文档类型，这2个为必须属性。
+  cat取值如下：
+
+*--------------------------*----------------------------*
+ 会员系统                   | cip
+*--------------------------*----------------------------*
+ 移动地理检索                | lbse
+*--------------------------*----------------------------*
+

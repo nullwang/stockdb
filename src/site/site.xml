@@ -1,0 +1,14 @@
+<project name="PAFF Doc">
+    <bannerLeft>
+        <name>PAFF doc</name>
+    </bannerLeft>
+    <body>
+        <menu name="Paff Doc Tool">
+            <item name="Overview" href="index.html"/>
+            <item name="News" href="news.html"/>
+            <item name="Features" href="features.html"/>
+            <item name="References" href="reference.html"/>
+            <item name="FAQ" href="faq.html"/>
+        </menu>
+    </body>
+</project>

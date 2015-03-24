@@ -1,0 +1,80 @@
+通过标注代码生成文档
+
++---------------
+@PAFDoc(title="查询客户端配置",desc="请求客户端配置参数，该协议不需要登录就可调用",author="jie.chen",version=VERSION.V14XXXX)
+public class GetAppConfigController extends BaseController {
+
+    @RequestMapping(value = "/p1/op_get_app_config.{htm|json}", method = RequestMethod.POST)
+    @PAFDoc(title="查询客户端配置",desc="请求客户端配置参数，该协议不需要登录就可调用",author="jie.chen",version=VERSION.V14XXXX)
+    public @ResponseBody GetAppConfigResponse getAppConfiguration(@RequestBody BaseRequest req, HttpServletRequest httpRequest,
+                                                                 HttpServletResponse httpResponse) {
+
+        //do something
+    }
+}
++--------------------
+
+支持多种类型构建体
+
+  *支持war
+  *支持jar
+
+支持文档归类
+
+  将不同类的文档的生成在同一个类别下
+
++--------------
+   <block type="content" ftl="detail" name="注册、登陆、登出、TOKEN">
+       <!-- target 元素须使用类全名, 支持多个target 元素-->
+       <target>com.pinganfu.mtp.web.controller.p1.LoginController</target>
+       <target>com.pinganfu.mtp.web.controller.p2.OAuthRegisterController</target>
+   </block>
+
+    <block type="content" ftl="detail" name="短信、验证码">
+       <target>com.pinganfu.mtp.web.controller.p1.ApplySmsCodeController</target>
+       <target>com.pinganfu.mtp.web.controller.h5.ImageVerifyController</target>
+     </block>
++-----------------
+
+
+支持文档变更标示
+
+   通过 <gendoc:gendoc -Dversion=20150122>将20150122版本的变更的功能高亮显示方便查找
+
+
+支持在线查找
+
+   参见地址 <http://192.168.1.158:8080/docfull/> 在查找框输入内容即可查找
+
+支持场景标注
+
+  有时候需要针对一个类中filed 生成不同的文档，可以使用PAFFields标注
+
++---------------------------------
+
+public class PrepaidCardRequest extends BaseRequest{
+
+    /**
+     * @name cardId 卡号
+     */
+    @MTPField(logMode=LogMode.SENSITIVE)
+    @PAFFields(contexts = {"bindCard","getCardsSummaryInfo","getPrePayCardList","queryPrepaidCardInfo","unbindCard"}
+    ,fields = {@PAFField(desc="卡号",required=REQUIRED.Y)})
+    private String cardNo;
+
+    /**
+     * @name cardPwd 密码
+     */
+    @PAFFields(contexts = {"bindCard","getCardsSummaryInfo","getPrePayCardList","queryPrepaidCardInfo","unbindCard"}
+            ,fields = {@PAFField(desc="卡密码",required=REQUIRED.Y),@PAFField(desc="卡密码",required=REQUIRED.N),
+            @PAFField(desc="卡密码",required=REQUIRED.N),@PAFField(desc="卡密码",required=REQUIRED.N),@PAFField(desc="支付密码",required=REQUIRED.Y)})
+    @MTPField(logMode=LogMode.SENSITIVE)
+    private String cardPwd;
+
+    /** 客户ID */
+    @PAFFields(contexts = {"bindCard","getCardsSummaryInfo","getPrePayCardList","queryPrepaidCardInfo","unbindCard"}
+            ,fields = {@PAFField(desc="客户ID",required=REQUIRED.N),@PAFField(desc="客户ID",required=REQUIRED.N),
+            @PAFField(desc="客户ID",required=REQUIRED.N),@PAFField(desc="客户ID",required=REQUIRED.N),@PAFField(desc="客户ID",required=REQUIRED.N)})
+    private String customerId;
+}
++----------------------------------

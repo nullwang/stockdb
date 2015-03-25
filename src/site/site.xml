@@ -3,7 +3,7 @@
         <name>Test</name>
     </bannerLeft>
     <body>
-        <menu name="Paff Doc Tool">
+        <menu name="Tool">
             <item name="Overview" href="index.html"/>
             <item name="News" href="news.html"/>
             <item name="Features" href="features.html"/>

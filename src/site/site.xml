@@ -1,6 +1,6 @@
-<project name="PAFF Doc">
+<project name="Test">
     <bannerLeft>
-        <name>PAFF doc</name>
+        <name>Test</name>
     </bannerLeft>
     <body>
         <menu name="Paff Doc Tool">

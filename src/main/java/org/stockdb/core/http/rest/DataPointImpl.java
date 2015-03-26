@@ -17,43 +17,49 @@ package org.stockdb.core.http.rest;
  */
 
 import org.stockdb.core.datastore.DataPoint;
+import org.stockdb.util.Key;
 
 public class DataPointImpl implements DataPoint{
 
-    String id; //object id
-    String metricsName;
-    long timestamp;
-    String value;
+    String objId; //object objId
+    String metricName;
+    String timeStr;
+    String objValue;
 
-    public String getId() {
-        return id;
+    public String getObjId() {
+        return objId;
     }
 
-    public String getMetricsName() {
-        return metricsName;
+    public String getMetricName() {
+        return metricName;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public String getTimeStr() {
+        return timeStr;
     }
 
-    public String getValue() {
-        return value;
+    public String getObjValue() {
+        return objValue;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    @Override
+    public String getKey() {
+        return Key.makeRowKey(objId,metricName);
     }
 
-    public void setMetricsName(String metricsName) {
-        this.metricsName = metricsName;
+    public void setObjId(String objId) {
+        this.objId = objId;
     }
 
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
+    public void setMetricName(String metricName) {
+        this.metricName = metricName;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setTimeStr(String timeStr) {
+        this.timeStr = timeStr;
+    }
+
+    public void setObjValue(String objValue) {
+        this.objValue = objValue;
     }
 }

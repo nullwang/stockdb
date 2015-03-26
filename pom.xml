@@ -111,7 +111,7 @@
 	
 	<profiles>
     <profile>
-        <id>jdk-1.6</id>
+        <objId>jdk-1.6</objId>
         <activation>
             <activeByDefault>true</activeByDefault>
             <jdk>1.6</jdk>

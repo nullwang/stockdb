@@ -26,7 +26,6 @@ public class Key {
         String escapeMetricsName = Escape.escape(metricsName);
 
         return escapeId + ":" + escapeMetricsName;
-
     }
 
     public static String[] splitRowKey(String rowKey)

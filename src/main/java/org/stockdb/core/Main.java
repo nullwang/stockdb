@@ -24,10 +24,13 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
+import org.stockdb.core.exception.StockDBException;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 
 public class Main {
 
@@ -37,11 +40,16 @@ public class Main {
 
     private final static Object s_shutdownObject = new Object();
 
-    private List<StockDBService> services = new ArrayList<StockDBService>();
+    private JettyServer jettyServer;
 
-    protected Main(File properties) {
+    protected Main(Properties properties) throws StockDBException {
+        int port = Integer.parseInt(properties.getProperty("stockdb.jetty.port","8080"));
+        int sslPort = Integer.parseInt(properties.getProperty("stockdb.jetty.ssl_port","8443"));
+        String webRoot = properties.getProperty("stockdb.jetty.static_web_root","webroot");
+        String keyStorePath = properties.getProperty("stockdb.jetty.key_store_path");
+        String keyStorePassword = properties.getProperty("stockdb.jetty.key_store_password");
 
-
+        jettyServer = new JettyServer(port,sslPort,webRoot,keyStorePath,keyStorePassword);
     }
 
     public static void main(String[] args) {
@@ -70,13 +78,15 @@ public class Main {
             });
         }
 
-        File propertiesFile = null;
-        if (!StringUtils.isEmpty(arguments.propertiesFile))
-            propertiesFile = new File(arguments.propertiesFile);
-
-        final Main main = new Main(propertiesFile);
-        if (arguments.operationCommand.equals("run") || arguments.operationCommand.equals("start")) {
-            try {
+        try {
+            Properties properties = null;
+            if (!StringUtils.isEmpty(arguments.propertiesFile)) {
+                File propertiesFile = new File(arguments.propertiesFile);
+                properties = resolveProperties(propertiesFile);
+            }
+            if( properties == null) properties = System.getProperties();
+            final Main main = new Main(properties);
+            if (arguments.operationCommand.equals("run") || arguments.operationCommand.equals("start")) {
                 Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
                     public void run() {
                         try {
@@ -98,15 +108,15 @@ public class Main {
                 logger.info("------------------------------------------");
 
                 waitForShutdown();
-            } catch (Exception e) {
-                logger.error("Failed starting up services", e);
-                //main.stopServices();
-                System.exit(0);
-            } finally {
-                logger.info("--------------------------------------");
-                logger.info("     StockDB service is now down!");
-                logger.info("--------------------------------------");
             }
+        } catch (Exception e) {
+            logger.error("Failed starting up services", e);
+            //main.stopServices();
+            System.exit(0);
+        } finally {
+            logger.info("--------------------------------------");
+            logger.info("     StockDB service is now down!");
+            logger.info("--------------------------------------");
         }
     }
 
@@ -119,12 +129,19 @@ public class Main {
         }
     }
 
-    private void startServices() {
-
+    private void startServices() throws StockDBException {
+        jettyServer.start();
     }
 
-    private void stopServices() {
+    private void stopServices() throws StockDBException {
+        jettyServer.stop();
+    }
 
+    static private Properties resolveProperties(File propertiesFile) throws IOException {
+        Properties properties = new Properties();
+        properties.load(new FileInputStream(propertiesFile));
+        properties.putAll(System.getProperties()); //system properties override file properties
+        return properties;
     }
 
     @SuppressWarnings("UnusedDeclaration")

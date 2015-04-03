@@ -16,12 +16,10 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
+import org.stockdb.util.Commons;
 import redis.clients.jedis.ScanResult;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ScanableAdapter<E> implements Collection<E> {
 
@@ -54,7 +52,7 @@ public class ScanableAdapter<E> implements Collection<E> {
             if (index < list.size()) {
                 Map.Entry entry = (Map.Entry) list.get(index);
                 String key = String.valueOf(entry.getKey());
-                if (key.compareTo(startTime) >= 0 && key.compareTo(endTime) <= 0) {
+                    if( Commons.compareStr(key, startTime) >= 0 && Commons.compareStr(key,endTime) < 0 ) {
                     return (E) entry;
                 }
                 index++;
@@ -139,19 +137,25 @@ public class ScanableAdapter<E> implements Collection<E> {
     }
 
     private class IteratorImpl<E> implements Iterator<E> {
-
         Object t;
+
+        IteratorImpl(){
+            t = fetchNextValue();
+        }
 
         @Override
         public boolean hasNext() {
-          t = fetchNextValue();
           return t!=null;
         }
 
         @Override
         public E next() {
-            if( t != null ) return (E) t;
-            return (E) (t = fetchNextValue());
+            if( t== null) throw new NoSuchElementException();
+            else{
+                Object p = t;
+                t = fetchNextValue();
+                return (E) p;
+            }
         }
 
         @Override
@@ -159,4 +163,7 @@ public class ScanableAdapter<E> implements Collection<E> {
             throw new UnsupportedOperationException();
         }
     }
+
+
+
 }

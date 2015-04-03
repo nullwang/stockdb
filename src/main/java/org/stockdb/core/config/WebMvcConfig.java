@@ -1,4 +1,4 @@
-package org.stockdb.core.http.rest;
+package org.stockdb.core.config;
 /*
  * @author nullwang@hotmail.com
  * created at 2015/3/13
@@ -16,15 +16,23 @@ package org.stockdb.core.http.rest;
  * limitations under the License.
  */
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+import java.io.File;
 
 @EnableWebMvc
 @Configuration
-@ComponentScan({ "org.stockdb.core.http.rest" })
-public class SpringModule extends WebMvcConfigurerAdapter {
+public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("images/**").addResourceLocations("images/");
+    }
 
 }

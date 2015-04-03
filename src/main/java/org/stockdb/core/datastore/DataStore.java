@@ -19,7 +19,6 @@ package org.stockdb.core.datastore;
 import org.stockdb.core.exception.StockDBException;
 
 import java.util.Collection;
-import java.util.regex.Pattern;
 
 public interface DataStore {
 
@@ -35,7 +34,7 @@ public interface DataStore {
     String getMetricAttr(String name, String attr) throws StockDBException;
 
     /**
-     * Returns data points which timeStr is between startTime and endTime
+     * Returns data points which timeStr is between [startTime,endTime)
      * @param startTime the start time
      * @param endTime the end time
      * @return data points

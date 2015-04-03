@@ -102,6 +102,20 @@
 
     </dependencies>
 
+    <build>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main</directory>
+                <includes>
+                    <include>webroot/**</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+            </resource>
+        </resources>
+    </build>
+
     <properties>
         <slf4.version>1.7.5</slf4.version>
         <logback.version>1.0.13</logback.version>
@@ -111,7 +125,7 @@
 	
 	<profiles>
     <profile>
-        <objId>jdk-1.6</objId>
+        <id>jdk-1.6</id>
         <activation>
             <activeByDefault>true</activeByDefault>
             <jdk>1.6</jdk>

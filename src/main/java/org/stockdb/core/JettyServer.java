@@ -1,4 +1,4 @@
-package org.stockdb.core.http;
+package org.stockdb.core;
 /*
  * @author nullwang@hotmail.com
  * created at 2015/3/13
@@ -23,38 +23,48 @@ import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
-import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.stockdb.core.StockDBService;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.servlet.DispatcherServlet;
 import org.stockdb.core.exception.StockDBException;
 
+public class JettyServer {
 
-public class WebServer implements StockDBService {
-
-    private Logger logger = LoggerFactory.getLogger(WebServer.class);
+    private Logger logger = LoggerFactory.getLogger(JettyServer.class);
 
     private Server server;
 
-    @Value("${stockdb.jetty.port:8080}")
     private int jettyPort;
 
-    @Value("${stockdb.jetty.static_web_root}")
     private String jettyWebRoot;
 
-    @Value("${stockdb.jetty.ssl_port:8443}")
     private int jettySslPort;
 
-    @Value("${stockdb.jetty.key_store_path:}")
     private String keyStorePath;
 
-    @Value("${stockdb.jetty.key_store_password:}")
     private String keyStorePassword;
 
-    @Override
+    private static final String CONTEXT_PATH = "/";
+    private static final String MAPPING_URL = "/api/*";
+
+    JettyServer(int jettyPort, String jettyWebRoot){
+        this.jettyPort = jettyPort;
+        this.jettyWebRoot = jettyWebRoot;
+    }
+
+    JettyServer  (int jettyPort, int jettySslPort, String jettyWebRoot, String keyStorePath, String keyStorePassword){
+        this.jettyPort = jettyPort;
+        this.jettySslPort = jettySslPort;
+        this.jettyWebRoot = jettyWebRoot;
+        this.keyStorePath = keyStorePath;
+        this.keyStorePassword = keyStorePassword;
+    }
+
     public void start() throws StockDBException {
         try {
             if (jettyPort > 0) {
@@ -72,17 +82,22 @@ public class WebServer implements StockDBService {
                 server.addConnector(selectChannelConnector);
             }
 
+            AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+            context.setConfigLocation("org.stockdb.core.config");
+
             ServletContextHandler servletContextHandler =
                     new ServletContextHandler();
 
-            servletContextHandler.addServlet(DefaultServlet.class, "/api/*");
+            servletContextHandler.setContextPath(CONTEXT_PATH);
+            servletContextHandler.addServlet(new ServletHolder(new DispatcherServlet(context)), MAPPING_URL);
+
             ResourceHandler resourceHandler = new ResourceHandler();
             resourceHandler.setDirectoriesListed(true);
             resourceHandler.setWelcomeFiles(new String[]{"index.html"});
-            resourceHandler.setResourceBase(jettyWebRoot);
+            resourceHandler.setResourceBase(new ClassPathResource(jettyWebRoot).getURI().toString());
 
             HandlerList handlers = new HandlerList();
-            handlers.setHandlers(new Handler[]{servletContextHandler, resourceHandler, new DefaultHandler()});
+            handlers.setHandlers(new Handler[]{servletContextHandler,resourceHandler, new DefaultHandler()});
             server.setHandler(handlers);
 
             server.start();
@@ -91,7 +106,6 @@ public class WebServer implements StockDBService {
         }
     }
 
-    @Override
     public void stop() throws StockDBException {
         try{
             if( server != null){

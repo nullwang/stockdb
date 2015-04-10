@@ -16,6 +16,12 @@ package org.stockdb.util;
  * limitations under the License.
  */
 
+import com.google.gson.Gson;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class Commons {
 
     /**
@@ -32,4 +38,39 @@ public class Commons {
         if (str2 == null) return 1;
         return str1.compareTo(str2);
     }
+
+    public static Map<String,String> jsonMap(String json)
+    {
+        if (StringUtils.isEmpty(json)) return new HashMap<String, String>();
+        Gson gson = new Gson();
+        return gson.fromJson(json,Map.class);
+    }
+
+    public static String jsonPut(String json, String key, String value)
+    {
+        Map map = jsonMap(json);
+        map.put(key,value);
+        return mapJson(map);
+    }
+
+    public static String jsonRemove(String json, String key)
+    {
+        Map map = jsonMap(json);
+        map.remove(key);
+        return mapJson(map);
+    }
+
+    public static String mapJson(Map<String,String> map){
+        Gson gson = new Gson();
+        assert(map != null);
+        return gson.toJson(map);
+    }
+
+    public static String mapJson(String key, String value){
+        Map map = new HashMap();
+        map.put(key,value);
+        return mapJson(map);
+    }
+
+
 }

@@ -19,26 +19,43 @@ package org.stockdb.core.datastore;
 import org.stockdb.core.exception.StockDBException;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public interface DataStore {
 
-    void putData(DataPoint... dataPoints) throws StockDBException;
 
     /** Set the attribute value of metric
      * @param name the name of metric, should not be null
      * @param attr the name of attribute,should not be null
      * @param value the value of attribute
      */
-    void setMetric(String name, String attr, String value) throws StockDBException;
+    void setMetricAttr(String name, String attr, String value) throws StockDBException;
 
     String getMetricAttr(String name, String attr) throws StockDBException;
 
+    void setObjAttr(String id, String attr, String value) throws StockDBException;
+
+    String getObjAttr(String id, String attr) throws StockDBException;
+
+    Set<String> getMetrics();
+
+    DataPoint getData(String id, String metricName, String timeStr, int diff, TimeUnit timeUnit);
+
+    DataPoint getData(String id, String metricName, String timeStr);
+
+    List<DataPoint> getData(String id, String metricName, String startTime, String endTime);
+
+    void putData(DataPoint... dataPoints) throws StockDBException;
+
     /**
-     * Returns data points which timeStr is between [startTime,endTime)
+     * Returns the iterator of data points which timeStr is between [startTime,endTime)
      * @param startTime the start time
      * @param endTime the end time
      * @return data points
      */
-    Collection<DataPoint> getDataPoints(String id, String metricName, String startTime, String endTime);
+    Collection<DataPoint> queryData(String id, String metricName, String startTime, String endTime);
+
 
 }

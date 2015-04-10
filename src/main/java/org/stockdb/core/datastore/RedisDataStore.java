@@ -16,28 +16,37 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
+import com.google.gson.stream.JsonReader;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.stockdb.core.exception.DatastoreException;
 import org.stockdb.core.exception.StockDBException;
+import org.stockdb.util.Commons;
 import org.stockdb.util.Key;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.ScanResult;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
-public class RedisDataStore implements DataStore,Scanable {
+public class RedisDataStore extends AbstractDataStore implements Scanable {
 
     final static int  redisDefaultPort = 7379;
+
+    final static String METRICS_KEY="metrics";
+    final static String OBJECT_KEY="objects";
+    final static String META_KEY="meta";
+    final static String META_SETTING_KEY="meta_set";
 
     JedisCluster jc ;
 
     @Autowired
-    public RedisDataStore(@Value("stockdb.redis.hosts") final String hosts) throws DatastoreException
+    public RedisDataStore(@Value("stockdb.redis.hosts") String hosts) throws StockDBException
     {
         Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
         String[] hostAndPorts = StringUtils.split(hosts,",");
@@ -59,27 +68,57 @@ public class RedisDataStore implements DataStore,Scanable {
         }
 
         jc = new JedisCluster(jedisClusterNodes);
+        loadMeta();
+    }
+
+    //load meta data
+    void loadMeta() throws StockDBException{
+        //check if stock meta is loaded
+        long exist = jc.setnx(META_SETTING_KEY,"1");
+        if( exist == 0) return;
+
+        try {
+            JsonReader jsonReader = new JsonReader(new InputStreamReader(this.getClass().getResourceAsStream("/stock_metric.dat"),"utf-8"));
+            jsonReader.beginArray();
+            while(jsonReader.hasNext()){
+                jsonReader.beginObject();
+                jsonReader.nextName();
+                String metricName = jsonReader.nextString();
+                jsonReader.nextName();
+                String attrName = jsonReader.nextString();
+                jsonReader.nextName();
+                String attrValue = jsonReader.nextString();
+                setMetricAttr(metricName,attrName,attrValue);
+                jsonReader.endObject();
+            }
+            jsonReader.endArray();
+            jsonReader.close();
+        } catch (UnsupportedEncodingException e) {
+            throw new StockDBException(e);
+        } catch (IOException e) {
+            throw new StockDBException(e);
+        }
     }
 
     @Override
     public void putData(DataPoint[] dataPoints) throws StockDBException{
         for(DataPoint dataPoint:dataPoints) {
             String metricName = dataPoint.getMetricName();
-            String index = getMetricAttr(metricName,Metric.SAMPLE_INTERVAL);
+            String index = getMetricAttr(metricName,Constants.METRIC_SAMPLE_INTERVAL);
             try{
                 int i = Integer.parseInt(index);
                 if( !DataPoint.timeStrPatterns[i].matcher(dataPoint.getTimeStr()).matches()){
                     throw new StockDBException("DataPoint["+dataPoint.getKey()+"]" + "has bad format timeStr["+ dataPoint.getTimeStr() +"]");
                 }
             }catch (NumberFormatException e){
-                throw new StockDBException("Metric[" + metricName + "]attribute["+ Metric.SAMPLE_INTERVAL +"]value error");
+                throw new StockDBException("Metric[" + metricName + "]attribute["+ Constants.METRIC_SAMPLE_INTERVAL +"]value error");
             }
             jc.hset(dataPoint.getKey(),dataPoint.getTimeStr(),dataPoint.getObjValue());
         }
     }
 
     @Override
-    public void setMetric(String name, String attr, String value) throws StockDBException{
+    public void setMetricAttr(String name, String attr, String value) throws StockDBException{
         if( name == null){
             throw new StockDBException("metric name should not be null");
         }
@@ -87,7 +126,8 @@ public class RedisDataStore implements DataStore,Scanable {
             throw new StockDBException("attribute name should not be null");
         }
 
-        jc.hset(name,attr,value);
+        String attrValue = jc.hget(METRICS_KEY,name);
+        jc.hset(METRICS_KEY,name, Commons.jsonPut(attrValue,attr,value));
     }
 
     @Override
@@ -98,11 +138,52 @@ public class RedisDataStore implements DataStore,Scanable {
         if(attr == null){
             throw new IllegalArgumentException("attribute name should not be null");
         }
-       return jc.hget(name,attr);
+        Map<String,String> attrValue = Commons.jsonMap(jc.hget(METRICS_KEY, name));
+        return attrValue.get(attr);
     }
 
     @Override
-    public Collection<DataPoint> getDataPoints(String id, String metricName, String startTime, String endTime) {
+    public void setObjAttr(String id, String attr, String value) throws StockDBException {
+        if( id == null){
+            throw new StockDBException("object id should not be null");
+        }
+        if(attr == null){
+            throw new StockDBException("attribute name should not be null");
+        }
+
+        String attrValue = jc.hget(OBJECT_KEY,id);
+        jc.hset(OBJECT_KEY,id, Commons.jsonPut(attrValue,attr,value));
+    }
+
+    @Override
+    public String getObjAttr(String id, String attr) throws StockDBException {
+        if( id == null){
+            throw new IllegalArgumentException("object id should not be null");
+        }
+        if(attr == null){
+            throw new IllegalArgumentException("attribute name should not be null");
+        }
+        Map<String,String> attrValue = Commons.jsonMap(jc.hget(OBJECT_KEY, id));
+        return attrValue.get(attr);
+    }
+
+    @Override
+    public Set<String> getMetrics() {
+        return jc.hkeys(METRICS_KEY);
+    }
+
+    @Override
+    public DataPoint getData(String id, String metricName, String timeStr, int diff, TimeUnit timeUnit) {
+        return null;
+    }
+
+    @Override
+    public List<DataPoint> getData(String id, String metricName, String startTime, String endTime) {
+        return null;
+    }
+
+    @Override
+    public Collection<DataPoint> queryData(String id, String metricName, String startTime, String endTime) {
         return ScanableAdapter.build(this,id,metricName,startTime,endTime);
     }
 

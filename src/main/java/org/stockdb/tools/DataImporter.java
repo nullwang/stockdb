@@ -1,7 +1,7 @@
-package org.stockdb.core.datastore;
+package org.stockdb.tools;
 /*
  * @author nullwang@hotmail.com
- * created at 2015/3/26
+ * created at 2015/4/9
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,12 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
-public interface Metric {
-    String SAMPLE_INTERVAL = "sampleInterval";
+public class DataImporter {
 
-    int MILLI_INTERVAL=0;
-    int SECOND_INTERVAL=1;
-    int MINUTE_INTERVAL=2;
-    int HOUR_INTERVAL=3;
-    int DAY_INTERVAL=4;
-    int MONTH_INTERVAL=5;
-    int YEAR_INTERVAL=6;
-    int WEEK_INTERVAL=7;
 
+    public static void main(String[] args) {
+
+        System.getProperty("data")
+
+    }
 }

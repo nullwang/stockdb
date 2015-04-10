@@ -1,0 +1,1 @@
+java -classpath ".\lib\*" com.pinganfu.pcp.proxy.Proxy

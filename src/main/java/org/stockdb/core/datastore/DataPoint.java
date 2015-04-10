@@ -43,15 +43,6 @@ public interface DataPoint {
 
     public String getKey();
 
-    int MILLI_INTERVAL=0;
-    int SECOND_INTERVAL=1;
-    int MINUTE_INTERVAL=2;
-    int HOUR_INTERVAL=3;
-    int DAY_INTERVAL=4;
-    int WEEK_INTERVAL=5;
-    int MONTH_INTERVAL=6;
-    int YEAR_INTERVAL=7;
-
     String PATTERN_YY="((19|20|21|22)\\d\\d)";
     String PATTERN_YYMM=PATTERN_YY + "(0[1-9]|1[012])";
     String PATTERN_YYMMDD=PATTERN_YYMM + "(0[1-9]|[12][0-9]|3[01])";

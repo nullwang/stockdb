@@ -21,13 +21,13 @@ import org.stockdb.util.Key;
 
 public class DataPointImpl implements DataPoint{
 
-    String objId; //object objId
+    String id; //object id
     String metricName;
     String timeStr;
-    String objValue;
+    String value;
 
-    public String getObjId() {
-        return objId;
+    public String getId() {
+        return id;
     }
 
     public String getMetricName() {
@@ -38,17 +38,17 @@ public class DataPointImpl implements DataPoint{
         return timeStr;
     }
 
-    public String getObjValue() {
-        return objValue;
+    public String getValue() {
+        return value;
     }
 
     @Override
     public String getKey() {
-        return Key.makeRowKey(objId,metricName);
+        return Key.makeRowKey(id,metricName);
     }
 
-    public void setObjId(String objId) {
-        this.objId = objId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setMetricName(String metricName) {
@@ -59,7 +59,7 @@ public class DataPointImpl implements DataPoint{
         this.timeStr = timeStr;
     }
 
-    public void setObjValue(String objValue) {
-        this.objValue = objValue;
+    public void setValue(String value) {
+        this.value = value;
     }
 }

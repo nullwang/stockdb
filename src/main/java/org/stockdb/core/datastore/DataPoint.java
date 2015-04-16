@@ -23,7 +23,7 @@ public interface DataPoint {
      * Returns object id
      * @return the object id
      */
-    public String getObjId();
+    public String getId();
 
     public String getMetricName() ;
 
@@ -39,7 +39,7 @@ public interface DataPoint {
      */
     public String getTimeStr() ;
 
-    public String getObjValue() ;
+    public String getValue() ;
 
     public String getKey();
 

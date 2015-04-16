@@ -1,7 +1,7 @@
-package org.stockdb.core.datastore;
+package org.stockdb.core.http.rest;
 /*
  * @author nullwang@hotmail.com
- * created at 2015/4/7
+ * created at 2015/4/16
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,26 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
-import org.stockdb.core.exception.StockDBException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-public abstract class AbstractDataStore implements DataStore {
+public class Response {
+    private int status = 0; // 0 - ok;
 
-    @Override
-    public DataPoint getData(String id, String metricName, String timeStr)
-    {
-        return getData(id,metricName,timeStr,0,TimeUnit.NANOSECONDS);
+    private List<String> errorMessages = new ArrayList<String>();
 
+    public Response(){
     }
 
-    @Override
-    public void putMetric(Metric... metrics) throws StockDBException {
-        for(Metric metric: metrics ) {
-            setMetricAttr(metric.name,metric.attr,metric.value);
-        }
+    public Response(int status){
+        this.status = status;
+    }
+
+    public void addErrors(String... messages){
+        if( messages == null) return;
+        errorMessages.addAll(Arrays.asList(messages));
     }
 }

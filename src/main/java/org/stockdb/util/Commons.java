@@ -72,5 +72,14 @@ public class Commons {
         return mapJson(map);
     }
 
+    public static String toJson(Object object)
+    {
+        Gson gson = new Gson();
+        return gson.toJson(object);
+    }
 
+    public static <T> T fromJson(String json, Class<T> tClass){
+        Gson gson = new Gson();
+        return gson.fromJson(json,tClass);
+    }
 }

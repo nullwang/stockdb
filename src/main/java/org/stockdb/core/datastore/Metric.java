@@ -16,7 +16,7 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
-public interface Metric {
+public class Metric {
     String SAMPLE_INTERVAL = "sampleInterval";
 
     int MILLI_INTERVAL=0;
@@ -28,4 +28,31 @@ public interface Metric {
     int YEAR_INTERVAL=6;
     int WEEK_INTERVAL=7;
 
+    String name;
+    String attr;
+    String value;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAttr() {
+        return attr;
+    }
+
+    public void setAttr(String attr) {
+        this.attr = attr;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
 }

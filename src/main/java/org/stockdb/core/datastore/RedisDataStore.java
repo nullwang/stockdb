@@ -113,7 +113,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable {
             }catch (NumberFormatException e){
                 throw new StockDBException("Metric[" + metricName + "]attribute["+ Constants.METRIC_SAMPLE_INTERVAL +"]value error");
             }
-            jc.hset(dataPoint.getKey(),dataPoint.getTimeStr(),dataPoint.getObjValue());
+            jc.hset(dataPoint.getKey(),dataPoint.getTimeStr(),dataPoint.getValue());
         }
     }
 

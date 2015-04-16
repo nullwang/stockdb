@@ -49,6 +49,8 @@ public interface DataStore {
 
     void putData(DataPoint... dataPoints) throws StockDBException;
 
+    void putMetric(Metric... metrics) throws StockDBException;
+
     /**
      * Returns the iterator of data points which timeStr is between [startTime,endTime)
      * @param startTime the start time

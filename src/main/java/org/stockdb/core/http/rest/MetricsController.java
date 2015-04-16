@@ -1,11 +1,15 @@
 package org.stockdb.core.http.rest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.stockdb.core.datastore.DataPoint;
+import org.stockdb.core.datastore.DataStore;
+import org.stockdb.core.datastore.Metric;
+import org.stockdb.core.exception.StockDBException;
 
 /*
  * @author nullwang@hotmail.com
@@ -27,27 +31,26 @@ import org.stockdb.core.datastore.DataPoint;
 @RequestMapping(value="/api/v1")
 public class MetricsController {
 
+    @Autowired
+    private DataStore dataStore;
+
     @RequestMapping(value = "/version", method = RequestMethod.GET )
-    public void version()
+    public void version() throws StockDBException
     {
-
-
 
     }
 
     @RequestMapping(value = "/datapoints", method = RequestMethod.POST )
     public @ResponseBody
-    void putDataPoints(@RequestBody DataPoint[] dataPoints)
-    {
-
-
-
-
+    void putDataPoints(@RequestBody DataPointImpl[] dataPoints) throws StockDBException {
+         dataStore.putData(dataPoints);
     }
 
-
-
-
-
+    @RequestMapping(value = "/metrics", method = RequestMethod.POST )
+    public @ResponseBody
+    void putDataPoints(@RequestBody Metric[] metrics) throws StockDBException
+    {
+        dataStore.putMetric(metrics);
+    }
 
 }

@@ -16,12 +16,75 @@ package org.stockdb.tools;
  * limitations under the License.
  */
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriTemplate;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
 public class DataImporter {
 
+    private static final Arguments arguments = new Arguments();
+    private static Logger logger = LoggerFactory.getLogger(DataImporter.class);
 
     public static void main(String[] args) {
 
-        System.getProperty("data")
+        RestTemplate restTemplate = new RestTemplate();
 
+        JCommander commander = new JCommander(arguments);
+        try {
+            commander.parse(args);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            commander.usage();
+            System.exit(0);
+        }
+
+        StringBuilder sb = new StringBuilder("http://{host}:{port}/api/v1");
+        File file = new File(arguments.file);
+        String str = null;
+        try {
+            str = FileUtils.readFileToString(file);
+        } catch (IOException e) {
+            logger.error("read file " + file + "error", e);
+        }
+        //import metrics
+        if ("metrics".equals(arguments.format)) {
+            sb.append("/metrics");
+        } else {
+            //import data
+            sb.append("/data");
+        }
+
+        String host = arguments.host == null ? "localhost" : arguments.host;
+        String port = arguments.port == null ? "8080" : arguments.port;
+
+        URI expanded = new UriTemplate(sb.toString()).expand(host,port);
+        logger.info("request url : " + expanded);
+        String result = restTemplate.postForObject(sb.toString(), str,String.class,host,port);
+        logger.info("response : " + result);
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    private static class Arguments {
+        @Parameter(names = "-d", description = "the format of the data")
+        private String format;
+
+        @Parameter(names = "-h", description = "host")
+        private String host;
+
+        @Parameter(names = "-p", description = "host")
+        private String port;
+
+        @Parameter(names = "-f", description = "the data file")
+        private String file;
     }
 }

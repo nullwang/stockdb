@@ -27,8 +27,6 @@ import org.springframework.web.util.UriTemplate;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 public class DataImporter {
 

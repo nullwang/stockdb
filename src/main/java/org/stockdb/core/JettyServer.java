@@ -28,6 +28,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -84,6 +85,7 @@ public class JettyServer {
 
             AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
             context.setConfigLocation("org.stockdb.core.config");
+            context.getEnvironment().setDefaultProfiles("prod");
 
             ServletContextHandler servletContextHandler =
                     new ServletContextHandler();

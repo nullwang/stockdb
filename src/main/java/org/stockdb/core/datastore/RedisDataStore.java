@@ -20,6 +20,8 @@ import com.google.gson.stream.JsonReader;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.stockdb.core.exception.DatastoreException;
 import org.stockdb.core.exception.StockDBException;
 import org.stockdb.util.Commons;
@@ -27,6 +29,8 @@ import org.stockdb.util.Key;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.ScanResult;
+import redis.clients.jedis.exceptions.JedisConnectionException;
+import redis.clients.jedis.exceptions.JedisException;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -34,6 +38,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class RedisDataStore extends AbstractDataStore implements Scanable {
 
     final static int  redisDefaultPort = 7379;
@@ -46,7 +51,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable {
     JedisCluster jc ;
 
     @Autowired
-    public RedisDataStore(@Value("stockdb.redis.hosts") String hosts) throws StockDBException
+    public RedisDataStore(@Value("${stockdb.redis.hosts}") String hosts) throws StockDBException
     {
         Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
         String[] hostAndPorts = StringUtils.split(hosts,",");
@@ -66,7 +71,6 @@ public class RedisDataStore extends AbstractDataStore implements Scanable {
 
             jedisClusterNodes.add(new HostAndPort(hostAndPort[0], port));
         }
-
         jc = new JedisCluster(jedisClusterNodes);
         loadMeta();
     }
@@ -191,5 +195,10 @@ public class RedisDataStore extends AbstractDataStore implements Scanable {
     @Override
     public ScanResult scan(String id, String metricName, String cursor) {
         return  jc.hscan(Key.makeRowKey(id,metricName),"0");
+    }
+
+    @ExceptionHandler(JedisException.class)
+    private void handlerJedisException(JedisException e) throws StockDBException{
+        throw new StockDBException(e);
     }
 }

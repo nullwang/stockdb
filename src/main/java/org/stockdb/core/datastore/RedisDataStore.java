@@ -26,10 +26,7 @@ import org.stockdb.core.exception.DatastoreException;
 import org.stockdb.core.exception.StockDBException;
 import org.stockdb.util.Commons;
 import org.stockdb.util.Key;
-import redis.clients.jedis.HostAndPort;
-import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.ScanResult;
-import redis.clients.jedis.exceptions.JedisConnectionException;
+import redis.clients.jedis.*;
 import redis.clients.jedis.exceptions.JedisException;
 
 import java.io.IOException;
@@ -41,19 +38,19 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RedisDataStore extends AbstractDataStore implements Scanable {
 
-    final static int  redisDefaultPort = 7379;
+    final static int  redisDefaultPort = 6379;
 
     final static String METRICS_KEY="metrics";
     final static String OBJECT_KEY="objects";
     final static String META_KEY="meta";
     final static String META_SETTING_KEY="meta_set";
 
-    JedisCluster jc ;
+    JedisWrapper jc ;
 
     @Autowired
     public RedisDataStore(@Value("${stockdb.redis.hosts}") String hosts) throws StockDBException
     {
-        Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
+        LinkedList<HostAndPort> jedisClusterNodes = new LinkedList<HostAndPort>();
         String[] hostAndPorts = StringUtils.split(hosts,",");
         if( hostAndPorts.length == 0) throw new DatastoreException("stockdb.redis.hosts is empty");
         for(int i=0; i<hostAndPorts.length; i++) {
@@ -71,14 +68,24 @@ public class RedisDataStore extends AbstractDataStore implements Scanable {
 
             jedisClusterNodes.add(new HostAndPort(hostAndPort[0], port));
         }
-        jc = new JedisCluster(jedisClusterNodes);
+        JedisPool jedisPool = null;
+        JedisCluster jedisCluster = null;
+        if( jedisClusterNodes.size() == 1){
+            jedisPool = new JedisPool(jedisClusterNodes.get(0).getHost(),jedisClusterNodes.get(0).getPort());
+        }else {
+            jedisCluster = new JedisCluster(new HashSet(jedisClusterNodes));
+        }
+        jc = new JedisWrapper(jedisPool,jedisCluster);
+
         loadMeta();
     }
 
     //load meta data
     void loadMeta() throws StockDBException{
         //check if stock meta is loaded
-        long exist = jc.setnx(META_SETTING_KEY,"1");
+
+        long exist = jc.setnx(META_SETTING_KEY, "1");
+
         if( exist == 0) return;
 
         try {

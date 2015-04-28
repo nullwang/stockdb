@@ -1,0 +1,13 @@
+Getting started
+
+
+unix 3个参数
+[16976] 28 Apr 21:38:44.673 # Redis can't set maximum open files to 10032 because of OS error: Operation not permitted.
+[16976] 28 Apr 21:38:44.673 # Current maximum open files is 1024. maxclients has been reduced to 4064 to compensate for low ulimit. If you need higher maxclients increase 'ulimit -n'.
+
+[16976] 28 Apr 21:38:44.677 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+[16976] 28 Apr 21:38:44.677 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+[16976] 28 Apr 21:38:44.677 * The server is now ready to accept connections on port 6379
+
+
+

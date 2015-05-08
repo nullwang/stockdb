@@ -63,7 +63,7 @@ public class DataImporter {
         }
 
         String host = arguments.host == null ? "localhost" : arguments.host;
-        String port = arguments.port == null ? "8080" : arguments.port;
+        String port = arguments.port == null ? "7070" : arguments.port;
 
         URI expanded = new UriTemplate(sb.toString()).expand(host,port);
         logger.info("request url : " + expanded);

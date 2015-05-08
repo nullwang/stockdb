@@ -43,8 +43,8 @@ public class Main {
     private JettyServer jettyServer;
 
     protected Main(Properties properties) throws StockDBException {
-        int port = Integer.parseInt(properties.getProperty("stockdb.jetty.port","8080"));
-        int sslPort = Integer.parseInt(properties.getProperty("stockdb.jetty.ssl_port","8443"));
+        int port = Integer.parseInt(properties.getProperty("stockdb.jetty.port","7070"));
+        int sslPort = Integer.parseInt(properties.getProperty("stockdb.jetty.ssl_port","7443"));
         String webRoot = properties.getProperty("stockdb.jetty.static_web_root","webroot");
         String keyStorePath = properties.getProperty("stockdb.jetty.key_store_path");
         String keyStorePassword = properties.getProperty("stockdb.jetty.key_store_password");

@@ -35,12 +35,13 @@ public class MetricsController {
     private DataStore dataStore;
 
     @RequestMapping(value = "/version", method = RequestMethod.GET )
-    public void version() throws StockDBException
+    @ResponseBody
+    public String version() throws StockDBException
     {
-
+        return "{\"version\":\"1.0\"}";
     }
 
-    @RequestMapping(value = "/datapoints", method = RequestMethod.POST )
+    @RequestMapping(value = "/data", method = RequestMethod.POST )
     public @ResponseBody
     void putDataPoints(@RequestBody DataPointImpl[] dataPoints) throws StockDBException {
          dataStore.putData(dataPoints);

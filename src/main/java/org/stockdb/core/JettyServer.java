@@ -51,7 +51,7 @@ public class JettyServer {
     private String keyStorePassword;
 
     private static final String CONTEXT_PATH = "/";
-    private static final String MAPPING_URL = "/api/*";
+    private static final String MAPPING_URL = "/*";
 
     JettyServer(int jettyPort, String jettyWebRoot){
         this.jettyPort = jettyPort;

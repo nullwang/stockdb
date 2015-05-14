@@ -118,7 +118,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable {
             String index = getMetricAttr(metricName,Constants.METRIC_SAMPLE_INTERVAL);
             try{
                 int i = Integer.parseInt(index);
-                if( !DataPoint.timeStrPatterns[i].matcher(dataPoint.getTimeStr()).matches()){
+                if(dataPoint.getTimeStr() == null ||  !DataPoint.timeStrPatterns[i].matcher(dataPoint.getTimeStr()).matches()){
                     throw new StockDBException("DataPoint["+dataPoint.getKey()+"]" + "has bad format timeStr["+ dataPoint.getTimeStr() +"]");
                 }
             }catch (NumberFormatException e){
@@ -206,6 +206,12 @@ public class RedisDataStore extends AbstractDataStore implements Scanable {
 
     @ExceptionHandler(JedisException.class)
     private void handlerJedisException(JedisException e) throws StockDBException{
+        throw new StockDBException(e);
+    }
+
+    @ExceptionHandler(Exception.class)
+    private void handlerException(Exception e) throws StockDBException
+    {
         throw new StockDBException(e);
     }
 }

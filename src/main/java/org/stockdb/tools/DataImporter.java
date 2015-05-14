@@ -21,6 +21,7 @@ import com.beust.jcommander.Parameter;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
@@ -36,6 +37,7 @@ public class DataImporter {
     public static void main(String[] args) {
 
         RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
         JCommander commander = new JCommander(arguments);
         try {

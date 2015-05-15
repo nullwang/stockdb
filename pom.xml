@@ -105,17 +105,22 @@
             <artifactId>jedis</artifactId>
             <version>2.6.2</version>
         </dependency>
-
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>${jackson-mapper.version}</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson-core-version}</version>
         </dependency>
 
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
-            <version>${jackson-core.version}</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson-core-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson-core-version}</version>
         </dependency>
 
     </dependencies>
@@ -162,7 +167,8 @@
         <spring.version>4.1.6.RELEASE</spring.version>
         <jetty.version>8.1.13.v20130916</jetty.version>
         <jackson-mapper.version>1.9.12</jackson-mapper.version>
-        <jackson-core.version>1.9.12</jackson-core.version>
+        <!--<jackson-core.version>1.9.12</jackson-core.version>-->
+        <jackson-core-version>2.3.3</jackson-core-version>
     </properties>
 	
 	<profiles>

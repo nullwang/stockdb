@@ -41,10 +41,13 @@ public interface DataStore {
 
     Set<String> getMetrics();
 
-    DataPoint getData(String id, String metricName, String timeStr, int diff, TimeUnit timeUnit);
-
     DataPoint getData(String id, String metricName, String timeStr);
-
+    /**
+     * Returns data points which timeStr is between [startTime,endTime)
+     * @param startTime the start time
+     * @param endTime the end time
+     * @return data points
+     */
     List<DataPoint> getData(String id, String metricName, String startTime, String endTime);
 
     void putData(DataPoint... dataPoints) throws StockDBException;

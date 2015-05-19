@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.stockdb.core.exception.DatastoreException;
 import org.stockdb.core.exception.StockDBException;
+import org.stockdb.core.http.rest.DataPointImpl;
 import org.stockdb.util.Commons;
 import org.stockdb.util.Key;
 import redis.clients.jedis.*;
@@ -184,20 +185,40 @@ public class RedisDataStore extends AbstractDataStore implements Scanable {
     }
 
     @Override
-    public DataPoint getData(String id, String metricName, String timeStr, int diff, TimeUnit timeUnit) {
+    public DataPoint getData(String id, String metricName, String timeStr) {
+        String value = jc.hget(Key.makeRowKey(id,metricName),timeStr);
+        if( value != null){
+            DataPointImpl dataPoint = new DataPointImpl();
+            dataPoint.setValue(value);
+            dataPoint.setTimeStr(timeStr);
+            dataPoint.setId(id);
+            dataPoint.setMetricName(metricName);
+            return dataPoint;
+        }
         return null;
     }
 
     @Override
     public List<DataPoint> getData(String id, String metricName, String startTime, String endTime) {
-        return null;
+        //jc.hvals(Key.makeRowKey(id,metricName));
+        Map<String,String> datas = jc.hgetAll(Key.makeRowKey(id,metricName));
+        List<DataPoint> points = new ArrayList<DataPoint> ();
+        for(Map.Entry<String,String> entry: datas.entrySet()){
+            if( Commons.between(startTime,endTime,entry.getKey())){
+                DataPointImpl dataPoint = new DataPointImpl();
+                dataPoint.setTimeStr(entry.getKey());
+                dataPoint.setId(id);
+                dataPoint.setMetricName(metricName);
+                dataPoint.setValue(entry.getValue());
+            }
+        }
+        return points;
     }
 
     @Override
     public Collection<DataPoint> queryData(String id, String metricName, String startTime, String endTime) {
         return ScanableAdapter.build(this,id,metricName,startTime,endTime);
     }
-
 
     @Override
     public ScanResult scan(String id, String metricName, String cursor) {

@@ -2,14 +2,13 @@ package org.stockdb.core.http.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.stockdb.core.datastore.DataPoint;
 import org.stockdb.core.datastore.DataStore;
 import org.stockdb.core.datastore.Metric;
 import org.stockdb.core.exception.StockDBException;
+
+import java.util.List;
 
 /*
  * @author nullwang@hotmail.com
@@ -45,6 +44,22 @@ public class MetricsController {
     public @ResponseBody
     void putDataPoints(@RequestBody DataPointImpl[] dataPoints) throws StockDBException {
          dataStore.putData(dataPoints);
+    }
+
+    @RequestMapping(value = "/list/{id}/{metricName}/{startTime}/{endTime}", method = RequestMethod.GET )
+    public @ResponseBody
+    List<DataPoint> getDataPoints(@PathVariable("id") String id,
+                       @PathVariable String metricName,
+                       @PathVariable String startTime, @PathVariable String endTime) throws StockDBException {
+        return dataStore.getData(id, metricName,startTime,endTime);
+    }
+
+    @RequestMapping(value = "/{id}/{metricName}/{timeStr}", method = RequestMethod.GET )
+    public @ResponseBody
+    DataPoint getDataPoint(@PathVariable("id") String id,
+                                  @PathVariable String metricName,
+                                  @PathVariable String timeStr) throws StockDBException {
+        return dataStore.getData(id, metricName,timeStr);
     }
 
     @RequestMapping(value = "/metrics", method = RequestMethod.POST )

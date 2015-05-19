@@ -21,7 +21,7 @@ import com.beust.jcommander.Parameter;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
@@ -37,7 +37,8 @@ public class DataImporter {
     public static void main(String[] args) {
 
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        //restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+
 
         JCommander commander = new JCommander(arguments);
         try {
@@ -69,8 +70,23 @@ public class DataImporter {
 
         URI expanded = new UriTemplate(sb.toString()).expand(host,port);
         logger.info("request url : " + expanded);
-        String result = restTemplate.postForObject(sb.toString(), str,String.class,host,port);
-        logger.info("response : " + result);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> entity = new HttpEntity<String>(str,headers);
+        ResponseEntity<String> responseEntity = restTemplate
+                .exchange(sb.toString(), HttpMethod.POST, entity, String.class,host,port);
+        logger.info("response code : " + responseEntity.getStatusCode() + " ,body: " + responseEntity.getBody());
+
+        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+            //JSONObject userJson = new JSONObject(loginResponse.getBody());
+        } else if (responseEntity.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+            // nono... bad credentials
+        }
+
+        //String result = restTemplate.postForObject(sb.toString(), str,String.class,host,port);
+
     }
 
     @SuppressWarnings("UnusedDeclaration")

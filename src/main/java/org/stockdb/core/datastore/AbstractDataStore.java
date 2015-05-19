@@ -23,13 +23,6 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractDataStore implements DataStore {
 
     @Override
-    public DataPoint getData(String id, String metricName, String timeStr)
-    {
-        return getData(id,metricName,timeStr,0,TimeUnit.NANOSECONDS);
-
-    }
-
-    @Override
     public void putMetric(Metric... metrics) throws StockDBException {
         for(Metric metric: metrics ) {
             setMetricAttr(metric.name,metric.attr,metric.value);

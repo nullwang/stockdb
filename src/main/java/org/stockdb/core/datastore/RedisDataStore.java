@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.stockdb.core.exception.DatastoreException;
 import org.stockdb.core.exception.StockDBException;
-import org.stockdb.core.http.rest.DataPointImpl;
+import org.stockdb.core.http.rest.model.DataPointImpl;
 import org.stockdb.util.Commons;
 import org.stockdb.util.Key;
 import redis.clients.jedis.*;
@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 @Component
 public class RedisDataStore extends AbstractDataStore implements Scanable {
@@ -113,19 +112,19 @@ public class RedisDataStore extends AbstractDataStore implements Scanable {
     }
 
     @Override
-    public void putData(DataPoint[] dataPoints) throws StockDBException{
+    public void putData(String id,String metricName, DataPoint[] dataPoints) throws StockDBException{
+        String index = getMetricAttr(metricName,Constants.METRIC_SAMPLE_INTERVAL);
+        String rowKey = Key.makeRowKey(id,metricName);
         for(DataPoint dataPoint:dataPoints) {
-            String metricName = dataPoint.getMetricName();
-            String index = getMetricAttr(metricName,Constants.METRIC_SAMPLE_INTERVAL);
             try{
                 int i = Integer.parseInt(index);
                 if(dataPoint.getTimeStr() == null ||  !DataPoint.timeStrPatterns[i].matcher(dataPoint.getTimeStr()).matches()){
-                    throw new StockDBException("DataPoint["+dataPoint.getKey()+"]" + "has bad format timeStr["+ dataPoint.getTimeStr() +"]");
+                    throw new StockDBException("DataPoint["+rowKey+"]" + "has bad format timeStr["+ dataPoint.getTimeStr() +"]");
                 }
             }catch (NumberFormatException e){
                 throw new StockDBException("Metric[" + metricName + "]attribute["+ Constants.METRIC_SAMPLE_INTERVAL +"]value error");
             }
-            jc.hset(dataPoint.getKey(),dataPoint.getTimeStr(),dataPoint.getValue());
+            jc.hset(rowKey,dataPoint.getTimeStr(),dataPoint.getValue());
         }
     }
 
@@ -185,17 +184,8 @@ public class RedisDataStore extends AbstractDataStore implements Scanable {
     }
 
     @Override
-    public DataPoint getData(String id, String metricName, String timeStr) {
-        String value = jc.hget(Key.makeRowKey(id,metricName),timeStr);
-        if( value != null){
-            DataPointImpl dataPoint = new DataPointImpl();
-            dataPoint.setValue(value);
-            dataPoint.setTimeStr(timeStr);
-            dataPoint.setId(id);
-            dataPoint.setMetricName(metricName);
-            return dataPoint;
-        }
-        return null;
+    public String getValue(String id, String metricName, String timeStr) {
+        return jc.hget(Key.makeRowKey(id,metricName),timeStr);
     }
 
     @Override
@@ -205,10 +195,8 @@ public class RedisDataStore extends AbstractDataStore implements Scanable {
         List<DataPoint> points = new ArrayList<DataPoint> ();
         for(Map.Entry<String,String> entry: datas.entrySet()){
             if( Commons.between(startTime,endTime,entry.getKey())){
-                DataPointImpl dataPoint = new DataPointImpl();
+                DataPoint dataPoint = new DataPoint();
                 dataPoint.setTimeStr(entry.getKey());
-                dataPoint.setId(id);
-                dataPoint.setMetricName(metricName);
                 dataPoint.setValue(entry.getValue());
             }
         }

@@ -1,7 +1,7 @@
-package org.stockdb.core.http.rest;
+package org.stockdb.core.http.rest.model;
 /*
  * @author nullwang@hotmail.com
- * created at 2015/4/16
+ * created at 2015/5/21
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,6 @@ package org.stockdb.core.http.rest;
  * limitations under the License.
  */
 
-import org.springframework.web.bind.annotation.ExceptionHandler;
+public class DataPointsRsp {
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-public class Response {
-    private int status = 0; // 0 - ok;
-
-    private List<String> errorMessages = new ArrayList<String>();
-
-    public Response(){
-    }
-
-    public Response(int status){
-        this.status = status;
-    }
-
-    public void addErrors(String... messages){
-        if( messages == null) return;
-        errorMessages.addAll(Arrays.asList(messages));
-    }
 }

@@ -24,7 +24,7 @@ function clear()
 
 function updateChart() {
 	clear();
-	var query=buildKairosDBQuery();
+	var query=buildDataQuery();
 
 	var metricData = getAdditionalChartData();
 	$('#query-hidden-text').val(JSON.stringify(query, null, 2));
@@ -36,9 +36,9 @@ function updateChart() {
 	showChartForQuery("(Click and drag to zoom)", query, metricData);
 }
 
-function buildKairosDBQuery() {
+function buildDataQuery() {
 	var hasError = false;
-	var query = new kairosdb.MetricQuery();
+	var query = new stockdb.MetricQuery();
 
 	// todo cachetime
 
@@ -51,7 +51,7 @@ function buildKairosDBQuery() {
 			return;
 		}
 
-		var metric = new kairosdb.Metric(metricName);
+		var metric = new stockdb.Metric(metricName);
 
 		$metricContainer.find(".groupBy").each(function (index, groupBy) {
 			var name = $(groupBy).find(".groupByName").val();
@@ -63,7 +63,7 @@ function buildKairosDBQuery() {
 					hasError = true;
 					return true; // continue to next item
 				}
-				metric.addGroupBy(new kairosdb.TagGroupBy(tags));
+				metric.addGroupBy(new stockdb.TagGroupBy(tags));
 			}
 			else if (name == "time") {
 				var value = $(groupBy).find(".groupByTimeSizeValue").val();
@@ -81,7 +81,7 @@ function buildKairosDBQuery() {
 					hasError = true;
 					return true;
 				}
-				metric.addGroupBy(new kairosdb.TimeGroupBy(value, unit, count));
+				metric.addGroupBy(new stockdb.TimeGroupBy(value, unit, count));
 			}
 			else if (name == "value") {
 				var size = $(groupBy).find(".groupByValueValue").val();
@@ -90,7 +90,7 @@ function buildKairosDBQuery() {
 					hasError = true;
 					return true;
 				}
-				metric.addGroupBy(new kairosdb.ValueGroupBy(size));
+				metric.addGroupBy(new stockdb.ValueGroupBy(size));
 			}
 		});
 
@@ -637,8 +637,8 @@ function getTagsForMetric(metricName) {
 		return;
 	}
 
-	var query = new kairosdb.MetricQuery();
-	query.addMetric(new kairosdb.Metric(metricName));
+	var query = new stockdb.MetricQuery();
+	query.addMetric(new stockdb.Metric(metricName));
 	query.setStartAbsolute(0);
 	$('body').toggleClass('cursorWaiting');
 
@@ -664,7 +664,7 @@ function getTagsForMetric(metricName) {
 }
 
 function showChartForQuery(subTitle, query, metricData) {
-	kairosdb.dataPointsQuery(query, function (queries) {
+	stockdb.dataPointsQuery(query, function (queries) {
 		showChart(subTitle, queries, metricData);
 		$("#deleteButton").button("enable");
 	});
@@ -773,7 +773,7 @@ function isHighChartsLoaded() {
 function deleteDataPoints() {
 	if (confirm("Are you sure you want to delete all data points returned from the last query?")) {
 		var query = $("#query-hidden-text").val();
-		kairosdb.deleteDataPoints(query, function () {
+		stockdb.deleteDataPoints(query, function () {
 			if (confirm("Data was deleted. It may take up 30 seconds are more to update. Do you want to refresh the graph?")) {
 				updateChart();
 			}

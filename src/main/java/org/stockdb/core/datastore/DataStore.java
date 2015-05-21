@@ -41,7 +41,7 @@ public interface DataStore {
 
     Set<String> getMetrics();
 
-    DataPoint getData(String id, String metricName, String timeStr);
+    String getValue(String id, String metricName, String timeStr);
     /**
      * Returns data points which timeStr is between [startTime,endTime)
      * @param startTime the start time
@@ -50,7 +50,9 @@ public interface DataStore {
      */
     List<DataPoint> getData(String id, String metricName, String startTime, String endTime);
 
-    void putData(DataPoint... dataPoints) throws StockDBException;
+    void putData(String id, String metricName, DataPoint... dataPoints) throws StockDBException;
+
+    void putData(ObjectMetricDataSet objectMetricDataSet) throws StockDBException;
 
     void putMetric(Metric... metrics) throws StockDBException;
 
@@ -61,6 +63,5 @@ public interface DataStore {
      * @return data points
      */
     Collection<DataPoint> queryData(String id, String metricName, String startTime, String endTime);
-
 
 }

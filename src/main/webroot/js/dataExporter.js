@@ -1,12 +1,12 @@
 function exportCsvQueryData() {
 	clear();
 
-	var query = buildKairosDBQuery();
+	var query = buildDataQuery();
 
 	if (query) {
 		var offset = new Date().getTimezoneOffset() * -60000;
 		var oBuilder = "Epoch Time,Local Time,Value,Groups...\n";
-		kairosdb.dataPointsQuery(query, function (queries) {
+		stockdb.dataPointsQuery(query, function (queries) {
 			queries.forEach(function (resultSet) {
 				resultSet.results.forEach(function (queryResult) {
 					var groupByMessage = "";
@@ -46,11 +46,11 @@ function exportCsvQueryData() {
 function exportJsonQueryData() {
 	clear();
 
-	var query = buildKairosDBQuery();
+	var query = buildDataQuery();
 
 	if (query) {
 		debugger;
-		kairosdb.dataPointsQuery(query, function (resultSet) {
+		stockdb.dataPointsQuery(query, function (resultSet) {
 			var blob = new Blob([JSON.stringify(resultSet)], {type: "text/json;charset=utf-8"});
 			saveAs(blob, "query_json.txt");
 

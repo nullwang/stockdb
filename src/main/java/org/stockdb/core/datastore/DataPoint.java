@@ -18,14 +18,11 @@ package org.stockdb.core.datastore;
 
 import java.util.regex.Pattern;
 
-public interface DataPoint {
-    /**
-     * Returns object id
-     * @return the object id
-     */
-    public String getId();
+public class DataPoint {
 
-    public String getMetricName() ;
+
+    String timeStr;
+    String value;
 
     /**
      * The format of yyyyMMddHHmmSS.sss
@@ -35,30 +32,42 @@ public interface DataPoint {
      * yyyyMMdd
      * yyyyMM
      * yyyy
+     *
      * @return
      */
-    public String getTimeStr() ;
+    public String getTimeStr() {
+        return timeStr;
+    }
 
-    public String getValue() ;
+    ;
 
-    public String getKey();
+    public String getValue() {
+        return value;
+    }
 
-    String PATTERN_YY="((19|20|21|22)\\d\\d)";
-    String PATTERN_YYMM=PATTERN_YY + "(0[1-9]|1[012])";
-    String PATTERN_YYMMDD=PATTERN_YYMM + "(0[1-9]|[12][0-9]|3[01])";
-    String PATTERN_YYMMDDHH=PATTERN_YYMMDD + "([0-1][0-9]|2[0-3])";
-    String PATTERN_YYMMDDHHMM = PATTERN_YYMMDDHH + "([0-5][0-9])";
-    String PATTERN_YYMMDDHHMMSS=PATTERN_YYMMDDHHMM + "([0-5][0-9])";
-    String PATTERN_YYMMDDHHMMSSZZZ=PATTERN_YYMMDDHHMMSS + "\\.\\d{3}";
+    static String PATTERN_YY = "((19|20|21|22)\\d\\d)";
+    static String PATTERN_YYMM = PATTERN_YY + "(0[1-9]|1[012])";
+    static String PATTERN_YYMMDD = PATTERN_YYMM + "(0[1-9]|[12][0-9]|3[01])";
+    static String PATTERN_YYMMDDHH = PATTERN_YYMMDD + "([0-1][0-9]|2[0-3])";
+    static String PATTERN_YYMMDDHHMM = PATTERN_YYMMDDHH + "([0-5][0-9])";
+    static String PATTERN_YYMMDDHHMMSS = PATTERN_YYMMDDHHMM + "([0-5][0-9])";
+    static String PATTERN_YYMMDDHHMMSSZZZ = PATTERN_YYMMDDHHMMSS + "\\.\\d{3}";
 
-    Pattern[]  timeStrPatterns = {
-            Pattern.compile("^" + PATTERN_YYMMDDHHMMSSZZZ +"$"),
-            Pattern.compile("^" + PATTERN_YYMMDDHHMMSS +"$"),
-            Pattern.compile("^" + PATTERN_YYMMDDHHMM +"$"),
-            Pattern.compile("^" + PATTERN_YYMMDDHH +"$"),
-            Pattern.compile("^" + PATTERN_YYMMDD +"$"),
-            Pattern.compile("^" + PATTERN_YYMM +"$"),
-            Pattern.compile("^" + PATTERN_YY +"$"),
+    static Pattern[] timeStrPatterns = {
+            Pattern.compile("^" + PATTERN_YYMMDDHHMMSSZZZ + "$"),
+            Pattern.compile("^" + PATTERN_YYMMDDHHMMSS + "$"),
+            Pattern.compile("^" + PATTERN_YYMMDDHHMM + "$"),
+            Pattern.compile("^" + PATTERN_YYMMDDHH + "$"),
+            Pattern.compile("^" + PATTERN_YYMMDD + "$"),
+            Pattern.compile("^" + PATTERN_YYMM + "$"),
+            Pattern.compile("^" + PATTERN_YY + "$"),
     };
 
+    public void setTimeStr(String timeStr) {
+        this.timeStr = timeStr;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
 }

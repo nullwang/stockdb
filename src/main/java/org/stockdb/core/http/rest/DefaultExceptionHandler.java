@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.stockdb.core.exception.DatastoreException;
 import org.stockdb.core.exception.StockDBException;
+import org.stockdb.core.http.rest.model.Response;
 import org.stockdb.util.Commons;
 
 import javax.servlet.http.HttpServletRequest;

@@ -28,4 +28,12 @@ public abstract class AbstractDataStore implements DataStore {
             setMetricAttr(metric.name,metric.attr,metric.value);
         }
     }
+
+    public void putData(ObjectMetricDataSet objectMetricDataSet) throws StockDBException{
+        assert(objectMetricDataSet != null);
+        String id = objectMetricDataSet.getId();
+        String metricName = objectMetricDataSet.getMetricName();
+        putData(id,metricName,objectMetricDataSet.getDataPoints());
+    }
+
 }

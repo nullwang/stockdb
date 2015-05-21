@@ -1,4 +1,4 @@
-package org.stockdb.core.http.rest;
+package org.stockdb.core.http.rest.model;
 /*
  * @author nullwang@hotmail.com
  * created at 2015/3/13
@@ -16,10 +16,11 @@ package org.stockdb.core.http.rest;
  * limitations under the License.
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.stockdb.core.datastore.DataPoint;
 import org.stockdb.util.Key;
 
-public class DataPointImpl implements DataPoint{
+public class DataPointImpl {
 
     String id; //object id
     String metricName;
@@ -42,7 +43,7 @@ public class DataPointImpl implements DataPoint{
         return value;
     }
 
-    @Override
+    @JsonIgnore
     public String getKey() {
         return Key.makeRowKey(id,metricName);
     }

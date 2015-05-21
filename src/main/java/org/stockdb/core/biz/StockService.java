@@ -19,6 +19,7 @@ package org.stockdb.core.biz;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.stockdb.core.datastore.DataStore;
+import org.stockdb.core.datastore.ObjectMetricDataSet;
 import org.stockdb.core.exception.StockDBException;
 
 import java.util.ArrayList;
@@ -38,21 +39,23 @@ public class StockService {
         this.dataStore = dataStore;
     }
 
-    public void setIndicatorName(String id, String name) throws StockDBException {
-        dataStore.setMetricAttr(id,STR_NAME,name);
+    public void setIndicatorName(String indicatorId, String name) throws StockDBException {
+        dataStore.setMetricAttr(indicatorId,STR_NAME,name);
     }
 
-    public String[] getIndicatorNames(String... ids) throws StockDBException
+    public String[] getIndicatorNames(String... indicatorIds) throws StockDBException
     {
-        if( ids == null ) return null;
+        if( indicatorIds == null ) return null;
         List<String> names = new ArrayList();
-        for(String id: ids ) {
+        for(String id: indicatorIds ) {
             names.add(dataStore.getMetricAttr(id, STR_NAME));
         }
         return names.toArray(new String[names.size()]);
     }
 
-    public getKLineData()
+    public ObjectMetricDataSet getKLineData( ) throws StockDBException{
+
+    }
 
     public getK30lineData(String ids) throws StockDBException{
 

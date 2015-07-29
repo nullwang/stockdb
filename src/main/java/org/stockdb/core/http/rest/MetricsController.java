@@ -8,7 +8,6 @@ import org.stockdb.core.datastore.DataStore;
 import org.stockdb.core.datastore.Metric;
 import org.stockdb.core.datastore.ObjectMetricDataSet;
 import org.stockdb.core.exception.StockDBException;
-import org.stockdb.core.http.rest.model.DataPointImpl;
 import org.stockdb.core.http.rest.model.DataQueryReq;
 
 import java.util.List;
@@ -71,7 +70,6 @@ public class MetricsController {
     DataPoint getDataPoint(@PathVariable("id") String id,
                                   @PathVariable String metricName,
                                   @PathVariable String timeStr) throws StockDBException {
-
 //        return dataStore.getValue(id, metricName, timeStr);
     }
 

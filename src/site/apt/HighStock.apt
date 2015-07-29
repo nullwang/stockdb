@@ -1,0 +1,54 @@
+
+High Stock 如何构造
+
+    Html 页面中定义呈现元素 <div id="container" style="height: 400px; min-width: 310px"></div>
+    定义
+     <script type="text/javascript">
+     $(function () {
+         $.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-c.json&callback=?', function (data) {
+             // Create the chart
+             //$('#container')获取div #container的jquery元素
+             $('#container').highcharts('StockChart', {
+                 rangeSelector : {
+                     selected : 1
+                 },
+                 title : {
+                     text : 'AAPL Stock Price'
+                 },
+                 series : [{
+                     name : 'AAPL',
+                     data : data,
+                     tooltip: {
+                         valueDecimals: 2
+                     }
+                 }]
+             });
+         });
+
+     }); </script>
+
+   接下来调用jquery中定义的扩展 968行函数 	$.fn.highcharts = function () {... },
+   函数989 ret = this 返回 jquery对象， 987 chart = new Highcharts[constr](options, args[1]); 构造一个图，stock图的
+初始化均由此展开。构造图时使用了 constr 其默认值为Chart，其由highcharts第一个参数决定上例中是StockChart。注意chart是new出的一个实例
+
+
+Highcharts[StockChart] 引用函数22659 Highcharts.StockChart = function (options, callback) { } 其主要引用并合并些图形选项
+最终构造一个Chart 22777行 return new Chart(options, callback);
+
+new Chart(options, callback) 在 11286 找到 定义
+var Chart = Highcharts.Chart = function () {
+	this.init.apply(this, arguments); //这个方法中的this，由于是new调用就是新构造的实例,但是init方法从何而来？
+};
+
+11210 行代码为Highcharts.Chart增加原型同时指定了init方法
+Chart.prototype = {
+
+}
+
+//上面的apply 调用init看起来似乎是个直接调用，实则不然，请看22567 这条语句对Chart.prototype的init方法进行了wrap
+当然最终回到了init调用
+
+
+
+
+

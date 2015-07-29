@@ -53,7 +53,7 @@ public class StockService {
         return names.toArray(new String[names.size()]);
     }
 
-    public ObjectMetricDataSet getKLineData( ) throws StockDBException{
+    public ObjectMetricDataSet getKLineData(String id, String metricName, String startTime,String endTime ) throws StockDBException{
 
     }
 

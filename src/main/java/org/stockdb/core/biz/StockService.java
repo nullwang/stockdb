@@ -16,8 +16,6 @@ package org.stockdb.core.biz;
  * limitations under the License.
  */
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.stockdb.core.datastore.DataStore;
 import org.stockdb.core.datastore.ObjectMetricDataSet;
 import org.stockdb.core.exception.StockDBException;
@@ -54,10 +52,10 @@ public class StockService {
     }
 
     public ObjectMetricDataSet getKLineData(String id, String metricName, String startTime,String endTime ) throws StockDBException{
-
+        return null;
     }
 
-    public getK30lineData(String ids) throws StockDBException{
+    public void getK30lineData(String ids) throws StockDBException{
 
     }
 

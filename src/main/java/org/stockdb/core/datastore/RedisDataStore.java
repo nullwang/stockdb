@@ -24,7 +24,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.stockdb.core.exception.DatastoreException;
 import org.stockdb.core.exception.StockDBException;
-import org.stockdb.core.http.rest.model.DataPointImpl;
 import org.stockdb.util.Commons;
 import org.stockdb.util.Key;
 import redis.clients.jedis.*;

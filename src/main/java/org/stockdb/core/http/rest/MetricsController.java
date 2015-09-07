@@ -51,10 +51,11 @@ public class MetricsController {
     @RequestMapping(value = "/query", method = RequestMethod.POST )
     public @ResponseBody
     ObjectMetricDataSet queryDataPoints(@RequestBody DataQueryReq dataQueryReq) throws StockDBException {
-        dataQueryReq.getObjectMetrics()
+        dataQueryReq.getObjectMetrics();
 
 //        return dataStore.getData(dataQueryReq.getId(), dataQueryReq.getMetricName(),
 //                dataQueryReq.getStartTime(), dataQueryReq.getEndTime());
+        return null;
     }
 
     @RequestMapping(value = "/list/{id}/{metricName}/{startTime}/{endTime}", method = RequestMethod.GET )
@@ -71,6 +72,8 @@ public class MetricsController {
                                   @PathVariable String metricName,
                                   @PathVariable String timeStr) throws StockDBException {
 //        return dataStore.getValue(id, metricName, timeStr);
+
+        return null;
     }
 
     @RequestMapping(value = "/metrics", method = RequestMethod.POST )

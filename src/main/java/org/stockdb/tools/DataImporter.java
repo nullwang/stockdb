@@ -19,6 +19,8 @@ package org.stockdb.tools;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
@@ -39,7 +41,6 @@ public class DataImporter {
         RestTemplate restTemplate = new RestTemplate();
         //restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
-
         JCommander commander = new JCommander(arguments);
         try {
             commander.parse(args);
@@ -51,16 +52,25 @@ public class DataImporter {
 
         StringBuilder sb = new StringBuilder("http://{host}:{port}/api/v1");
         File file = new File(arguments.file);
-        String str = null;
+        StringBuilder data = new StringBuilder();
+        LineIterator lt = null;
         try {
-            str = FileUtils.readFileToString(file);
+             lt = FileUtils.lineIterator(file,"UTF-8");
+            while(lt.hasNext()){
+                String str = lt.next();
+                if(!StringUtils.startsWith(str,"//")){
+                    data.append(str);
+                }
+            }
         } catch (IOException e) {
             logger.error("read file " + file + "error", e);
+        }finally {
+            if( lt !=null) lt.close();
         }
         //import metrics
-        if ("metrics".equals(arguments.format)) {
+        if ("M".equals(arguments.format)) {
             sb.append("/metrics");
-        } else {
+        } else if ("DD".equals(arguments.format)) {
             //import data
             sb.append("/data");
         }
@@ -74,7 +84,7 @@ public class DataImporter {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<String> entity = new HttpEntity<String>(str,headers);
+        HttpEntity<String> entity = new HttpEntity<String>(sb.toString(),headers);
         ResponseEntity<String> responseEntity = restTemplate
                 .exchange(sb.toString(), HttpMethod.POST, entity, String.class,host,port);
         logger.info("response code : " + responseEntity.getStatusCode() + " ,body: " + responseEntity.getBody());
@@ -91,7 +101,7 @@ public class DataImporter {
 
     @SuppressWarnings("UnusedDeclaration")
     private static class Arguments {
-        @Parameter(names = "-d", description = "the format of the data")
+        @Parameter(names = "-f", description = "the format of the data M-metrics,D-单行数据,DD-多行数据]")
         private String format;
 
         @Parameter(names = "-h", description = "host")
@@ -100,7 +110,7 @@ public class DataImporter {
         @Parameter(names = "-p", description = "host")
         private String port;
 
-        @Parameter(names = "-f", description = "the data file")
+        @Parameter(names = "-d", description = "the data or metrics file" ,required = true)
         private String file;
     }
 }

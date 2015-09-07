@@ -42,12 +42,81 @@ var Chart = Highcharts.Chart = function () {
 
 11210 行代码为Highcharts.Chart增加原型同时指定了init方法
 Chart.prototype = {
-
+//11220 行
+    init: function (userOptions, callback) {
+    //11309行
+    chart.firstRender();
+    }
 }
 
 //上面的apply 调用init看起来似乎是个直接调用，实则不然，请看22567 这条语句对Chart.prototype的init方法进行了wrap
-当然最终回到了init调用
+当然最终回到了init调用,init中第11309行最终调用呈现图表
 
+//第12546行
+firstRender: function () {
+		var chart = this,
+			options = chart.options,
+			callback = chart.callback;
+
+		// Check whether the chart is ready to render
+		if (!chart.isReadyToRender()) {
+			return;
+		}
+
+		// Create the container,创建呈现容器
+		chart.getContainer();
+
+		// Run an early event after the container and renderer are established
+		fireEvent(chart, 'init');
+
+
+		chart.resetMargins();
+		chart.setChartSize();
+
+		// Set the common chart properties (mainly invert) from the given series
+		chart.propFromSeries();
+
+		// get axes
+		chart.getAxes();
+
+		// Initialize the series
+		each(options.series || [], function (serieOptions) {
+			chart.initSeries(serieOptions);
+		});
+
+		chart.linkSeries();
+
+		// Run an event after axes and series are initialized, but before render. At this stage,
+		// the series data is indexed and cached in the xData and yData arrays, so we can access
+		// those before rendering. Used in Highstock.
+		fireEvent(chart, 'beforeRender');
+
+		// depends on inverted and on margins being set
+		if (Highcharts.Pointer) {
+			chart.pointer = new Pointer(chart, options);
+		}
+
+		chart.render(); //12349 产生图形
+
+		// add canvas
+		chart.renderer.draw();
+		// run callbacks
+		if (callback) {
+			callback.apply(chart, [chart]);
+		}
+		each(chart.callbacks, function (fn) {
+			if (chart.index !== UNDEFINED) { // Chart destroyed in its own callback (#3600)
+				fn.apply(chart, [chart]);
+			}
+		});
+
+		// Fire the load event
+		fireEvent(chart, 'load');
+
+		// If the chart was rendered outside the top container, put it back in (#3679)
+		chart.cloneRenderTo(true);
+
+	},
 
 
 

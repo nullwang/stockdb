@@ -20,8 +20,8 @@ import org.stockdb.core.exception.StockDBException;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 public interface DataStore {
 
@@ -40,6 +40,8 @@ public interface DataStore {
     String getObjAttr(String id, String attr) throws StockDBException;
 
     Set<String> getMetrics();
+
+    Map<String,String> getMetricAttr(String name) throws StockDBException;
 
     String getValue(String id, String metricName, String timeStr);
     /**

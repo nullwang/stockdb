@@ -68,12 +68,12 @@ public class DataImporter {
             if( lt !=null) lt.close();
         }
         //import metrics
-        if ("M".equals(arguments.format)) {
+        if ("m".equals(arguments.format)) {
             sb.append("/metrics");
-        } else if ("D".equals(arguments.format)) {
+        } else if ("d".equals(arguments.format)) {
             //import data
             sb.append("/d");
-        }else if( "DS".equals(arguments.format)){
+        }else if( "ds".equals(arguments.format)){
             sb.append("/ds");
         }
 
@@ -86,7 +86,7 @@ public class DataImporter {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<String> entity = new HttpEntity<String>(sb.toString(),headers);
+        HttpEntity<String> entity = new HttpEntity<String>(data.toString(),headers);
         ResponseEntity<String> responseEntity = restTemplate
                 .exchange(sb.toString(), HttpMethod.POST, entity, String.class,host,port);
         logger.info("response code : " + responseEntity.getStatusCode() + " ,body: " + responseEntity.getBody());
@@ -103,13 +103,13 @@ public class DataImporter {
 
     @SuppressWarnings("UnusedDeclaration")
     private static class Arguments {
-        @Parameter(names = "-f", description = "the format of the data M-metrics,D-单行数据,DS-多行数据]")
+        @Parameter(names = "-f", description = "the format of the data m-metrics,d-单行数据,ds-多行数据]",required = true)
         private String format;
 
         @Parameter(names = "-h", description = "host")
         private String host;
 
-        @Parameter(names = "-p", description = "host")
+        @Parameter(names = "-p", description = "port")
         private String port;
 
         @Parameter(names = "-d", description = "the data or metrics file" ,required = true)

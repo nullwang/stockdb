@@ -191,6 +191,11 @@ public class RedisDataStore extends AbstractDataStore implements Scanable {
     }
 
     @Override
+    public Map<String, String> getMetricAttr(String name) throws StockDBException {
+        return Commons.jsonMap(jc.hget(METRICS_KEY, name));
+    }
+
+    @Override
     public String getValue(String id, String metricName, String timeStr) {
         return jc.hget(Key.makeRowKey(id,metricName),timeStr);
     }
@@ -205,6 +210,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable {
                 DataPoint dataPoint = new DataPoint();
                 dataPoint.setTimeStr(entry.getKey());
                 dataPoint.setValue(entry.getValue());
+                points.add(dataPoint);
             }
         }
         return points;

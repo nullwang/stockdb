@@ -7,7 +7,9 @@ import org.stockdb.core.datastore.*;
 import org.stockdb.core.exception.StockDBException;
 import org.stockdb.core.http.rest.model.DataQueryReq;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /*
  * @author nullwang@hotmail.com
@@ -52,6 +54,16 @@ public class MetricsController {
             DataPoint dataPoint = new DataPoint(data.getTimeStr(),data.getValue());
             dataStore.putData(data.getId(),data.getMetricName(),dataPoint);
         }
+    }
+
+    @RequestMapping(value = "/meta", method = RequestMethod.POST )
+    public @ResponseBody
+    Map getMeta() throws StockDBException {
+        Map map = new HashMap();
+        for(String metric:  dataStore.getMetrics()){
+            map.put(metric,dataStore.getMetricAttr(metric));
+        }
+        return map;
     }
 
     @RequestMapping(value = "/query", method = RequestMethod.POST )

@@ -56,7 +56,7 @@ public class MetricsController {
         }
     }
 
-    @RequestMapping(value = "/meta", method = RequestMethod.POST )
+    @RequestMapping(value = "/meta", method = RequestMethod.GET )
     public @ResponseBody
     Map getMeta() throws StockDBException {
         Map map = new HashMap();

@@ -1,7 +1,7 @@
-package org.stockdb.core.datastore;
+package org.stockdb.core.util;
 /*
  * @author nullwang@hotmail.com
- * created at 2015/3/26
+ * created at 2015/9/8
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,33 +16,7 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
-public class Metric {
+public class DigitUtil {
 
-    String name;
-    String attr;
-    String value;
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAttr() {
-        return attr;
-    }
-
-    public void setAttr(String attr) {
-        this.attr = attr;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
 }

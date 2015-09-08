@@ -70,9 +70,11 @@ public class DataImporter {
         //import metrics
         if ("M".equals(arguments.format)) {
             sb.append("/metrics");
-        } else if ("DD".equals(arguments.format)) {
+        } else if ("D".equals(arguments.format)) {
             //import data
-            sb.append("/data");
+            sb.append("/d");
+        }else if( "DS".equals(arguments.format)){
+            sb.append("/ds");
         }
 
         String host = arguments.host == null ? "localhost" : arguments.host;
@@ -101,7 +103,7 @@ public class DataImporter {
 
     @SuppressWarnings("UnusedDeclaration")
     private static class Arguments {
-        @Parameter(names = "-f", description = "the format of the data M-metrics,D-单行数据,DD-多行数据]")
+        @Parameter(names = "-f", description = "the format of the data M-metrics,D-单行数据,DS-多行数据]")
         private String format;
 
         @Parameter(names = "-h", description = "host")

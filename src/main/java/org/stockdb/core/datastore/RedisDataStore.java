@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.stockdb.core.exception.DatastoreException;
 import org.stockdb.core.exception.StockDBException;
+import org.stockdb.core.util.TimeFormatUtil;
 import org.stockdb.util.Commons;
 import org.stockdb.util.Key;
 import redis.clients.jedis.*;
@@ -116,9 +117,16 @@ public class RedisDataStore extends AbstractDataStore implements Scanable {
         String rowKey = Key.makeRowKey(id,metricName);
         for(DataPoint dataPoint:dataPoints) {
             try{
-                int i = Integer.parseInt(index);
-                if(dataPoint.getTimeStr() == null ||  !DataPoint.timeStrPatterns[i].matcher(dataPoint.getTimeStr()).matches()){
-                    throw new StockDBException("DataPoint["+rowKey+"]" + "has bad format timeStr["+ dataPoint.getTimeStr() +"]");
+                int dataPointTimeIndex = TimeFormatUtil.detectFormat(dataPoint.getTimeStr());
+                if( dataPointTimeIndex < 0) throw new StockDBException("DataPoint["+rowKey+"]" + "has bad format timeStr["+ dataPoint.getTimeStr() +"]");
+
+                if( index == null ){
+                    setSampleInterval(metricName,dataPointTimeIndex);
+                }else {
+                    int i = Integer.parseInt(index);
+                    if( dataPointTimeIndex != i){
+                        throw new StockDBException("Metric ["+metricName+"]" + "has two different time format["+ i + "," + dataPointTimeIndex +"]");
+                    }
                 }
             }catch (NumberFormatException e){
                 throw new StockDBException("Metric[" + metricName + "]attribute["+ Constants.METRIC_SAMPLE_INTERVAL +"]value error");

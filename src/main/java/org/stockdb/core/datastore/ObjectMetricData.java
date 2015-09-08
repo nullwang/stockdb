@@ -1,7 +1,7 @@
 package org.stockdb.core.datastore;
 /*
  * @author nullwang@hotmail.com
- * created at 2015/3/26
+ * created at 2015/9/8
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,37 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
-public class Metric {
+public class ObjectMetricData {
+    String id; //object id
 
-    String name;
-    String attr;
+    String metricName;
+
+    String timeStr;
+
     String value;
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getAttr() {
-        return attr;
+    public String getMetricName() {
+        return metricName;
     }
 
-    public void setAttr(String attr) {
-        this.attr = attr;
+    public void setMetricName(String metricName) {
+        this.metricName = metricName;
+    }
+
+    public String getTimeStr() {
+        return timeStr;
+    }
+
+    public void setTimeStr(String timeStr) {
+        this.timeStr = timeStr;
     }
 
     public String getValue() {

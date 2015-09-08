@@ -3,10 +3,7 @@ package org.stockdb.core.http.rest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.stockdb.core.datastore.DataPoint;
-import org.stockdb.core.datastore.DataStore;
-import org.stockdb.core.datastore.Metric;
-import org.stockdb.core.datastore.ObjectMetricDataSet;
+import org.stockdb.core.datastore.*;
 import org.stockdb.core.exception.StockDBException;
 import org.stockdb.core.http.rest.model.DataQueryReq;
 
@@ -42,10 +39,19 @@ public class MetricsController {
         return "{\"version\":\"1.0\"}";
     }
 
-    @RequestMapping(value = "/data", method = RequestMethod.POST )
+    @RequestMapping(value = "/ds", method = RequestMethod.POST )
     public @ResponseBody
     void putDataPoints(@RequestBody ObjectMetricDataSet objectMetricDataSet) throws StockDBException {
         dataStore.putData(objectMetricDataSet);
+    }
+
+    @RequestMapping(value = "/d", method = RequestMethod.POST )
+    public @ResponseBody
+    void putDataPoints(@RequestBody ObjectMetricData[] objectMetricData) throws StockDBException {
+        for(ObjectMetricData data: objectMetricData){
+            DataPoint dataPoint = new DataPoint(data.getTimeStr(),data.getValue());
+            dataStore.putData(data.getId(),data.getMetricName(),dataPoint);
+        }
     }
 
     @RequestMapping(value = "/query", method = RequestMethod.POST )
@@ -71,9 +77,8 @@ public class MetricsController {
     DataPoint getDataPoint(@PathVariable("id") String id,
                                   @PathVariable String metricName,
                                   @PathVariable String timeStr) throws StockDBException {
-//        return dataStore.getValue(id, metricName, timeStr);
-
-        return null;
+        String value  = dataStore.getValue(id,metricName,timeStr);
+        return new DataPoint(metricName,value);
     }
 
     @RequestMapping(value = "/metrics", method = RequestMethod.POST )
@@ -82,5 +87,4 @@ public class MetricsController {
     {
         dataStore.putMetric(metrics);
     }
-
 }

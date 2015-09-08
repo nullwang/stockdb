@@ -18,8 +18,6 @@ package org.stockdb.core.datastore;
 
 import org.stockdb.core.exception.StockDBException;
 
-import java.util.concurrent.TimeUnit;
-
 public abstract class AbstractDataStore implements DataStore {
 
     @Override
@@ -27,6 +25,11 @@ public abstract class AbstractDataStore implements DataStore {
         for(Metric metric: metrics ) {
             setMetricAttr(metric.name,metric.attr,metric.value);
         }
+    }
+
+    public void setSampleInterval(String name, int i) throws StockDBException
+    {
+        setMetricAttr(name, Constants.METRIC_SAMPLE_INTERVAL,String.valueOf(i));
     }
 
     public void putData(ObjectMetricDataSet objectMetricDataSet) throws StockDBException{

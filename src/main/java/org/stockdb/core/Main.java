@@ -24,11 +24,11 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
+import org.stockdb.core.config.StockPropertyConfigurer;
 import org.stockdb.core.exception.StockDBException;
+import org.stockdb.core.util.PropertyUtil;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
@@ -82,9 +82,19 @@ public class Main {
             Properties properties = null;
             if (!StringUtils.isEmpty(arguments.propertiesFile)) {
                 File propertiesFile = new File(arguments.propertiesFile);
-                properties = resolveProperties(propertiesFile);
+                properties = PropertyUtil.mergePropertyFileIgnoreException(null,propertiesFile);
+                logger.info(" loading property file {}", propertiesFile);
             }
-            if( properties == null) properties = System.getProperties();
+
+            File f = StockPropertyConfigurer.getConfFile();
+            if( f.exists()){
+                properties = PropertyUtil.mergePropertyFileIgnoreException(properties,f);
+                logger.info(" loading property file {}", f);
+            }
+
+            //system properties override configure property
+            properties = PropertyUtil.mergeProperties(properties,System.getProperties());
+
             final Main main = new Main(properties);
             if (arguments.operationCommand.equals("run") || arguments.operationCommand.equals("start")) {
                 Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
@@ -137,12 +147,6 @@ public class Main {
         jettyServer.stop();
     }
 
-    static private Properties resolveProperties(File propertiesFile) throws IOException {
-        Properties properties = new Properties();
-        properties.load(new FileInputStream(propertiesFile));
-        properties.putAll(System.getProperties()); //system properties override file properties
-        return properties;
-    }
 
     @SuppressWarnings("UnusedDeclaration")
     private static class Arguments {
@@ -175,6 +179,4 @@ public class Main {
         @Parameter(names = "-c", description = "Command to run: export, import, run, start.")
         private String operationCommand;
     }
-
-
 }

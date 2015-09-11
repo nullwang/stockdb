@@ -1,0 +1,63 @@
+系统配置
+
+  系统默认配置文件位于 conf/stock.conf
+
+*--------------------------*----------------------------*
+ stockdb.jetty.port                         | default 7070, 服务端口
+*--------------------------*----------------------------*
+ stockdb.jetty.ssl_port                     | default 7443 安全端口
+*--------------------------*----------------------------*
+
+   接口说明
+
+*--------------------------*----------------------------*
+/api/v1/meta                        | 获取stockDB 元数据配置
+*--------------------------*----------------------------*
+ /api/v1/query                         | 查询 metrics 数据
+*--------------------------*----------------------------*
+
+ get /list/{id}/{metricName}/{startTime}/{endTime}
+
+ [起始时间、截止时间) 查询指定对象的特定metric指定时间段数据点集合 List<DataPoint> ，
+ 例如 /list/000001/day_lowest_price/20150801/20150830
+
+ get /{id}/{metricName}/{timeStr}
+ 获取指定对象的特定metric特定时间点数据
+
+ Metric 数据提交，设置metric 属性数据
+ post /api/v1/metrics
+
+提交数据内容
+  Metric[]
+    {
+        String name;
+        String attr;
+        String value;
+    }
+
+  对象度量数据提交，设置对象的metric数值
+  post /api/v1/d
+
+提交数据内容
+  ObjectMetricData[]
+  {
+        String id; //object id
+        String metricName;
+        String timeStr;
+        String value;
+  }
+
+  对象度量数据提交，提交对象metric数据集
+  post /api/v1/ds
+
+ObjectMetricDataSet
+{
+      String id; //object id
+      String metricName;
+      DataPoint[] dataPoints;
+}
+
+DataPoint {
+    String timeStr;
+    String value;
+}

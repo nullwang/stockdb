@@ -21,28 +21,27 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 @SuppressWarnings("UnusedDeclaration")
 public class PropertySourcesConfig {
-    private static final Resource[] DEV_PROPERTIES = new ClassPathResource[]{
-            new ClassPathResource("example-dev.properties"),
-    };
-    private static final Resource[] TEST_PROPERTIES = new ClassPathResource[]{
-            new ClassPathResource("example-test.properties"),
-    };
-    private static final Resource[] PROD_PROPERTIES = new ClassPathResource[]{
-            new ClassPathResource("stock.properties"),
-    };
+    private static final Resource DEV_PROPERTIES = new ClassPathResource("example-dev.properties");
+    private static final Resource TEST_PROPERTIES = new ClassPathResource("example-test.properties");
+    private static final Resource PROD_PROPERTIES = new ClassPathResource("stock.properties");
 
     @Profile("dev")
     @SuppressWarnings("UnusedDeclaration")
     public static class DevConfig {
         @Bean
         public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-            PropertySourcesPlaceholderConfigurer pspc = new PropertySourcesPlaceholderConfigurer();
-            pspc.setLocations(DEV_PROPERTIES);
+            PropertySourcesPlaceholderConfigurer pspc = new StockPropertyConfigurer();
+            pspc.setLocations(addConfPropertyFile(DEV_PROPERTIES));
             return pspc;
         }
     }
@@ -52,8 +51,8 @@ public class PropertySourcesConfig {
     public static class TestConfig {
         @Bean
         public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-            PropertySourcesPlaceholderConfigurer pspc = new PropertySourcesPlaceholderConfigurer();
-            pspc.setLocations(TEST_PROPERTIES);
+            PropertySourcesPlaceholderConfigurer pspc = new StockPropertyConfigurer();
+            pspc.setLocations(addConfPropertyFile(TEST_PROPERTIES));
             return pspc;
         }
     }
@@ -63,9 +62,27 @@ public class PropertySourcesConfig {
     public static class ProdConfig {
         @Bean
         public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-            PropertySourcesPlaceholderConfigurer pspc = new PropertySourcesPlaceholderConfigurer();
-            pspc.setLocations(PROD_PROPERTIES);
+            PropertySourcesPlaceholderConfigurer pspc = new StockPropertyConfigurer();
+            List<Resource> resourceList = new ArrayList<Resource>();
+
+            pspc.setLocations(addConfPropertyFile(PROD_PROPERTIES));
+
             return pspc;
         }
+    }
+
+    private static Resource[] addConfPropertyFile(Resource... resources)
+    {
+        List<Resource> resourceList = new ArrayList<Resource>();
+        for(Resource resource:resources){
+            resourceList.add(resource);
+        }
+        //conf/stock.conf
+        File f = StockPropertyConfigurer.getConfFile();
+        if( f.exists()){
+            resourceList.add(new FileSystemResource(f.getAbsolutePath()));
+        }
+
+        return resourceList.toArray(new Resource[resourceList.size()]);
     }
 }

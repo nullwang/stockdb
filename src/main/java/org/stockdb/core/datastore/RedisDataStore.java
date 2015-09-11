@@ -18,10 +18,13 @@ package org.stockdb.core.datastore;
 
 import com.google.gson.stream.JsonReader;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.stockdb.core.StockDBService;
+import org.stockdb.core.config.StockPropertyConfigurer;
+import org.stockdb.core.datastore.value.NormalProcess;
+import org.stockdb.core.datastore.value.SeparatorProcess;
+import org.stockdb.core.datastore.value.ValueProcess;
 import org.stockdb.core.exception.DatastoreException;
 import org.stockdb.core.exception.StockDBException;
 import org.stockdb.core.util.TimeFormatUtil;
@@ -36,7 +39,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 @Component
-public class RedisDataStore extends AbstractDataStore implements Scanable {
+public class RedisDataStore extends AbstractDataStore implements Scanable,StockDBService {
 
     final static int  redisDefaultPort = 6379;
 
@@ -46,10 +49,20 @@ public class RedisDataStore extends AbstractDataStore implements Scanable {
     final static String META_SETTING_KEY="meta_set";
 
     JedisWrapper jc ;
+    ValueProcess valueProcess;
 
-    @Autowired
-    public RedisDataStore(@Value("${stockdb.redis.hosts}") String hosts) throws StockDBException
+    public RedisDataStore()
     {
+        if("auto".equals(StockPropertyConfigurer.get("stockdb.decimal") )){
+            valueProcess = new SeparatorProcess();
+        }else {
+            valueProcess = new NormalProcess();
+        }
+    }
+
+    @Override
+    public void start() throws StockDBException {
+        String hosts = String.valueOf(StockPropertyConfigurer.get("stockdb.redis.hosts"));
         LinkedList<HostAndPort> jedisClusterNodes = new LinkedList<HostAndPort>();
         String[] hostAndPorts = StringUtils.split(hosts,",");
         if( hostAndPorts.length == 0) throw new DatastoreException("stockdb.redis.hosts is empty");
@@ -80,14 +93,25 @@ public class RedisDataStore extends AbstractDataStore implements Scanable {
         loadMeta();
     }
 
+    @Override
+    public void stop() throws StockDBException {
+        if( jc != null) try {
+            jc.close();
+        } catch (IOException e) {
+            throw new StockDBException(e);
+        }
+    }
+
+    @Override
+    public int getLevel() {
+        return 0;
+    }
+
     //load meta data
     void loadMeta() throws StockDBException{
         //check if stock meta is loaded
-
         long exist = jc.setnx(META_SETTING_KEY, "1");
-
         if( exist == 0) return;
-
         try {
             JsonReader jsonReader = new JsonReader(new InputStreamReader(this.getClass().getResourceAsStream("/stock_metric.dat"),"utf-8"));
             jsonReader.beginArray();
@@ -131,7 +155,8 @@ public class RedisDataStore extends AbstractDataStore implements Scanable {
             }catch (NumberFormatException e){
                 throw new StockDBException("Metric[" + metricName + "]attribute["+ Constants.METRIC_SAMPLE_INTERVAL +"]value error");
             }
-            jc.hset(rowKey,dataPoint.getTimeStr(),dataPoint.getValue());
+            String v = filterValue(dataPoint.getValue());
+            jc.hset(rowKey,dataPoint.getTimeStr(),v);
         }
     }
 
@@ -225,6 +250,11 @@ public class RedisDataStore extends AbstractDataStore implements Scanable {
     public ScanResult scan(String id, String metricName, String cursor) {
         return  jc.hscan(Key.makeRowKey(id,metricName),"0");
     }
+
+    private final String filterValue(String v){
+        return valueProcess.filter(v);
+    }
+
 
     @ExceptionHandler(JedisException.class)
     private void handlerJedisException(JedisException e) throws StockDBException{

@@ -28,7 +28,6 @@ import java.util.Map;
  * limitations under the License.
  */
 @Controller
-@RequestMapping(value="/api/v1")
 public class MetricsController {
 
     @Autowired

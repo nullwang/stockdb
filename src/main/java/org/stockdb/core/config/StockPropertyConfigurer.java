@@ -16,15 +16,11 @@ package org.stockdb.core.config;
  * limitations under the License.
  */
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.ConfigurablePropertyResolver;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 public class StockPropertyConfigurer extends PropertySourcesPlaceholderConfigurer {
 

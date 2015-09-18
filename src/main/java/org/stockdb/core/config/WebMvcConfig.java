@@ -32,7 +32,9 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("images/**").addResourceLocations("images/");
+        //registry.addResourceHandler("img/**").addResourceLocations("classpath:/img/");
+        //registry.addResourceHandler("css/**").addResourceLocations("classpath:/css/");
+        //registry.addResourceHandler("js/**").addResourceLocations("classpath:/js/");
     }
 
 }

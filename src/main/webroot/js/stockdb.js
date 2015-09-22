@@ -1,5 +1,40 @@
 if (stockdb === undefined) {
 	var stockdb = {};
+    stockdb.baseFourMetrics=["day_opening_price","day_highest_price","day_lowest_price","day_closing_price"];
+    stockdb.baseEightMetrics = [];
+    for(ele in baseFourMetrics){
+        stockdb.baseEightMetrics.push(ele);
+    }
+    baseEightMetrics.push("day_change");
+    baseEightMetrics.push("day_%chg");
+    baseEightMetrics.push("day_volume");
+    baseEightMetrics.push("day_turnover");
+}
+
+stockdb.ObjectMetric = function(id, name){
+    this.id = id;
+    this.name = name;
+}
+
+stockdb.MetricQuery = function(){
+    this.startTime;
+    this.endTime;
+    this.objectMetrics = [];
+
+    this.setStartTime = function(startTime){
+        this.startTime = startTime;
+        return this;
+    }
+
+    this.setEndTime = function(endTime){
+        this.endTime = endTime;
+        return this;
+    }
+
+    this.addMetric = function(id, metricName){
+        this.objectMetrics.push(new ObjectMetric(id,metricName));
+        return this;
+    }
 }
 
 stockdb.MetricException = function (message) {
@@ -32,6 +67,8 @@ stockdb.Unit =  //Values used for Aggregator sampling and Relative time
 	MONTHS: "months",
 	YEARS: "years"
 };
+
+
 
 /**
  name: Name of the metric
@@ -190,75 +227,7 @@ stockdb.TimeGroupBy = function (groupSizeValue, groupSizeUnit, groupCount) {
 	this.range_size.unit = groupSizeUnit;
 };
 
-/**
- cacheTime: the amount of time in seconds to cache the query
- */
-stockdb.MetricQuery = function (cacheTime) {
-	this.metrics = [];
-	this.cache_time = 0;
-	if (cacheTime != undefined)
-		this.cache_time = cacheTime;
 
-	/**
-	 */
-	this.setStartAbsolute = function (value) {
-		this.start_absolute = value;
-		if (this.start_relative != undefined)
-			throw new stockdb.MetricException(
-				'You cannot define both start_absolute and start_relative');
-	};
-
-	/**
-	 */
-	this.setStartRelative = function (value, unit) {
-		this.start_relative = {};
-		this.start_relative.value = value;
-		this.start_relative.unit = unit;
-		if (this.start_absolute != undefined)
-			throw new stockdb.MetricException(
-				'You cannot define both start_absolute and start_relative');
-	};
-
-	/**
-	 */
-	this.setEndAbsolute = function (value) {
-		this.end_absolute = value;
-		if (this.end_relative != undefined)
-			throw new stockdb.MetricException(
-				'You cannot define both end_absolute and end_relative');
-	};
-
-	/**
-	 */
-	this.setEndRelative = function (value, unit) {
-		this.end_relative = {};
-		this.end_relative.value = value;
-		this.end_relative.unit = unit;
-		if (this.end_absolute != undefined)
-			throw new stockdb.MetricException(
-				'You cannot define both end_absolute and end_relative');
-	};
-
-	/**
-	 Used to add a kairos.Metric object to the MetricQuery
-	 */
-	this.addMetric = function (metric) {
-		this.metrics.push(metric);
-	};
-
-	/**
-	 Called to validate the MetricQuery object
-	 */
-	this.validate = function () {
-		if ((this.start_relative == undefined) && (this.start_absolute == undefined))
-			throw new stockdb.MetricException(
-				'You must define a start_relative or a start_absolute property');
-
-		if (this.metrics.length == 0)
-			throw new stockdb.MetricException(
-				'You must specify one or more metrics to query upon');
-	}
-};
 
 stockdb.showError = function (message) {
 	alert(message);

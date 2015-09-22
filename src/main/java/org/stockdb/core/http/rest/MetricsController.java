@@ -7,9 +7,7 @@ import org.stockdb.core.datastore.*;
 import org.stockdb.core.exception.StockDBException;
 import org.stockdb.core.http.rest.model.DataQueryReq;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /*
  * @author nullwang@hotmail.com
@@ -55,24 +53,26 @@ public class MetricsController {
         }
     }
 
-    @RequestMapping(value = "/meta", method = RequestMethod.GET )
-    public @ResponseBody
-    Map getMeta() throws StockDBException {
-        Map map = new HashMap();
-        for(String metric:  dataStore.getMetrics()){
-            map.put(metric,dataStore.getMetricAttr(metric));
-        }
-        return map;
-    }
-
     @RequestMapping(value = "/query", method = RequestMethod.POST )
     public @ResponseBody
-    ObjectMetricDataSet queryDataPoints(@RequestBody DataQueryReq dataQueryReq) throws StockDBException {
+    List<ObjectMetricDataSet> queryDataPoints(@RequestBody DataQueryReq dataQueryReq) throws StockDBException {
         dataQueryReq.getObjectMetrics();
 
-//        return dataStore.getData(dataQueryReq.getId(), dataQueryReq.getMetricName(),
-//                dataQueryReq.getStartTime(), dataQueryReq.getEndTime());
-        return null;
+        String startTime = dataQueryReq.getStartTime();
+        String endTime = dataQueryReq.getEndTime();
+        List<ObjectMetricDataSet> objectMetricDataSets = new ArrayList<ObjectMetricDataSet>();
+        for(DataQueryReq.ObjectMetric objectMetric : dataQueryReq.getObjectMetrics()){
+            String objId = objectMetric.getId();
+            String metricName = objectMetric.getMetricName();
+            ObjectMetricDataSet objectMetricDataSet = new ObjectMetricDataSet();
+            List<DataPoint> points = dataStore.getData(objId,metricName,startTime,endTime);
+
+            objectMetricDataSet.setId(objId);
+            objectMetricDataSet.setMetricName(metricName);
+            objectMetricDataSet.setDataPoints(points.toArray(new DataPoint[points.size()]));
+            objectMetricDataSets.add(objectMetricDataSet);
+        }
+        return objectMetricDataSets;
     }
 
     @RequestMapping(value = "/list/{id}/{metricName}/{startTime}/{endTime}", method = RequestMethod.GET )
@@ -94,8 +94,33 @@ public class MetricsController {
 
     @RequestMapping(value = "/metrics", method = RequestMethod.POST )
     public @ResponseBody
-    void putDataPoints(@RequestBody Metric[] metrics) throws StockDBException
+    void putMetrics(@RequestBody Metric[] metrics) throws StockDBException
     {
         dataStore.putMetric(metrics);
+    }
+
+    @RequestMapping(value = "/metrics", method = RequestMethod.GET )
+    public @ResponseBody
+    Map getMeta() throws StockDBException {
+        Map map = new HashMap();
+        for(String metric:  dataStore.getMetrics()){
+            map.put(metric,dataStore.getMetricAttr(metric));
+        }
+        return map;
+    }
+
+    @RequestMapping(value = "/metrics/{metricName}", method = RequestMethod.GET )
+    public @ResponseBody
+    Map<String,String> getMetrics(@PathVariable("metricName") String metricName) throws StockDBException
+    {
+        return dataStore.getMetricAttr(metricName);
+    }
+
+    @RequestMapping(value = "/metrics/{metricName}/{attrName}", method = RequestMethod.GET )
+    public @ResponseBody
+    String getMetricAttr(@PathVariable("metricName") String metricName,
+                         @PathVariable("attrName") String attrName) throws StockDBException
+    {
+        return dataStore.getMetricAttr(metricName,attrName);
     }
 }

@@ -31,44 +31,55 @@
 	<script src="js/numeral.min.js"></script>
 
 	<script>
-		var metricNames = [];
-
 		$(function () {
 			if(!window.console){ window.console = {log: function(){} }; } // If not console, don't log
             $("#btn30DaysQuery").button().click(function(){
-                $("#queryDaysTxt").val("30");
+                $("#queryDaysTxt").val("1");
                 queryStockItem();
             });
             $("#btn60DaysQuery").button().click(function(){
-                $("#queryDaysTxt").val("60");
+                $("#queryDaysTxt").val("2");
                 queryStockItem();
             });
             $("#btn90DaysQuery").button().click(function(){
-                $("#queryDaysTxt").val("90");
+                $("#queryDaysTxt").val("3");
                 queryStockItem();
             });
             $("#btn180DaysQuery").button().click(function(){
-                $("#queryDaysTxt").val("180");
+                $("#queryDaysTxt").val("6");
                 queryStockItem();
             });
             $("#btn1yearQuery").button().click(function(){
-                $("#queryDaysTxt").val("360");
+                $("#queryDaysTxt").val("12");
                 queryStockItem();
             });
             $("#btn2yearsQuery").button().click(function(){
-                $("#queryDaysTxt").val("720");
+                $("#queryDaysTxt").val("24");
                 queryStockItem();
             });
             $("#btnCustomizedQuery").button().click(function(){
-                queryStockItem();
+                //queryStockItem();
             });
 		});
 
         queryStockItem = function(){
             //build query condition
             var stockId = $('#txtStockId').val();
+            //calc startTime & endTime
+            //startTime = currTime - 1 month
+            //endTime = currentTime
+            //time format yyyyMMddHHmmss
+            var startTime = new Date();
+            var endTime = new Date();
+            var monthDiff = Number($("#queryDaysTxt").val());
+            startTime.setMonth(startTime.getMonth()-monthDiff);
 
-            //get data
+            var strStartTime = startTime.Format("yyyyMMddhhmmss");
+            var strEndTime = endTime.Format("yyyyMMddhhmmss");
+            stockdb.queryBaseFourMetricDataPoints(stockId,strStartTime,strEndTime,loadData);
+        }
+
+        loadData = function(){
 
         }
 	</script>
@@ -82,8 +93,8 @@
     <button id="btn60DaysQuery">二月</button>
     <button id="btn90DaysQuery">三月</button>
     <button id="btn180DaysQuery">半年</button>
-    <button id="btn1yearQuery">1年</button>
-    <button id="btn2yearsQuery">2年</button>
+    <button id="btn1yearQuery">一年</button>
+    <button id="btn2yearsQuery">二年</button>
 <button id="btnCustomizedQuery">自定义查询</button>
 </div>
 <div>

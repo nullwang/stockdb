@@ -21,7 +21,7 @@ stockdb.listDataPoints = function (id, metricName, startTime, endTime, callback)
             $status.html("<i>正在处理...</i>");
             $queryTime.html(numeral(new Date().getTime() - exeStartTime.getTime()).format('0,0') + " ms");
             setTimeout(function(){
-                callback(data.queries);
+                callback(data);
             }, 0);
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -41,13 +41,15 @@ stockdb.listDataPoints = function (id, metricName, startTime, endTime, callback)
 
 /**查询指定stock的基础四项指标**/
 stockdb.queryBaseFourMetricDataPoints = function(id, startTime, endTime, callback){
-    stockdb.queryMetricsDataPoints(id,stockdb.baseFourMetrics);
+    stockdb.queryMetricsDataPoints(id,stockdb.baseFourMetrics,startTime,endTime,callback);
 }
 
 stockdb.queryMetricsDataPoints = function(id, metricNames, startTime, endTime, callback){
     var metricQuery = new stockdb.MetricQuery();
-    for(metricName in metricNames){
-        metricQuery.addMetric(id, metricName);
+    metricQuery.setStartTime(startTime);
+    metricQuery.setEndTime(endTime);
+    for(index in metricNames){
+        metricQuery.addMetric(id, metricNames[index]);
     }
 
     stockdb.dataPointsQuery(metricQuery,callback);
@@ -73,7 +75,7 @@ stockdb.dataPointsQuery = function (metricQuery, callback) {
 			$status.html("<i>Plotting in progress...</i>");
 			$queryTime.html(numeral(new Date().getTime() - startTime.getTime()).format('0,0') + " ms");
 			setTimeout(function(){
-				callback(data.queries);
+				callback(data);
 			}, 0);
 		},
 		error: function (jqXHR, textStatus, errorThrown) {
@@ -107,7 +109,7 @@ stockdb.deleteDataPoints = function (deleteQuery, callback) {
 		dataType: 'text',
 		success: function (data, textStatus, jqXHR) {
 			setTimeout(function () {
-				callback(data.queries);
+				callback(data);
 			}, 0);
 		},
 		error: function (jqXHR, textStatus, errorThrown) {

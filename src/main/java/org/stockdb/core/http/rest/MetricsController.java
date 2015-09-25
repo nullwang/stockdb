@@ -92,6 +92,20 @@ public class MetricsController {
         return new DataPoint(metricName,value);
     }
 
+    @RequestMapping(value = "/{id}/{attrName}", method = RequestMethod.GET )
+    public @ResponseBody
+    String getAttribute(@PathVariable("id") String id,
+                           @PathVariable String attrName) throws StockDBException {
+        String value  = dataStore.getObjAttr(id,attrName);
+        return value;
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET )
+    public @ResponseBody
+    Map<String,String> getAttributes(@PathVariable("id") String id) throws StockDBException {
+        return dataStore.getObjAttr(id);
+    }
+
     @RequestMapping(value = "/metrics", method = RequestMethod.POST )
     public @ResponseBody
     void putMetrics(@RequestBody Metric[] metrics) throws StockDBException

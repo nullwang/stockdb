@@ -664,7 +664,7 @@ function getTagsForMetric(metricName) {
 }
 
 function showChartForQuery(subTitle, query, metricData) {
-	stockdb.dataPointsQuery(query, function (queries) {
+	stockdb.queryDataPoints(query, function (queries) {
 		showChart(subTitle, queries, metricData);
 		$("#deleteButton").button("enable");
 	});

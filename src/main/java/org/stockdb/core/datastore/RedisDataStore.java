@@ -211,6 +211,15 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
     }
 
     @Override
+    public Map<String, String> getObjAttr(String id) throws StockDBException {
+        if( id == null){
+            throw new IllegalArgumentException("object id should not be null");
+        }
+        Map<String,String> attrValue = Commons.jsonMap(jc.hget(OBJECT_KEY, id));
+        return attrValue;
+    }
+
+    @Override
     public Set<String> getMetrics() {
         return jc.hkeys(METRICS_KEY);
     }

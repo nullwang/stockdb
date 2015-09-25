@@ -44,6 +44,11 @@ stockdb.queryBaseFourMetricDataPoints = function(id, startTime, endTime, callbac
     stockdb.queryMetricsDataPoints(id,stockdb.baseFourMetrics,startTime,endTime,callback);
 }
 
+/**查询指定stock的名称**/
+stockdb.queryObjName = function(id,callback){
+    stockdb.queryObjectAttribute(id,"name",callback);
+}
+
 stockdb.queryMetricsDataPoints = function(id, metricNames, startTime, endTime, callback){
     var metricQuery = new stockdb.MetricQuery();
     metricQuery.setStartTime(startTime);
@@ -52,12 +57,61 @@ stockdb.queryMetricsDataPoints = function(id, metricNames, startTime, endTime, c
         metricQuery.addMetric(id, metricNames[index]);
     }
 
-    stockdb.dataPointsQuery(metricQuery,callback);
+    stockdb.queryDataPoints(metricQuery,callback);
 }
 
 
-/**自定义查询**/
-stockdb.dataPointsQuery = function (metricQuery, callback) {
+/**对象属性查询**/
+stockdb.queryObjectAttribute= function()
+{
+    var exeStartTime = new Date();
+
+    var $status = $('#status');
+    var $queryTime = $("#queryTime");
+
+    $status.html("<i>正在查询...</i>");
+
+    len= arguments.length;
+
+    if ( len ==2 ){
+        _url = "api/" + arguments[0];
+        callback = arguments[1];
+    }
+    else if( len == 3){
+        _url = "api/" + arguments[0] + "/" + arguments[1];
+        callback = arguments[2];
+    }
+
+    $.ajax({
+        type: "GET",
+        url: _url,
+        headers: { 'Content-Type': ['application/json']},
+        dataType: 'json',
+        success: function (data, textStatus, jqXHR) {
+            $status.html("<i>正在处理...</i>");
+            $queryTime.html(numeral(new Date().getTime() - exeStartTime.getTime()).format('0,0') + " ms");
+            setTimeout(function(){
+                callback(data);
+            }, 0);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+
+            var $errorContainer = $("#errorContainer");
+            $errorContainer.show();
+            $errorContainer.html("");
+            $errorContainer.append("Status Code: " +  jqXHR.status + "</br>");
+            $errorContainer.append("Status: " +  jqXHR.statusText + "<br>");
+            $errorContainer.append("Return Value: " +  jqXHR.responseText);
+
+            $status.html("");
+            $queryTime.html(numeral(new Date().getTime() - exeStartTime.getTime()).format('0,0') + " ms");
+        }
+    });
+}
+
+
+/**自定义数据查询**/
+stockdb.queryDataPoints = function (metricQuery, callback) {
 	var startTime = new Date();
 
 	var $status = $('#status');

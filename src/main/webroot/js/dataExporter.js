@@ -6,7 +6,7 @@ function exportCsvQueryData() {
 	if (query) {
 		var offset = new Date().getTimezoneOffset() * -60000;
 		var oBuilder = "Epoch Time,Local Time,Value,Groups...\n";
-		stockdb.dataPointsQuery(query, function (queries) {
+		stockdb.queryDataPoints(query, function (queries) {
 			queries.forEach(function (resultSet) {
 				resultSet.results.forEach(function (queryResult) {
 					var groupByMessage = "";
@@ -50,7 +50,7 @@ function exportJsonQueryData() {
 
 	if (query) {
 		debugger;
-		stockdb.dataPointsQuery(query, function (resultSet) {
+		stockdb.queryDataPoints(query, function (resultSet) {
 			var blob = new Blob([JSON.stringify(resultSet)], {type: "text/json;charset=utf-8"});
 			saveAs(blob, "query_json.txt");
 

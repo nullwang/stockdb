@@ -77,11 +77,37 @@
             var strStartTime = startTime.Format("yyyyMMddhhmmss");
             var strEndTime = endTime.Format("yyyyMMddhhmmss");
             stockdb.queryBaseFourMetricDataPoints(stockId,strStartTime,strEndTime,loadData);
-        }
+        };
 
-        loadData = function(){
+        //using data to show graph
+        loadData = function(data){
+            // Create the chart
+            $('#container').highcharts('StockChart', {
 
-        }
+
+                rangeSelector : {
+                    selected : 1,
+                    enabled: false
+                },
+
+                title : {
+                    text : 'AAPL Stock Price'
+                },
+
+                credits:{
+                    enabled: false
+                },
+
+                series : [{
+                    name : 'AAPL',
+                    data : data,
+                    tooltip: {
+                        valueDecimals: 2
+                    }
+                }]
+            });
+        };
+
 	</script>
 </head>
 

@@ -39,6 +39,8 @@ public interface DataStore {
 
     String getObjAttr(String id, String attr) throws StockDBException;
 
+    Map<String,String> getObjAttr(String id) throws StockDBException;
+
     Set<String> getMetrics();
 
     Map<String,String> getMetricAttr(String name) throws StockDBException;

@@ -12270,6 +12270,7 @@ Chart.prototype = {
 	
 			// Set the chart property
 			chart[key] = value;
+
 		});
 		
 	},

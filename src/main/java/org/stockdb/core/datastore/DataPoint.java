@@ -16,8 +16,6 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
-import java.util.regex.Pattern;
-
 public class DataPoint {
 
 

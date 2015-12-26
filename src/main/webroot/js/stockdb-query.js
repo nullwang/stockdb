@@ -3,14 +3,35 @@ if (stockdb === undefined)
 	var stockdb = {};
 }
 
-//根据[startTime,endTime) 查询指定 id， 指定 metricName的数据点集
-stockdb.listDataPoints = function (id, metricName, startTime, endTime, callback) {
+stockdb.StatusCallback = function(){
+    var starting = function(){
+        $status.html("<i>正在查询...</i>");
+    }
+
+    //回调时会传入话费时间，毫秒单位
+    var doing = function(costTime){
+        $status.html("<i>正在处理...</i>");
+        var $queryTime = $("#queryTime");
+        var costMs = numeral(costTime).format('0,0') + " ms"
+        $queryTime.html(costMs);
+    };
+
+    var completed = function(costTime){
+
+    };
+
+    var error = function(){
+        $status.html("");
+        $queryTime.html(numeral(new Date().getTime() - exeStartTime.getTime()).format('0,0') + " ms");
+    };
+}
+
+//根据[startTime,endTime] 查询指定 id， 指定 metricName的数据点集
+stockdb.listDataPoints = function (id, metricName, startTime, endTime,
+                                   dataCallback,statusCallback) {
     var exeStartTime = new Date();
 
-    var $status = $('#status');
-    var $queryTime = $("#queryTime");
-
-    $status.html("<i>正在查询...</i>");
+    if( statusCallback) statusCallback.starting();
 
     $.ajax({
         type: "GET",
@@ -18,23 +39,19 @@ stockdb.listDataPoints = function (id, metricName, startTime, endTime, callback)
         headers: { 'Content-Type': ['application/json']},
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
-            $status.html("<i>正在处理...</i>");
-            $queryTime.html(numeral(new Date().getTime() - exeStartTime.getTime()).format('0,0') + " ms");
+            if(statusCallback) statusCallback.doing(new Date().getTime() - exeStartTime.getTime());
             setTimeout(function(){
-                callback(data);
+                dataCallback(data);
             }, 0);
         },
         error: function (jqXHR, textStatus, errorThrown) {
-
             var $errorContainer = $("#errorContainer");
             $errorContainer.show();
             $errorContainer.html("");
             $errorContainer.append("Status Code: " +  jqXHR.status + "</br>");
             $errorContainer.append("Status: " +  jqXHR.statusText + "<br>");
             $errorContainer.append("Return Value: " +  jqXHR.responseText);
-
-            $status.html("");
-            $queryTime.html(numeral(new Date().getTime() - exeStartTime.getTime()).format('0,0') + " ms");
+            if(statusCallback) statusCallback.error(new Date().getTime() - exeStartTime.getTime());
         }
     });
 };

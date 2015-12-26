@@ -40,15 +40,15 @@ public class Commons {
     }
 
     /**
-     * str between [str1,str2)
-     * @param str1 more or equal than
-     * @param str2 less then
+     * str between [str1,str2]
+     * @param str1 more or equal
+     * @param str2 less or equal
      * @param str
      * @return
      */
     public static boolean between(String str1, String str2, String str)
     {
-        return compareStr(str,str1)>=0 && compareStr(str,str2)<0;
+        return compareStr(str,str1)>=0 && compareStr(str,str2)<=0;
     }
 
     public static Map<String,String> jsonMap(String json)

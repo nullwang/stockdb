@@ -38,6 +38,11 @@ public class MetricsController {
         return "{\"version\":\"1.0\"}";
     }
 
+    /**
+     * 数据集导入
+     * @param objectMetricDataSet
+     * @throws StockDBException
+     */
     @RequestMapping(value = "/ds", method = RequestMethod.POST )
     public @ResponseBody
     void putDataPoints(@RequestBody ObjectMetricDataSet objectMetricDataSet) throws StockDBException {
@@ -75,6 +80,15 @@ public class MetricsController {
         return objectMetricDataSets;
     }
 
+    /**
+     *
+     * @param id 对象标示
+     * @param metricName 属性字段
+     * @param startTime 起始时间, >=
+     * @param endTime 截止时间, <=
+     * @return 指定对象特定属性在某个时间范围的结果集
+     * @throws StockDBException
+     */
     @RequestMapping(value = "/list/{id}/{metricName}/{startTime}/{endTime}", method = RequestMethod.GET )
     public @ResponseBody
     List<DataPoint> getDataPoints(@PathVariable("id") String id,

@@ -24,31 +24,55 @@ import java.util.Map;
 
 public class Commons {
 
+    private static int NULL_IS_BIGGER = 1;
+    private static int NULL_IS_SMALL = -1;
+
     /**
      * compareStr(null,null) == 0
-     * compareStr("anything",null) > 0
-     * compareStr(null,"anything") < 0
+     * compareStr("anyStr",null) > 0
+     * compareStr("a","b") < 0
      * @param str1
      * @param str2
      * @return
      */
-    public static int compareStr(String str1, String str2) {
+    public static int compareStrA(String str1, String str2) {
         if (str1 == str2) return 0;
-        if (str1 == null) return -1;
-        if (str2 == null) return 1;
+        if (str1 == null) return NULL_IS_SMALL ;
+        if( str2 == null) return 1;
+
+        return str1.compareTo(str2);
+    }
+
+    /**
+     * null > anyStr
+     * @param str1
+     * @param str2
+     * @return
+     */
+    public static int compareStrB(String str1, String str2) {
+        if (str1 == str2) return 0;
+        if (str1 == null) return NULL_IS_BIGGER ;
+        if( str2 == null) return -1;
+
         return str1.compareTo(str2);
     }
 
     /**
      * str between [str1,str2]
+     *  between(null,null,"anyStr") return true
+     *  between(null,"b,"anyStr") return true
+     *  between(null,"b","c") return false
+     *  between("a",null,"c") return true
+     *  between("c",null,"c") return true
+     *  between("c",null,"a") return false
      * @param str1 more or equal
      * @param str2 less or equal
-     * @param str
+     * @param str 被比较的字符串
      * @return
      */
     public static boolean between(String str1, String str2, String str)
     {
-        return compareStr(str,str1)>=0 && compareStr(str,str2)<=0;
+        return compareStrA(str,str1)>=0 && compareStrB(str,str2)<=0;
     }
 
     public static Map<String,String> jsonMap(String json)

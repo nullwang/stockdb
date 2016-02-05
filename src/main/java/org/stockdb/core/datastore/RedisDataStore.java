@@ -50,6 +50,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
 
     JedisWrapper jc ;
     ValueProcess valueProcess;
+    Calculator calculator;
 
     public RedisDataStore()
     {
@@ -91,6 +92,8 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         jc = new JedisWrapper(jedisPool,jedisCluster);
 
         loadMeta();
+
+        calculator = new Calculator();
     }
 
     @Override
@@ -234,6 +237,14 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         return jc.hget(Key.makeRowKey(id,metricName),timeStr);
     }
 
+    /**
+     *
+     * @param id
+     * @param metricName
+     * @param startTime the start time >=起始时间
+     * @param endTime the end time <=结束时间
+     * @return 数据点
+     */
     @Override
     public List<DataPoint> getData(String id, String metricName, String startTime, String endTime) {
         //jc.hvals(Key.makeRowKey(id,metricName));

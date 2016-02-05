@@ -90,3 +90,22 @@ Metric
 
     数据底层使用redis进行存储,存储分为metric属性存储和metric值存储。
 
+Metric 和 attribute 属性的区别
+   首先，metric和attribute 都属于对象。
+    metric 是一般和时间相关，容易变化。 attribute 不易变化且和时间没有太大关联性
+
+股票数据是如何存储的。
+
+   每只股票在StockDb中标示为一个object，股票的编码通过id 来标示. 任何股票具有如下2个最基本的metric。
+   成交价   price
+   成交量   volume
+
+   基于其上，5个基本扩展指标
+   开盘价 day_opening_price = first(price)
+   最高价 day_highest_price = max(price)
+   最低价 day_lowest_price = min(price)
+   收盘价 day_closing_price = last(price)
+   成交量 day_volume  日成交总量 = total(volume)
+
+
+

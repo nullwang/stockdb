@@ -58,6 +58,12 @@ public class MetricsController {
         }
     }
 
+    /**
+     * 查询 起始
+     * @param dataQueryReq
+     * @return
+     * @throws StockDBException
+     */
     @RequestMapping(value = "/query", method = RequestMethod.POST )
     public @ResponseBody
     List<ObjectMetricDataSet> queryDataPoints(@RequestBody DataQueryReq dataQueryReq) throws StockDBException {

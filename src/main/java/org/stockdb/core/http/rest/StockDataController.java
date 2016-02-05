@@ -1,7 +1,19 @@
 package org.stockdb.core.http.rest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.stockdb.core.datastore.DataPoint;
+import org.stockdb.core.datastore.DataStore;
+import org.stockdb.core.datastore.ObjectMetricDataSet;
+import org.stockdb.core.exception.StockDBException;
+import org.stockdb.core.http.rest.model.DataQueryReq;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * @author nullwang@hotmail.com
@@ -20,9 +32,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * limitations under the License.
  */
 @Controller
-@RequestMapping(value="/stock/v1")
+@RequestMapping(value="/stock")
 public class StockDataController {
 
+    @Autowired
+    private DataStore dataStore;
 
+    /**
+     *k 线接口
+     */
+    @RequestMapping(value = "/kline", method = RequestMethod.POST )
+    public @ResponseBody
+    List<ObjectMetricDataSet> queryDataPoints(@RequestBody DataQueryReq dataQueryReq) throws StockDBException {
+        dataQueryReq.getObjectMetrics();
+
+        String startTime = dataQueryReq.getStartTime();
+        String endTime = dataQueryReq.getEndTime();
+        List<ObjectMetricDataSet> objectMetricDataSets = new ArrayList<ObjectMetricDataSet>();
+        for(DataQueryReq.ObjectMetric objectMetric : dataQueryReq.getObjectMetrics()){
+            String objId = objectMetric.getId();
+            String metricName = objectMetric.getMetricName();
+            ObjectMetricDataSet objectMetricDataSet = new ObjectMetricDataSet();
+            List<DataPoint> points = dataStore.getData(objId,metricName,startTime,endTime);
+
+            objectMetricDataSet.setId(objId);
+            objectMetricDataSet.setMetricName(metricName);
+            objectMetricDataSet.setDataPoints(points.toArray(new DataPoint[points.size()]));
+            objectMetricDataSets.add(objectMetricDataSet);
+        }
+        return objectMetricDataSets;
+    }
 
 }

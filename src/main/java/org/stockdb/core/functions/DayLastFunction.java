@@ -1,7 +1,7 @@
-package org.stockdb.core.datastore;
+package org.stockdb.core.functions;
 /*
  * @author nullwang@hotmail.com
- * created at 2015/3/26
+ * created at 2016/2/6
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,11 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
-public interface Metric {
+import org.stockdb.core.datastore.DataPoint;
 
-    public String getName();
-
-    public void setName(String name);
-
-    public Attribute getAttr(String attrName);
-
-    public void setAttrValue(String attrName,String value);
-
-    public String getAttrValue(String attrName);
+public class DayLastFunction implements Function {
+    @Override
+    public DataPoint call(DataPoint... dataPoints) {
+        return null;
+    }
 }

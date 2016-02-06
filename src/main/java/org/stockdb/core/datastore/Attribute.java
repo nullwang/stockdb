@@ -1,7 +1,7 @@
 package org.stockdb.core.datastore;
 /*
  * @author nullwang@hotmail.com
- * created at 2015/3/26
+ * created at 2016/2/6
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,33 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
-public interface Metric {
+public class Attribute {
 
-    public String getName();
+    String name;
 
-    public void setName(String name);
+    String value;
 
-    public Attribute getAttr(String attrName);
+    public Attribute() {
+    }
 
-    public void setAttrValue(String attrName,String value);
+    public Attribute(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
 
-    public String getAttrValue(String attrName);
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
 }

@@ -16,15 +16,25 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
-public interface Metric {
+public class FunctionMetric extends Metric{
 
-    public String getName();
+    String functionName;
 
-    public void setName(String name);
+    String[] baseMetrics;
 
-    public Attribute getAttr(String attrName);
+    public String getFunctionName() {
+        return functionName;
+    }
 
-    public void setAttrValue(String attrName,String value);
+    public void setFunctionName(String functionName) {
+        this.functionName = functionName;
+    }
 
-    public String getAttrValue(String attrName);
+    public String[] getBaseMetrics() {
+        return baseMetrics;
+    }
+
+    public void setBaseMetrics(String[] baseMetrics) {
+        this.baseMetrics = baseMetrics;
+    }
 }

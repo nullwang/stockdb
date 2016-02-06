@@ -1,7 +1,7 @@
 package org.stockdb.core.datastore;
 /*
  * @author nullwang@hotmail.com
- * created at 2015/3/26
+ * created at 2016/2/6
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,22 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
-public interface Metric {
+public interface MetricService {
 
-    public String getName();
+    /**
+     * 使用函数，基于一组metric 创建新的metric
+     * metricName = functionName(metricNames...)
+     * @param metricName 要创建的metric 的名称
+     * @param functionName 函数名称
+     * @param metricNames 基于的metric 的名称列表
+     */
+    public void createFunctionMetric(String metricName, String functionName, String ...metricNames);
 
-    public void setName(String name);
+    //获取基于metric的扩展metric
+    public FunctionMetric[] getExtends(String metricName);
 
-    public Attribute getAttr(String attrName);
 
-    public void setAttrValue(String attrName,String value);
+    public FunctionMetric getFunctionMetric(String metricName);
 
-    public String getAttrValue(String attrName);
+
 }

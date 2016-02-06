@@ -93,7 +93,8 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
 
         loadMeta();
 
-        calculator = new Calculator();
+        calculator = new Calculator(this,5);
+        calculator.start();
     }
 
     @Override
@@ -164,12 +165,24 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
     }
 
     @Override
-    public void setMetricAttr(String name, String attr, String value) throws StockDBException{
-        if( name == null){
-            throw new StockDBException("metric name should not be null");
+    public void putMetric(String name) throws StockDBException
+    {
+        if( StringUtils.isEmpty(name)){
+            throw new StockDBException("metric name should not be empty");
         }
-        if(attr == null){
-            throw new StockDBException("attribute name should not be null");
+
+        if(! jc.hexists(METRICS_KEY,name) ) {
+            jc.hset(METRICS_KEY, name,"");
+        }
+    }
+
+    @Override
+    public void setMetricAttr(String name, String attr, String value) throws StockDBException{
+        if( StringUtils.isEmpty(name)){
+            throw new StockDBException("metric name should not be empty");
+        }
+        if(StringUtils.isEmpty(attr)){
+            throw new StockDBException("attribute name should not be empty");
         }
 
         String attrValue = jc.hget(METRICS_KEY,name);

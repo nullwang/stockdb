@@ -1,7 +1,7 @@
-package org.stockdb.core.datastore;
+package org.stockdb.core.functions;
 /*
  * @author nullwang@hotmail.com
- * created at 2015/3/26
+ * created at 2016/2/14
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,16 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
-public interface FunctionMetric extends Metric {
+import org.stockdb.core.exception.StockFunctionException;
 
-    public String getFunctionName();
+public abstract class FunctionBuilder {
 
-    public String[] getBaseMetrics();
+       public static Function build(String name) throws StockFunctionException{
+           if( DayFirstFunction.NAME.equals(name))
+               return new DayFirstFunction();
+           else if( DayLastFunction.NAME.equals(name) )
+               return new DayLastFunction();
+
+            throw new StockFunctionException("function {0} not found", name);
+       }
 }

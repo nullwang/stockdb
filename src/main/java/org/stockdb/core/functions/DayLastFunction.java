@@ -17,10 +17,22 @@ package org.stockdb.core.functions;
  */
 
 import org.stockdb.core.datastore.DataPoint;
+import org.stockdb.core.util.DataPointComparator;
 
-public class DayLastFunction implements Function {
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+public class DayLastFunction extends TimeFunction {
+    static final String NAME = "DAY_FIRST";
+
+    DataPointComparator dataPointComparator = new DataPointComparator();
+
     @Override
     public DataPoint call(DataPoint... dataPoints) {
-        return null;
+        assert(dataPoints != null);
+        List<DataPoint> dataPointList = Arrays.asList(dataPoints);
+        Collections.sort(dataPointList, dataPointComparator);
+        return dataPointList.get(dataPointList.size()-1);
     }
 }

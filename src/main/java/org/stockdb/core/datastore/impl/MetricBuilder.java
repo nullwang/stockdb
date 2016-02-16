@@ -1,7 +1,7 @@
-package org.stockdb.core.datastore;
+package org.stockdb.core.datastore.impl;
 /*
  * @author nullwang@hotmail.com
- * created at 2015/3/26
+ * created at 2016/2/14
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,14 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
-public interface FunctionMetric extends Metric {
+import org.stockdb.core.datastore.Metric;
 
-    public String getFunctionName();
+import java.util.Map;
 
-    public String[] getBaseMetrics();
+public abstract class MetricBuilder {
+
+    public static Metric build(String name, Map attrMap) {
+
+        return null;
+    }
 }

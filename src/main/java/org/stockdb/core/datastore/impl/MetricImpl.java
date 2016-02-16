@@ -1,4 +1,4 @@
-package org.stockdb.core.http.rest.model;
+package org.stockdb.core.datastore.impl;
 /*
  * @author nullwang@hotmail.com
  * created at 2015/3/26
@@ -19,12 +19,14 @@ package org.stockdb.core.http.rest.model;
 import org.stockdb.core.datastore.Attribute;
 import org.stockdb.core.datastore.Metric;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 public class MetricImpl implements Metric {
 
     String name;
-    Map<String,Attribute> attrs;
+    Map<String,Attribute> attrs = Collections.emptyMap();
 
 
     @Override
@@ -40,6 +42,11 @@ public class MetricImpl implements Metric {
     @Override
     public Attribute getAttr(String attrName) {
         return attrs.get(attrName);
+    }
+
+    @Override
+    public Collection<Attribute> getAttrs() {
+        return attrs.values();
     }
 
     @Override

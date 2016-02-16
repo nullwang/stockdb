@@ -16,15 +16,30 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
+import org.stockdb.core.datastore.impl.MetricBuilder;
 import org.stockdb.core.exception.StockDBException;
+import org.stockdb.util.Commons;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractDataStore implements DataStore {
 
     @Override
     public void putMetric(Metric... metrics) throws StockDBException {
         for(Metric metric: metrics ) {
-            setMetricAttr(metric.name,metric.attr,metric.value);
+            for(Attribute attribute: metric.getAttrs()) {
+                setMetricAttr(metric.getName(), attribute.getName(), attribute.getValue());
+            }
         }
+    }
+    @Override
+    public Metric getMetric(String metricName) throws StockDBException
+    {
+        Map map = getMetricAttr(metricName);
+        return MetricBuilder.build(metricName,map);
     }
 
     public void setSampleInterval(String name, int i) throws StockDBException
@@ -37,6 +52,22 @@ public abstract class AbstractDataStore implements DataStore {
         String id = objectMetricDataSet.getId();
         String metricName = objectMetricDataSet.getMetricName();
         putData(id,metricName,objectMetricDataSet.getDataPoints());
+    }
+
+    @Override
+    public List<FunctionMetric> getFunctionMetrics(String metricName) throws StockDBException{
+        Collection<String> names = getMetricNames();
+        List<FunctionMetric> metricList = new ArrayList();
+        for(String name: names){
+            Metric metric = getMetric(name);
+            if( metric instanceof FunctionMetric){
+                FunctionMetric functionMetric = (FunctionMetric) metric;
+                if( Commons.contains(functionMetric.getBaseMetrics(),metricName)){
+                    metricList.add(functionMetric);
+                }
+            }
+        }
+        return metricList;
     }
 
 }

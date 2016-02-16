@@ -137,7 +137,7 @@ public class MetricsController {
     public @ResponseBody
     Map getMeta() throws StockDBException {
         Map map = new HashMap();
-        for(String metric:  dataStore.getMetrics()){
+        for(String metric:  dataStore.getMetricNames()){
             map.put(metric,dataStore.getMetricAttr(metric));
         }
         return map;

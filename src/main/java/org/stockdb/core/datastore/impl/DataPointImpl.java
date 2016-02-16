@@ -1,4 +1,4 @@
-package org.stockdb.core.http.rest.model;
+package org.stockdb.core.datastore.impl;
 /*
  * @author nullwang@hotmail.com
  * created at 2015/3/13
@@ -17,7 +17,6 @@ package org.stockdb.core.http.rest.model;
  */
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.stockdb.core.datastore.DataPoint;
 import org.stockdb.util.Key;
 
 public class DataPointImpl {

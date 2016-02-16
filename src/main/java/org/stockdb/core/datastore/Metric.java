@@ -16,6 +16,8 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
+import java.util.Collection;
+
 public interface Metric {
 
     public String getName();
@@ -23,6 +25,8 @@ public interface Metric {
     public void setName(String name);
 
     public Attribute getAttr(String attrName);
+
+    public Collection<Attribute> getAttrs();
 
     public void setAttrValue(String attrName,String value);
 

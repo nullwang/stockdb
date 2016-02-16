@@ -17,6 +17,7 @@ package org.stockdb.util;
  */
 
 import com.google.gson.Gson;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
@@ -117,5 +118,14 @@ public class Commons {
     public static <T> T fromJson(String json, Class<T> tClass){
         Gson gson = new Gson();
         return gson.fromJson(json,tClass);
+    }
+
+    static public boolean contains(Object[] container, Object element){
+        if( container == null) return element == null;
+        for(Object object: container){
+            if(ObjectUtils.equals(object,element))
+                return true;
+        }
+        return false;
     }
 }

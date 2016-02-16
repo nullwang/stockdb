@@ -22,5 +22,5 @@ import java.util.EventListener;
 
 public interface MetricListener extends EventListener {
 
-    public void dataPointChange(String id, String metric, DataPoint dataPoint);
+    public void dataPointChange(String id, String metric, DataPoint... dataPoints);
 }

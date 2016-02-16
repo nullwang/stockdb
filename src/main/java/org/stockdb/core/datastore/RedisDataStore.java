@@ -25,6 +25,7 @@ import org.stockdb.core.config.StockPropertyConfigurer;
 import org.stockdb.core.datastore.value.NormalProcess;
 import org.stockdb.core.datastore.value.SeparatorProcess;
 import org.stockdb.core.datastore.value.ValueProcess;
+import org.stockdb.core.event.MetricListener;
 import org.stockdb.core.exception.DatastoreException;
 import org.stockdb.core.exception.StockDBException;
 import org.stockdb.core.util.TimeFormatUtil;
@@ -51,6 +52,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
     JedisWrapper jc ;
     ValueProcess valueProcess;
     Calculator calculator;
+    List<MetricListener> metricListeners = new ArrayList<MetricListener>();
 
     public RedisDataStore()
     {
@@ -99,6 +101,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
 
     @Override
     public void stop() throws StockDBException {
+        calculator.stop();
         if( jc != null) try {
             jc.close();
         } catch (IOException e) {
@@ -141,27 +144,32 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
 
     @Override
     public void putData(String id,String metricName, DataPoint[] dataPoints) throws StockDBException{
+        assert(dataPoints != null);
         String index = getMetricAttr(metricName,Constants.METRIC_SAMPLE_INTERVAL);
         String rowKey = Key.makeRowKey(id,metricName);
         for(DataPoint dataPoint:dataPoints) {
-            try{
+            try {
                 int dataPointTimeIndex = TimeFormatUtil.detectFormat(dataPoint.getTimeStr());
-                if( dataPointTimeIndex < 0) throw new StockDBException("DataPoint["+rowKey+"]" + "has bad format timeStr["+ dataPoint.getTimeStr() +"]");
+                if (dataPointTimeIndex < 0)
+                    throw new StockDBException("DataPoint[" + rowKey + "]" + "has bad format timeStr[" + dataPoint.getTimeStr() + "]");
 
-                if( index == null ){
-                    setSampleInterval(metricName,dataPointTimeIndex);
-                }else {
+                if (index == null) {
+                    setSampleInterval(metricName, dataPointTimeIndex);
+                } else {
                     int i = Integer.parseInt(index);
-                    if( dataPointTimeIndex != i){
-                        throw new StockDBException("Metric ["+metricName+"]" + "has two different time format["+ i + "," + dataPointTimeIndex +"]");
+                    if (dataPointTimeIndex != i) {
+                        throw new StockDBException("Metric [" + metricName + "]" + "has two different time format[" + i + "," + dataPointTimeIndex + "]");
                     }
                 }
-            }catch (NumberFormatException e){
-                throw new StockDBException("Metric[" + metricName + "]attribute["+ Constants.METRIC_SAMPLE_INTERVAL +"]value error");
+            } catch (NumberFormatException e) {
+                throw new StockDBException("Metric[" + metricName + "]attribute[" + Constants.METRIC_SAMPLE_INTERVAL + "]value error");
             }
+        }
+        for(DataPoint dataPoint: dataPoints){
             String v = filterValue(dataPoint.getValue());
             jc.hset(rowKey,dataPoint.getTimeStr(),v);
         }
+        notifyListener(id, metricName, dataPoints);
     }
 
     @Override
@@ -188,6 +196,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         String attrValue = jc.hget(METRICS_KEY,name);
         jc.hset(METRICS_KEY,name, Commons.jsonPut(attrValue,attr,value));
     }
+
 
     @Override
     public String getMetricAttr(String name, String attr) {
@@ -236,7 +245,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
     }
 
     @Override
-    public Set<String> getMetrics() {
+    public Set<String> getMetricNames() {
         return jc.hkeys(METRICS_KEY);
     }
 
@@ -272,6 +281,22 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
             }
         }
         return points;
+    }
+
+    public synchronized void addMetricListener(MetricListener metricListener){
+        metricListeners.add(metricListener);
+    }
+
+    public synchronized void removeMetricListener(MetricListener metricListener){
+        metricListeners.remove(metricListener);
+    }
+
+    private void notifyListener(String id, String metricName, DataPoint... dataPoints)
+    {
+        List<MetricListener> listeners = new ArrayList<MetricListener>(metricListeners);
+        for(MetricListener listener: listeners){
+            listener.dataPointChange(id, metricName,dataPoints);
+        }
     }
 
     @Override

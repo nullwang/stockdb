@@ -38,6 +38,18 @@ public class TimeFormatUtil {
             Pattern.compile("^" + PATTERN_YY + "$"),
     };
 
+    /**
+     *  detectFormat(PATTERN_YY) = 0
+     *  detectFormat(PATTERN_YYMM) = 1
+     *  detectFormat(PATTERN_YYMMDD) = 2
+     *  detectFormat(PATTERN_YYMMDDHH) = 3
+     *  detectFormat(PATTERN_YYMMDDHHMM) = 4
+     *  detectFormat(PATTERN_YYMMDDHHMMSS) = 5
+     *  detectFormat(PATTERN_YYMMDDHHMMSSZZZ) = 6
+     *
+     * @param timeStr 时间格式串
+     * @return 时间格式串所对应的值
+     */
     static public int detectFormat(String timeStr)
     {
         for(int i=0; i< timeStrPatterns.length; i++) {

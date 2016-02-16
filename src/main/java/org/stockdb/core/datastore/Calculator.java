@@ -16,40 +16,86 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
+import org.stockdb.core.event.MetricListener;
+import org.stockdb.core.exception.StockDBException;
+import org.stockdb.core.functions.Function;
+import org.stockdb.core.functions.FunctionBuilder;
+
+import java.util.List;
 import java.util.concurrent.*;
 
 /**
- * 数据计算器，用于对扩展指标的计算
+ * 数据计算器，用于对指标进行计算
  */
-public class Calculator {
+public class Calculator implements MetricListener{
     RedisDataStore redisDataStore;
     int number; //计算者个数
     ExecutorService executorService;
 
     protected Calculator(RedisDataStore redisDataStore, int number){
-        this.redisDataStore = redisDataStore;
-        this.number = number;
         assert(number > 0);
+        this.number = number;
+        this.redisDataStore = redisDataStore;
     }
 
     public void start()
     {
         executorService = Executors.newFixedThreadPool(number);
+        this.redisDataStore.addMetricListener(this);
+    }
+
+    public void stop() {
+        executorService.shutdown();
+        try {
+            executorService.awaitTermination(30,TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            //log
+        }
+        this.redisDataStore.removeMetricListener(this);
     }
 
     /**
-     * 重新计算指定的指标
+     * 提交计算指定的指标的任务
      * @param id 对象id
      * @param metricName 指标名称
      */
-    public void calcMetric(String id, String metricName)
+    public void submitCalcMetricTask(final String id, final String metricName,DataPoint... dataPoints)
     {
         executorService.submit(new Runnable() {
             @Override
             public void run() {
+                try {
+                    Metric metric = redisDataStore.getMetric(metricName);
+                    if( metric instanceof FunctionMetric){
+                        FunctionMetric functionMetric = (FunctionMetric)metric;
+                        String[] baseMetrics = functionMetric.getBaseMetrics();
 
+                        String functionName = functionMetric.getFunctionName();
+
+                        Function function = FunctionBuilder.build(functionName);
+
+
+
+                    }
+                }catch (StockDBException e){
+                    //log
+                }
             }
         });
     }
+
+    @Override
+    public void dataPointChange(String id, String metric, DataPoint... dataPoints) {
+        try {
+            List<FunctionMetric> metricList = redisDataStore.getFunctionMetrics(metric);
+
+
+        } catch (StockDBException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
 
 }

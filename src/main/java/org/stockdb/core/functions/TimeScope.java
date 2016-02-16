@@ -1,7 +1,7 @@
-package org.stockdb.core.datastore;
+package org.stockdb.core.functions;
 /*
  * @author nullwang@hotmail.com
- * created at 2015/3/26
+ * created at 2016/2/15
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,28 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
-public interface FunctionMetric extends Metric {
+public class TimeScope {
+    String startTime;
+    String endTime;
 
-    public String getFunctionName();
+    public TimeScope(String startTime, String endTime) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
 
-    public String[] getBaseMetrics();
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
 }

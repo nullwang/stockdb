@@ -1,7 +1,7 @@
 package org.stockdb.core.exception;
 /*
  * @author nullwang@hotmail.com
- * created at 2015/3/13
+ * created at 2016/2/14
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,33 @@ package org.stockdb.core.exception;
  * limitations under the License.
  */
 
-import java.text.MessageFormat;
+public class StockFunctionException extends StockDBException{
+    String functionName;
 
-public class StockDBException extends Exception{
-
-    public StockDBException() {
+    public String getFunctionName() {
+        return functionName;
     }
 
-    public StockDBException(String message) {
+    public void setFunctionName(String functionName) {
+        this.functionName = functionName;
+    }
+
+    public StockFunctionException() {
+    }
+
+    public StockFunctionException(String message) {
         super(message);
     }
 
-    public StockDBException(String formatStr,Object ... objects)
-    {
-        super(MessageFormat.format(formatStr,objects));
+    public StockFunctionException(String formatStr, Object... objects) {
+        super(formatStr, objects);
     }
 
-    public StockDBException(String message, Throwable cause) {
+    public StockFunctionException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public StockDBException(Throwable cause) {
+    public StockFunctionException(Throwable cause) {
         super(cause);
     }
 }

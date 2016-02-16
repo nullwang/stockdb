@@ -41,7 +41,15 @@ public interface DataStore {
 
     Map<String,String> getObjAttr(String id) throws StockDBException;
 
-    Set<String> getMetrics();
+    Set<String> getMetricNames();
+
+    /**
+     * 获取子metric，即通过metricName进行运算而产生的function metric
+     * @param metricName
+     * @return
+     * @throws StockDBException
+     */
+    List<FunctionMetric> getFunctionMetrics(String metricName) throws StockDBException;
 
     Map<String,String> getMetricAttr(String name) throws StockDBException;
 
@@ -59,6 +67,8 @@ public interface DataStore {
     void putData(ObjectMetricDataSet objectMetricDataSet) throws StockDBException;
 
     void putMetric(Metric... metrics) throws StockDBException;
+
+    Metric getMetric(String metricName) throws StockDBException;
 
     void putMetric(String metricName) throws StockDBException;
 

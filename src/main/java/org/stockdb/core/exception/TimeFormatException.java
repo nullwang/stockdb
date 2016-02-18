@@ -1,7 +1,7 @@
 package org.stockdb.core.exception;
 /*
  * @author nullwang@hotmail.com
- * created at 2015/3/13
+ * created at 2016/2/18
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,24 @@ package org.stockdb.core.exception;
  * limitations under the License.
  */
 
-import java.text.MessageFormat;
+public class TimeFormatException extends StockDBException {
 
-public class StockDBException extends RuntimeException{
-
-    public StockDBException() {
+    public TimeFormatException() {
     }
 
-    public StockDBException(String message) {
+    public TimeFormatException(String message) {
         super(message);
     }
 
-    public StockDBException(String formatStr,Object ... objects)
-    {
-        super(MessageFormat.format(formatStr,objects));
+    public TimeFormatException(String formatStr, Object... objects) {
+        super(formatStr, objects);
     }
 
-    public StockDBException(String message, Throwable cause) {
+    public TimeFormatException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public StockDBException(Throwable cause) {
+    public TimeFormatException(Throwable cause) {
         super(cause);
     }
 }

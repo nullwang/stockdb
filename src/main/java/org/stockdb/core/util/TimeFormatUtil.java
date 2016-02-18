@@ -15,27 +15,31 @@ package org.stockdb.core.util;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import org.stockdb.core.exception.TimeFormatException;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TimeFormatUtil {
 
-    static String PATTERN_YY = "((19|20|21|22)\\d\\d)";
-    static String PATTERN_YYMM = PATTERN_YY + "(0[1-9]|1[012])";
-    static String PATTERN_YYMMDD = PATTERN_YYMM + "(0[1-9]|[12][0-9]|3[01])";
-    static String PATTERN_YYMMDDHH = PATTERN_YYMMDD + "([0-1][0-9]|2[0-3])";
-    static String PATTERN_YYMMDDHHMM = PATTERN_YYMMDDHH + "([0-5][0-9])";
-    static String PATTERN_YYMMDDHHMMSS = PATTERN_YYMMDDHHMM + "([0-5][0-9])";
-    static String PATTERN_YYMMDDHHMMSSZZZ = PATTERN_YYMMDDHHMMSS + "\\.\\d{3}";
+    public static int YY = 0, YYMM=1, YYMMDD=2, YYMMDDHH=3, YYMMDDHHMM=4, YYMMDDHHMMSS=5, YYMMDDHHMMSSZZZ=6 ;
+
+    public static String PATTERN_YY = "((19|20|21|22)\\d\\d)";
+    public static String PATTERN_YYMM = PATTERN_YY + "(0[1-9]|1[012])";
+    public static String PATTERN_YYMMDD = PATTERN_YYMM + "(0[1-9]|[12][0-9]|3[01])";
+    public static String PATTERN_YYMMDDHH = PATTERN_YYMMDD + "([0-1][0-9]|2[0-3])";
+    public static String PATTERN_YYMMDDHHMM = PATTERN_YYMMDDHH + "([0-5][0-9])";
+    public static String PATTERN_YYMMDDHHMMSS = PATTERN_YYMMDDHHMM + "([0-5][0-9])";
+    public static String PATTERN_YYMMDDHHMMSSZZZ = PATTERN_YYMMDDHHMMSS + "(\\d{3})";
 
     public static Pattern[] timeStrPatterns = {
-            Pattern.compile("^" + PATTERN_YYMMDDHHMMSSZZZ + "$"),
-            Pattern.compile("^" + PATTERN_YYMMDDHHMMSS + "$"),
-            Pattern.compile("^" + PATTERN_YYMMDDHHMM + "$"),
-            Pattern.compile("^" + PATTERN_YYMMDDHH + "$"),
-            Pattern.compile("^" + PATTERN_YYMMDD + "$"),
-            Pattern.compile("^" + PATTERN_YYMM + "$"),
-            Pattern.compile("^" + PATTERN_YY + "$"),
+            Pattern.compile("^" + PATTERN_YY ),
+            Pattern.compile("^" + PATTERN_YYMM ),
+            Pattern.compile("^" + PATTERN_YYMMDD),
+            Pattern.compile("^" + PATTERN_YYMMDDHH ),
+            Pattern.compile("^" + PATTERN_YYMMDDHHMM ),
+            Pattern.compile("^" + PATTERN_YYMMDDHHMMSS),
+            Pattern.compile("^" + PATTERN_YYMMDDHHMMSSZZZ),
     };
 
     /**
@@ -60,8 +64,18 @@ public class TimeFormatUtil {
         return -1;
     }
 
-    public static void main(String[] args)
+    static public String convertFormat(String timeStr, int format ) throws TimeFormatException
     {
-        System.out.println(detectFormat("2009"));
+        int f = detectFormat(timeStr);
+        if( f < format ) throw new TimeFormatException("{0} can not convert to format {1}", timeStr ,timeStrPatterns[format]);
+
+        Matcher matcher = timeStrPatterns[format].matcher(timeStr);
+        if( matcher.find()){
+            return matcher.group();
+        }
+
+        throw new TimeFormatException("{0} can not convert to format {1}", timeStr ,timeStrPatterns[format]);
+
     }
+
 }

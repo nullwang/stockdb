@@ -52,7 +52,7 @@ public class ScanableAdapter<E> implements Collection<E> {
             if (index < list.size()) {
                 Map.Entry entry = (Map.Entry) list.get(index);
                 String key = String.valueOf(entry.getKey());
-                    if( Commons.compareStr(key, startTime) >= 0 && Commons.compareStr(key,endTime) < 0 ) {
+                    if( Commons.between(startTime,endTime,key)) {
                     return (E) entry;
                 }
                 index++;

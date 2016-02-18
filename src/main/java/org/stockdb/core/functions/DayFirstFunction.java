@@ -17,7 +17,6 @@ package org.stockdb.core.functions;
  */
 
 import org.stockdb.core.datastore.DataPoint;
-import org.stockdb.core.util.DataPointComparator;
 
 import java.util.*;
 
@@ -26,15 +25,23 @@ import java.util.*;
  */
 public class DayFirstFunction extends TimeFunction {
 
-    static final String NAME = "DAY_FIRST";
+    public static final String NAME = "DAY_FIRST";
 
+    //将时间按照天进行分组，返回每组中第一个元素,返回的值不一定按照时间排序
     @Override
-    public DataPoint call(DataPoint... dataPoints) {
+    public DataPoint[] call(DataPoint... dataPoints) {
         assert(dataPoints != null);
         List<DataPoint> dataPointList = Arrays.asList(dataPoints);
         Collections.sort(dataPointList,  dataPointComparator);
         if( dataPointList.isEmpty()) return null;
-        return dataPointList.get(0);
-    }
+        List<DataPoint> dataPointRetLst = new ArrayList<DataPoint>();
+        DataPoint d = dataPointList.get(0);
+        dataPointRetLst.add(d);
+        for(DataPoint dataPoint: dataPointList){
 
+        }
+
+        //return dataPointList.get(0);
+        return null;
+    }
 }

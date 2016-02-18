@@ -18,6 +18,8 @@ package org.stockdb.core.datastore;
 
 import org.stockdb.core.event.MetricListener;
 import org.stockdb.core.exception.StockDBException;
+import org.stockdb.core.functions.DayFirstFunction;
+import org.stockdb.core.functions.DayLastFunction;
 import org.stockdb.core.functions.Function;
 import org.stockdb.core.functions.FunctionBuilder;
 
@@ -88,7 +90,18 @@ public class Calculator implements MetricListener{
     public void dataPointChange(String id, String metric, DataPoint... dataPoints) {
         try {
             List<FunctionMetric> metricList = redisDataStore.getFunctionMetrics(metric);
+            //calc every function metric
+            for(FunctionMetric functionMetric:metricList){
+                Function function = FunctionBuilder.build(functionMetric.getFunctionName());
+                if(function instanceof DayFirstFunction){
 
+
+                }else if(function instanceof DayLastFunction){
+
+                }
+
+
+            }
 
         } catch (StockDBException e) {
             e.printStackTrace();

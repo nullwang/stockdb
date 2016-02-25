@@ -34,7 +34,10 @@ public abstract class AbstractDataStore implements DataStore {
                 setMetricAttr(metric.getName(), attribute.getName(), attribute.getValue());
             }
         }
+
+        //todo cycle check for function metric
     }
+
     @Override
     public Metric getMetric(String metricName) throws StockDBException
     {
@@ -55,6 +58,9 @@ public abstract class AbstractDataStore implements DataStore {
     }
 
     @Override
+    /**
+     * 获取依赖指定 metricName 的 functionMetric
+     */
     public List<FunctionMetric> getFunctionMetrics(String metricName) throws StockDBException{
         Collection<String> names = getMetricNames();
         List<FunctionMetric> metricList = new ArrayList();

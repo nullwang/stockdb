@@ -19,6 +19,8 @@ package org.stockdb.core.datastore.impl;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang.StringUtils;
 import org.stockdb.core.datastore.FunctionMetric;
+import org.stockdb.core.exception.StockFunctionException;
+import org.stockdb.util.Commons;
 
 public class FunctionMetricImpl extends MetricImpl implements FunctionMetric {
 
@@ -39,6 +41,7 @@ public class FunctionMetricImpl extends MetricImpl implements FunctionMetric {
         return StringUtils.split(getAttrValue(BASE_METRICS),METRIC_SEPARATOR);
     }
 
+    //函数不能递归自引用
     public void setBaseMetrics(String[] baseMetrics) {
         String v = StringUtils.join(baseMetrics,METRIC_SEPARATOR);
         setAttrValue(BASE_METRICS,v);

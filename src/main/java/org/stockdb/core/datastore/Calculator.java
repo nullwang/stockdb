@@ -18,10 +18,7 @@ package org.stockdb.core.datastore;
 
 import org.stockdb.core.event.MetricListener;
 import org.stockdb.core.exception.StockDBException;
-import org.stockdb.core.functions.DayFirstFunction;
-import org.stockdb.core.functions.DayLastFunction;
-import org.stockdb.core.functions.Function;
-import org.stockdb.core.functions.FunctionBuilder;
+import org.stockdb.core.functions.*;
 
 import java.util.List;
 import java.util.concurrent.*;
@@ -47,13 +44,13 @@ public class Calculator implements MetricListener{
     }
 
     public void stop() {
+        this.redisDataStore.removeMetricListener(this);
         executorService.shutdown();
         try {
             executorService.awaitTermination(30,TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             //log
         }
-        this.redisDataStore.removeMetricListener(this);
     }
 
     /**
@@ -71,10 +68,9 @@ public class Calculator implements MetricListener{
                     if( metric instanceof FunctionMetric){
                         FunctionMetric functionMetric = (FunctionMetric)metric;
                         String[] baseMetrics = functionMetric.getBaseMetrics();
-
                         String functionName = functionMetric.getFunctionName();
-
                         Function function = FunctionBuilder.build(functionName);
+
 
 
 
@@ -94,13 +90,21 @@ public class Calculator implements MetricListener{
             for(FunctionMetric functionMetric:metricList){
                 Function function = FunctionBuilder.build(functionMetric.getFunctionName());
                 if(function instanceof DayFirstFunction){
+                    DayFirstFunction dayFirstFunction = (DayFirstFunction) function;
+                    TimeScope timeScope = dayFirstFunction.getTimeScope(dataPoints);
 
+                    String startTime = timeScope.getStartTime();
+                    String endTime = timeScope.getEndTime();
+
+                    //受影响的数据
+                    List<DataPoint> effectedData = redisDataStore.getData(id,metric,startTime,endTime);
+                    DataPoint[] points = dayFirstFunction.call(effectedData.toArray(new DataPoint[0]));
+                    redisDataStore.putData(id,metric,points);
 
                 }else if(function instanceof DayLastFunction){
 
+
                 }
-
-
             }
 
         } catch (StockDBException e) {

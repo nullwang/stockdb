@@ -17,6 +17,7 @@ package org.stockdb.core.functions;
  */
 
 import org.stockdb.core.datastore.DataPoint;
+import org.stockdb.core.util.DataPointUtil;
 
 import java.util.*;
 
@@ -31,17 +32,13 @@ public class DayFirstFunction extends TimeFunction {
     @Override
     public DataPoint[] call(DataPoint... dataPoints) {
         assert(dataPoints != null);
-        List<DataPoint> dataPointList = Arrays.asList(dataPoints);
-        Collections.sort(dataPointList,  dataPointComparator);
-        if( dataPointList.isEmpty()) return null;
-        List<DataPoint> dataPointRetLst = new ArrayList<DataPoint>();
-        DataPoint d = dataPointList.get(0);
-        dataPointRetLst.add(d);
-        for(DataPoint dataPoint: dataPointList){
-
+        List<DataPoint> pointsRet = new ArrayList<DataPoint>();
+        Map<String,List<DataPoint>> result = DataPointUtil.groupByDay(dataPoints);
+        for(List<DataPoint> points : result.values()){
+            if( ! points.isEmpty()) {
+                pointsRet.add(points.get(0));
+            }
         }
-
-        //return dataPointList.get(0);
-        return null;
+        return pointsRet.toArray(new DataPoint[0]);
     }
 }

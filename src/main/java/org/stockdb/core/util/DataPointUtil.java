@@ -29,12 +29,23 @@ public class DataPointUtil {
         return new DataPointComparator(byTime ? 0 : 1);
     }
 
-    public static DataPoint[] groupByDay(DataPoint[] points) {
+    /**
+     * 根据日进行分组
+     * @param points 数据集
+     * @return 分组后的数据
+     */
+    public static Map<String,List<DataPoint>> groupByDay(DataPoint[] points) {
         Map<String,List<DataPoint>> map = group(points,TimeFormatUtil.YYMMDD);
-
-        return null;
+        return map;
     }
 
+    /**
+     *
+     * @param points 数据集
+     * @param format the format of time, pls
+     *  {@link TimeFormatUtil }
+     * @return 分组后的数据集
+     */
     public static Map<String,List<DataPoint>> group(DataPoint[] points,int format){
         assert(points != null);
         Map<String,List<DataPoint>> map =new HashMap();

@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
  * limitations under the License.
  */
 
-public class EscapeTest {
+public class EscapeTester {
 
     @Test
     public void testEscapeComma() {

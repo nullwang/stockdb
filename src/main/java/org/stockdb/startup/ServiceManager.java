@@ -1,4 +1,4 @@
-package org.stockdb.core.datastore;
+package org.stockdb.startup;
 /*
  * @author nullwang@hotmail.com
  * created at 2015/9/11
@@ -18,19 +18,23 @@ package org.stockdb.core.datastore;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ApplicationContextEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.ContextStoppedEvent;
 import org.springframework.stereotype.Component;
-import org.stockdb.startup.StockDBService;
 import org.stockdb.core.exception.StockDBException;
+import org.stockdb.startup.config.StockPropertyConfigurer;
 
 import java.util.*;
 
 @Component
 public class ServiceManager implements ApplicationListener<ApplicationContextEvent> {
+
+    @Autowired
+    private StockPropertyConfigurer stockPropertyConfigurer;
 
     private Logger logger = LoggerFactory.getLogger(ServiceManager.class);
 
@@ -57,7 +61,7 @@ public class ServiceManager implements ApplicationListener<ApplicationContextEve
         //start all services by order
         for (StockDBService stockDBService : serviceList) {
             try {
-                stockDBService.start();
+                stockDBService.start(stockPropertyConfigurer);
             } catch (StockDBException e) {
                 logger.error("Start service " + stockDBService.getClass() + " error ", e);
             }

@@ -21,7 +21,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.stockdb.startup.StockDBService;
-import org.stockdb.startup.config.StockPropertyConfigurer;
 import org.stockdb.core.datastore.value.NormalProcess;
 import org.stockdb.core.datastore.value.SeparatorProcess;
 import org.stockdb.core.datastore.value.ValueProcess;
@@ -53,19 +52,13 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
     ValueProcess valueProcess;
     Calculator calculator;
     List<MetricListener> metricListeners = new ArrayList<MetricListener>();
-
-    public RedisDataStore()
-    {
-        if("auto".equals(StockPropertyConfigurer.get("stockdb.decimal") )){
-            valueProcess = new SeparatorProcess();
-        }else {
-            valueProcess = new NormalProcess();
-        }
-    }
+    Env env;
 
     @Override
-    public void start() throws StockDBException {
-        String hosts = String.valueOf(StockPropertyConfigurer.get("stockdb.redis.hosts"));
+    public void start(Env env) throws StockDBException {
+        this.env = env;
+
+        String hosts = env.get("stockdb.redis.hosts");
         LinkedList<HostAndPort> jedisClusterNodes = new LinkedList<HostAndPort>();
         String[] hostAndPorts = StringUtils.split(hosts,",");
         if( hostAndPorts.length == 0) throw new DataStoreException("stockdb.redis.hosts is empty");
@@ -93,7 +86,14 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         }
         jc = new JedisWrapper(jedisPool,jedisCluster);
 
+
         loadMeta();
+
+        if("auto".equals(env.get("stockdb.decimal") )){
+            valueProcess = new SeparatorProcess();
+        }else {
+            valueProcess = new NormalProcess();
+        }
 
         calculator = new Calculator(this,5);
         calculator.start();

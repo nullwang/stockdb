@@ -1,7 +1,7 @@
-package org.stockdb.startup;
+package org.stockdb.core.datastore;
 /*
  * @author nullwang@hotmail.com
- * created at 2015/3/13
+ * created at 2016/2/26
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,12 @@ package org.stockdb.startup;
  * limitations under the License.
  */
 
-import org.stockdb.core.datastore.Env;
-import org.stockdb.core.exception.StockDBException;
+/**
+ * 当前配置环境
+ */
+public interface Env {
 
-public interface StockDBService {
+    public String get(String name);
 
-    public void start(Env env) throws StockDBException;
-
-    public void stop() throws StockDBException;
-
-    public int getLevel();
+    public Object get(String name, Object v);
 }

@@ -22,7 +22,7 @@ import org.stockdb.core.util.TimeFormatUtil;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 
-public class TimeFormatUtilTest {
+public class TimeFormatUtilTester {
 
     @Test
     public void testFormat()

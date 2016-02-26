@@ -19,28 +19,27 @@ package org.stockdb.startup.config;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.ConfigurablePropertyResolver;
+import org.stockdb.core.datastore.Env;
 
 import java.io.File;
 
-public class StockPropertyConfigurer extends PropertySourcesPlaceholderConfigurer {
+public class StockPropertyConfigurer extends PropertySourcesPlaceholderConfigurer implements Env {
 
     //private static Map<String, Object> ctxPropertiesMap;
 
     private static ConfigurablePropertyResolver propertyResolver;
-
 
     protected void processProperties(ConfigurableListableBeanFactory beanFactoryToProcess, ConfigurablePropertyResolver propertyResolver) throws org.springframework.beans.BeansException {
         super.processProperties(beanFactoryToProcess, propertyResolver);
         this.propertyResolver = propertyResolver;
     }
 
-
     //static method for accessing context properties
-    public static String get(String name) {
+    public String get(String name) {
         return propertyResolver.getProperty(name);
     }
 
-    public static Object get(String name, Object defaultValue) {
+    public Object get(String name, Object defaultValue) {
         String v = get(name);
         if( v == null ) return defaultValue;
         else return v;

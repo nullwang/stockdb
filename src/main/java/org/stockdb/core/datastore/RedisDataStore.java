@@ -86,7 +86,6 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         }
         jc = new JedisWrapper(jedisPool,jedisCluster);
 
-
         loadMeta();
 
         if("auto".equals(env.get("stockdb.decimal") )){

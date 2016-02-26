@@ -16,7 +16,27 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
-public class EnvMock {
+import java.util.HashMap;
+import java.util.Map;
 
+public class EnvMock implements Env {
+    Map<String,String> map = new HashMap();
 
+    public EnvMock(){
+        map.put("stockdb.redis.hosts","192.168.1.158");
+    }
+
+    @Override
+    public String get(String name) {
+        return map.get(name);
+    }
+
+    @Override
+    public Object get(String name, Object defaultValue) {
+        String v = get(name);
+        if( v == null) {
+            return defaultValue;
+        }
+        return v;
+    }
 }

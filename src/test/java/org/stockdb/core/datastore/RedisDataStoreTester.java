@@ -16,9 +16,38 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 public class RedisDataStoreTester {
 
     private RedisDataStore redisDataStore;
 
+    private Env env = new EnvMock();
 
+    @BeforeClass
+    public void startup() {
+        redisDataStore=new RedisDataStore();
+        redisDataStore.start(env);
+    }
+
+    @AfterClass
+    public void stop(){
+        redisDataStore.stop();
+    }
+
+    @Before
+    public void clean()
+    {
+        
+    }
+
+    @Test
+    public void testPutMetric()
+    {
+
+
+    }
 }

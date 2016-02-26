@@ -1,4 +1,4 @@
-package org.stockdb.core.http.rest.model;
+package org.stockdb.http.rest.model;
 /*
  * @author nullwang@hotmail.com
  * created at 2015/5/21

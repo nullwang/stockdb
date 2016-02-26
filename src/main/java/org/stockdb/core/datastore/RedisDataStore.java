@@ -20,13 +20,13 @@ import com.google.gson.stream.JsonReader;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.stockdb.core.StockDBService;
-import org.stockdb.core.config.StockPropertyConfigurer;
+import org.stockdb.startup.StockDBService;
+import org.stockdb.startup.config.StockPropertyConfigurer;
 import org.stockdb.core.datastore.value.NormalProcess;
 import org.stockdb.core.datastore.value.SeparatorProcess;
 import org.stockdb.core.datastore.value.ValueProcess;
 import org.stockdb.core.event.MetricListener;
-import org.stockdb.core.exception.DatastoreException;
+import org.stockdb.core.exception.DataStoreException;
 import org.stockdb.core.exception.StockDBException;
 import org.stockdb.core.util.TimeFormatUtil;
 import org.stockdb.util.Commons;
@@ -68,17 +68,17 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         String hosts = String.valueOf(StockPropertyConfigurer.get("stockdb.redis.hosts"));
         LinkedList<HostAndPort> jedisClusterNodes = new LinkedList<HostAndPort>();
         String[] hostAndPorts = StringUtils.split(hosts,",");
-        if( hostAndPorts.length == 0) throw new DatastoreException("stockdb.redis.hosts is empty");
+        if( hostAndPorts.length == 0) throw new DataStoreException("stockdb.redis.hosts is empty");
         for(int i=0; i<hostAndPorts.length; i++) {
             String[] hostAndPort = StringUtils.split(hostAndPorts[i],":");
             int port = redisDefaultPort;
             if(hostAndPort.length == 0)
-                throw new DatastoreException("stockdb.redis.host " + hostAndPort + " is illegal");
+                throw new DataStoreException("stockdb.redis.host " + hostAndPort + " is illegal");
             if( hostAndPort.length == 2) {
                 try {
                     port = Integer.parseInt(hostAndPort[1]);
                 } catch (NumberFormatException e) {
-                    throw new DatastoreException("stockdb.redis.host " + hostAndPort + " is illegal");
+                    throw new DataStoreException("stockdb.redis.host " + hostAndPort + " is illegal");
                 }
             }
 

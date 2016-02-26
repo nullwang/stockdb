@@ -1,4 +1,4 @@
-package org.stockdb.core;
+package org.stockdb.startup;
 /*
  * @author nullwang@hotmail.com
  * created at 2015/3/13
@@ -28,7 +28,6 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;

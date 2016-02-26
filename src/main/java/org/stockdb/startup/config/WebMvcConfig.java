@@ -1,4 +1,4 @@
-package org.stockdb.core.config;
+package org.stockdb.startup.config;
 /*
  * @author nullwang@hotmail.com
  * created at 2015/3/13
@@ -16,15 +16,10 @@ package org.stockdb.core.config;
  * limitations under the License.
  */
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-
-import java.io.File;
 
 @EnableWebMvc
 @Configuration

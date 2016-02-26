@@ -35,7 +35,7 @@ public abstract class AbstractDataStore implements DataStore {
             }
         }
 
-        //todo cycle check for function metric
+        //todo , cycle check for function metric
     }
 
     @Override

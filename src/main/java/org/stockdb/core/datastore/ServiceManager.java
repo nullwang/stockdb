@@ -24,7 +24,7 @@ import org.springframework.context.event.ApplicationContextEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.ContextStoppedEvent;
 import org.springframework.stereotype.Component;
-import org.stockdb.core.StockDBService;
+import org.stockdb.startup.StockDBService;
 import org.stockdb.core.exception.StockDBException;
 
 import java.util.*;

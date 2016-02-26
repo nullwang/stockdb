@@ -1,4 +1,4 @@
-package org.stockdb.core.config;
+package org.stockdb.startup.config;
 /*
  * @author nullwang@hotmail.com
  * created at 2015/4/1

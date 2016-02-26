@@ -16,6 +16,8 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.stockdb.core.event.MetricListener;
 import org.stockdb.core.exception.StockDBException;
 import org.stockdb.core.functions.*;
@@ -30,6 +32,8 @@ public class Calculator implements MetricListener{
     RedisDataStore redisDataStore;
     int number; //计算者个数
     ExecutorService executorService;
+
+    private Logger logger = LoggerFactory.getLogger(Calculator.class);
 
     protected Calculator(RedisDataStore redisDataStore, int number){
         assert(number > 0);
@@ -58,22 +62,31 @@ public class Calculator implements MetricListener{
      * @param id 对象id
      * @param metricName 指标名称
      */
-    public void submitCalcMetricTask(final String id, final String metricName,DataPoint... dataPoints)
+    protected void submitCalcMetricTask(final String id, final String metricName,final DataPoint... dataPoints)
     {
         executorService.submit(new Runnable() {
             @Override
             public void run() {
                 try {
-                    Metric metric = redisDataStore.getMetric(metricName);
-                    if( metric instanceof FunctionMetric){
-                        FunctionMetric functionMetric = (FunctionMetric)metric;
-                        String[] baseMetrics = functionMetric.getBaseMetrics();
-                        String functionName = functionMetric.getFunctionName();
-                        Function function = FunctionBuilder.build(functionName);
+                    List<FunctionMetric> metricList = redisDataStore.getFunctionMetrics(metricName);
+                    //calc every function metric
+                    for(FunctionMetric functionMetric:metricList){
+                        Function function = FunctionBuilder.build(functionMetric.getFunctionName());
 
+                        //dayFirst, dayLast
+                        if(function instanceof TimeFunction){
+                            TimeFunction timeFunction = (TimeFunction) function;
+                            TimeScope timeScope = timeFunction.getTimeScope(dataPoints);
 
+                            String startTime = timeScope.getStartTime();
+                            String endTime = timeScope.getEndTime();
 
-
+                            //受影响的数据
+                            List<DataPoint> effectedData = redisDataStore.getData(id,metricName,startTime,endTime);
+                            DataPoint[] points = timeFunction.call(effectedData.toArray(new DataPoint[0]));
+                            //保存计算结果
+                            redisDataStore.putData(id,functionMetric.getName(),points);
+                        }
                     }
                 }catch (StockDBException e){
                     //log
@@ -84,35 +97,7 @@ public class Calculator implements MetricListener{
 
     @Override
     public void dataPointChange(String id, String metric, DataPoint... dataPoints) {
-        try {
-            List<FunctionMetric> metricList = redisDataStore.getFunctionMetrics(metric);
-            //calc every function metric
-            for(FunctionMetric functionMetric:metricList){
-                Function function = FunctionBuilder.build(functionMetric.getFunctionName());
-                if(function instanceof DayFirstFunction){
-                    DayFirstFunction dayFirstFunction = (DayFirstFunction) function;
-                    TimeScope timeScope = dayFirstFunction.getTimeScope(dataPoints);
-
-                    String startTime = timeScope.getStartTime();
-                    String endTime = timeScope.getEndTime();
-
-                    //受影响的数据
-                    List<DataPoint> effectedData = redisDataStore.getData(id,metric,startTime,endTime);
-                    DataPoint[] points = dayFirstFunction.call(effectedData.toArray(new DataPoint[0]));
-                    redisDataStore.putData(id,metric,points);
-
-                }else if(function instanceof DayLastFunction){
-
-
-                }
-            }
-
-        } catch (StockDBException e) {
-            e.printStackTrace();
-        }
-
-
+        //提交依赖指标计算任务
+        submitCalcMetricTask(id,metric,dataPoints);
     }
-
-
 }

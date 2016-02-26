@@ -1,4 +1,4 @@
-package org.stockdb.core.http.rest;
+package org.stockdb.http.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,7 +10,7 @@ import org.stockdb.core.datastore.DataPoint;
 import org.stockdb.core.datastore.DataStore;
 import org.stockdb.core.datastore.ObjectMetricDataSet;
 import org.stockdb.core.exception.StockDBException;
-import org.stockdb.core.http.rest.model.DataQueryReq;
+import org.stockdb.http.rest.model.DataQueryReq;
 
 import java.util.ArrayList;
 import java.util.List;

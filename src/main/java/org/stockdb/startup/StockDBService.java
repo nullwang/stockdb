@@ -1,7 +1,7 @@
-package org.stockdb.core.config;
+package org.stockdb.startup;
 /*
  * @author nullwang@hotmail.com
- * created at 2015/4/1
+ * created at 2015/3/13
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@ package org.stockdb.core.config;
  * limitations under the License.
  */
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.stockdb.core.exception.StockDBException;
 
-@Configuration
-@ComponentScan(basePackages = {"org.stockdb.core.http.rest","org.stockdb.core.datastore"})
-public class AppConfig {
+public interface StockDBService {
+
+    public void start() throws StockDBException;
+
+    public void stop() throws StockDBException;
+
+    public int getLevel();
 }

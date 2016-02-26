@@ -18,15 +18,15 @@ package org.stockdb.core.exception;
 
 import org.stockdb.core.exception.StockDBException;
 
-public class DatastoreException extends StockDBException {
-    public DatastoreException() {
+public class DataStoreException extends StockDBException {
+    public DataStoreException() {
     }
 
-    public DatastoreException(String message) {
+    public DataStoreException(String message) {
         super(message);
     }
 
-    public DatastoreException(String message, Throwable cause) {
+    public DataStoreException(String message, Throwable cause) {
         super(message, cause);
     }
 }

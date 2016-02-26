@@ -1,4 +1,4 @@
-package org.stockdb.core;
+package org.stockdb.startup;
 /*
  * @author nullwang@hotmail.com
  * created at 2015/3/11
@@ -24,7 +24,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
-import org.stockdb.core.config.StockPropertyConfigurer;
+import org.stockdb.startup.config.StockPropertyConfigurer;
 import org.stockdb.core.exception.StockDBException;
 import org.stockdb.core.util.PropertyUtil;
 

@@ -1,7 +1,7 @@
-package org.stockdb.core;
+package org.stockdb.http.rest.model;
 /*
  * @author nullwang@hotmail.com
- * created at 2015/3/13
+ * created at 2015/5/21
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,6 @@ package org.stockdb.core;
  * limitations under the License.
  */
 
-import org.stockdb.core.exception.StockDBException;
+public class DataPointsRsp {
 
-public interface StockDBService {
-
-    public void start() throws StockDBException;
-
-    public void stop() throws StockDBException;
-
-    public int getLevel();
 }

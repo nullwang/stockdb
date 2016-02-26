@@ -1,4 +1,4 @@
-package org.stockdb.core.http.rest;
+package org.stockdb.http.rest;
 /*
  * @author nullwang@hotmail.com
  * created at 2015/4/16
@@ -18,9 +18,9 @@ package org.stockdb.core.http.rest;
 
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.stockdb.core.exception.DatastoreException;
+import org.stockdb.core.exception.DataStoreException;
 import org.stockdb.core.exception.StockDBException;
-import org.stockdb.core.http.rest.model.Response;
+import org.stockdb.http.rest.model.Response;
 import org.stockdb.util.Commons;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,8 +41,8 @@ public class DefaultExceptionHandler {
     }
 
 
-    @ExceptionHandler(DatastoreException.class)
-    public void handleDataStoreException(DatastoreException e,HttpServletRequest httpRequest,
+    @ExceptionHandler(DataStoreException.class)
+    public void handleDataStoreException(DataStoreException e,HttpServletRequest httpRequest,
                                          HttpServletResponse httpResponse) throws IOException {
         httpResponse.setContentType("application/json;charset=UTF-8");
         httpResponse.setCharacterEncoding("UTF8");

@@ -1,0 +1,6 @@
+[
+{   "name":"day_lowest_price",  "attrs":[{"name":"sample_interval",  "value":"4" }]} ,
+{   "name":"day_highest_price",  "attrs":[{"name":"sample_interval",  "value":"4" }]} ,
+{   "name":"day_open_price",  "attrs":[{"name":"sample_interval",  "value":"4" }]} ,
+{   "name":"day_close_price",  "attrs":[{"name":"sample_interval",  "value":"4" }]}
+]

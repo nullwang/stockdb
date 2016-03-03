@@ -25,5 +25,6 @@ public interface StockDBService {
 
     public void stop() throws StockDBException;
 
+    //服务优先级别
     public int getLevel();
 }

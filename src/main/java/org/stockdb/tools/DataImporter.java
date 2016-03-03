@@ -36,6 +36,9 @@ public class DataImporter {
     private static final Arguments arguments = new Arguments();
     private static Logger logger = LoggerFactory.getLogger(DataImporter.class);
 
+    //import data using cmd "org.stockdb.tools.DataImporter -d example\stock_shanghai_a.dat -f d"
+    //import metric using cmd "org.stockdb.tools.DataImporter -d example\stock_metric.dat -f m"
+
     public static void main(String[] args) {
 
         RestTemplate restTemplate = new RestTemplate();

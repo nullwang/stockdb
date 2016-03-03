@@ -19,8 +19,6 @@ package org.stockdb.core.datastore.impl;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang.StringUtils;
 import org.stockdb.core.datastore.FunctionMetric;
-import org.stockdb.core.exception.StockFunctionException;
-import org.stockdb.util.Commons;
 
 public class FunctionMetricImpl extends MetricImpl implements FunctionMetric {
 

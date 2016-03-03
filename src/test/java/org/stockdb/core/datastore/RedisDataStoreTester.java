@@ -100,12 +100,21 @@ public class RedisDataStoreTester {
     @Test
     public void testGetMeta()
     {
-        redisDataStore.putData("0001","attr1",new DataPoint("20010708","xsv") );
+        redisDataStore.putData("0001","metric1",new DataPoint("20010708","xsv") );
         Map map = redisDataStore.getObjectMeta("0001");
         Assert.assertEquals(map.get("id"),"0001");
 
-        Assert.assertEquals(map.get("metricNames"),"attr1");
-    }
+        Assert.assertEquals(map.get("metricNames"),"metric1");
 
+        redisDataStore.putData("0001","metric2",new DataPoint("20010708","xsv") );
+        map = redisDataStore.getObjectMeta("0001");
+        Assert.assertEquals(map.get("id"),"0001");
+        Assert.assertEquals(map.get("metricNames"),"metric1,metric2");
+
+        redisDataStore.putData("0001","metric1",new DataPoint("20010708","xsv") );
+        map = redisDataStore.getObjectMeta("0001");
+        Assert.assertEquals(map.get("id"),"0001");
+        Assert.assertEquals(map.get("metricNames"),"metric1,metric2");
+    }
 
 }

@@ -28,15 +28,17 @@ public class DayFirstFunction extends TimeFunction {
 
     public static final String NAME = "DAY_FIRST";
 
-    //将时间按照天进行分组，返回每组中第一个元素,返回的值不一定按照时间排序
+    //将时间按照天进行分组，返回每组中最小元素,返回的值不一定按照时间排序
     @Override
     public DataPoint[] call(DataPoint... dataPoints) {
         assert(dataPoints != null);
         List<DataPoint> pointsRet = new ArrayList<DataPoint>();
         Map<String,List<DataPoint>> result = DataPointUtil.groupByDay(dataPoints);
         for(List<DataPoint> points : result.values()){
-            if( ! points.isEmpty()) {
-                pointsRet.add(points.get(0));
+            List<DataPoint> vs = new ArrayList(points);
+            Collections.sort(vs,dataPointComparator);
+            if( ! vs.isEmpty()) {
+                pointsRet.add(vs.get(0));
             }
         }
         return pointsRet.toArray(new DataPoint[0]);

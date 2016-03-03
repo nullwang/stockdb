@@ -106,4 +106,6 @@ public class RedisDataStoreTester {
 
         Assert.assertEquals(map.get("metricNames"),"attr1");
     }
+
+
 }

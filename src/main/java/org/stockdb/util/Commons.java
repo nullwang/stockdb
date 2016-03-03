@@ -80,7 +80,7 @@ public class Commons {
     {
         if (StringUtils.isEmpty(json)) return new HashMap<String, String>();
         Gson gson = new Gson();
-        return gson.fromJson(json,Map.class);
+        return gson.fromJson(json,HashMap.class);
     }
 
     public static String jsonPut(String json, String key, String value)

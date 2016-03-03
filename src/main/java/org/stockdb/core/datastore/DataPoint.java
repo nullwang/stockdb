@@ -16,6 +16,8 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
+import org.apache.commons.lang.ObjectUtils;
+
 public class DataPoint {
 
 
@@ -55,5 +57,21 @@ public class DataPoint {
     }
 
     public DataPoint() {
+    }
+
+    @Override
+    public int hashCode()
+    {
+        String str = (timeStr+value);
+        return str.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if( !(o instanceof DataPoint) ) return false;
+        DataPoint dp = (DataPoint) o;
+        return ObjectUtils.equals(dp.timeStr,timeStr) &&
+                ObjectUtils.equals(dp.value, value);
     }
 }

@@ -85,4 +85,6 @@ public interface DataStore {
 
     void clearData();
 
+    public Map getObjectMeta(String id);
+
 }

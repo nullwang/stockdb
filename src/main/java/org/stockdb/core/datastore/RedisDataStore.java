@@ -16,7 +16,6 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
-import com.google.gson.stream.JsonReader;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -34,8 +33,6 @@ import redis.clients.jedis.*;
 import redis.clients.jedis.exceptions.JedisException;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 @Component
@@ -46,7 +43,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
     /*
    "metrics": {
        "metricName":{  "attrName":"attrValue"  },
-       "metricName2":{     }
+       "metricName2":{}
        ...
    }
    */
@@ -60,9 +57,6 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         ...
     }
     */
-
-    final static String META_KEY="meta";
-    final static String META_SETTING_KEY="meta_set";
 
     JedisWrapper jc ;
     ValueProcess valueProcess;
@@ -102,8 +96,6 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         }
         jc = new JedisWrapper(jedisPool,jedisCluster);
 
-        loadMeta();
-
         if("auto".equals(env.get("stockdb.decimal") )){
             valueProcess = new SeparatorProcess();
         }else {
@@ -129,36 +121,8 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         return 0;
     }
 
-    //load meta data
-    void loadMeta() throws StockDBException{
-        //check if stock meta is loaded
-        long exist = jc.setnx(META_SETTING_KEY, "1");
-        if( exist == 0) return;
-        try {
-            JsonReader jsonReader = new JsonReader(new InputStreamReader(this.getClass().getResourceAsStream("/stock_metric.dat"),"utf-8"));
-            jsonReader.beginArray();
-            while(jsonReader.hasNext()){
-                jsonReader.beginObject();
-                jsonReader.nextName();
-                String metricName = jsonReader.nextString();
-                jsonReader.nextName();
-                String attrName = jsonReader.nextString();
-                jsonReader.nextName();
-                String attrValue = jsonReader.nextString();
-                setMetricAttr(metricName,attrName,attrValue);
-                jsonReader.endObject();
-            }
-            jsonReader.endArray();
-            jsonReader.close();
-        } catch (UnsupportedEncodingException e) {
-            throw new StockDBException(e);
-        } catch (IOException e) {
-            throw new StockDBException(e);
-        }
-    }
-
     @Override
-    public void putData(String id,String metricName, DataPoint[] dataPoints) throws StockDBException{
+    public void putData(String id,String metricName, DataPoint... dataPoints) throws StockDBException{
         assert(dataPoints != null);
         String index = getMetricAttr(metricName,Constants.METRIC_SAMPLE_INTERVAL);
         String rowKey = Key.makeRowKey(id,metricName);
@@ -342,6 +306,11 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
 
         //clean meta
         jc.del(OBJECTS_KEY);
+    }
+
+    @Override
+    public Map getObjectMeta(String id) {
+        return Commons.jsonMap(jc.hget(OBJECTS_KEY,id));
     }
 
     private void refreshMeta(String id, String metricName)

@@ -23,7 +23,9 @@ import java.util.Map;
 public abstract class MetricBuilder {
 
     public static Metric build(String name, Map attrMap) {
-
-        return null;
+        MetricImpl metric = new MetricImpl();
+        metric.name = name;
+        metric.attrs = attrMap;
+        return metric;
     }
 }

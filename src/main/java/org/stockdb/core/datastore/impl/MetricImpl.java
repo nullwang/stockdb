@@ -16,18 +16,16 @@ package org.stockdb.core.datastore.impl;
  * limitations under the License.
  */
 
+import org.apache.commons.lang.ObjectUtils;
 import org.stockdb.core.datastore.Attribute;
 import org.stockdb.core.datastore.Metric;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
 public class MetricImpl implements Metric {
 
     String name;
-    Map<String,Attribute> attrs = Collections.emptyMap();
-
+    Map<String,String> attrs = new HashMap();
 
     @Override
     public String getName() {
@@ -41,22 +39,38 @@ public class MetricImpl implements Metric {
 
     @Override
     public Attribute getAttr(String attrName) {
-        return attrs.get(attrName);
+        return new Attribute(attrName,attrs.get(attrName));
     }
 
     @Override
     public Collection<Attribute> getAttrs() {
-        return attrs.values();
+        List<Attribute> attributes = new ArrayList<Attribute>();
+        for(Map.Entry<String,String> entry: attrs.entrySet()){
+            attributes.add(new Attribute(entry.getKey(),entry.getValue()));
+        }
+        return attributes;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if( ! (o instanceof MetricImpl) )return false;
+
+        MetricImpl metric = (MetricImpl) o;
+        return ObjectUtils.equals(name,metric.name) &&
+                ObjectUtils.equals(attrs,metric.attrs);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        if(name == null) return 0;
+        return name.hashCode();
     }
 
     @Override
     public void setAttrValue(String attrName, String value) {
-        Attribute attribute = getAttr(attrName);
-        if( attribute == null )
-            attribute = new Attribute(attrName,value);
-        else
-            attribute.setValue(value);
-        attrs.put(attrName,attribute);
+        attrs.put(attrName,value);
     }
 
     @Override

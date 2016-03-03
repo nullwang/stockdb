@@ -43,8 +43,24 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
 
     final static int  redisDefaultPort = 6379;
 
+    /*
+   "metrics": {
+       "metricName":{  "attrName":"attrValue"  },
+       "metricName2":{     }
+       ...
+   }
+   */
     final static String METRICS_KEY="metrics";
-    final static String OBJECT_KEY="objects";
+    //作为key 保存 对象的属性,当对象保存metric的数据时，会默认增加 两个 属性： id 属性 其值为 对象的id,metricNames 属性 其值为 metricName通过逗号分隔
+    final static String OBJECTS_KEY ="objects";
+    /*
+    "objects": {
+        "objectId":{"attrName":"attrValue"},
+        "objectId2":{ }
+        ...
+    }
+    */
+
     final static String META_KEY="meta";
     final static String META_SETTING_KEY="meta_set";
 
@@ -168,6 +184,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
             String v = filterValue(dataPoint.getValue());
             jc.hset(rowKey,dataPoint.getTimeStr(),v);
         }
+        refreshMeta(id,metricName);
         notifyListener(id, metricName, dataPoints);
     }
 
@@ -218,8 +235,8 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
             throw new StockDBException("attribute name should not be null");
         }
 
-        String attrValue = jc.hget(OBJECT_KEY,id);
-        jc.hset(OBJECT_KEY,id, Commons.jsonPut(attrValue,attr,value));
+        String attrValue = jc.hget(OBJECTS_KEY,id);
+        jc.hset(OBJECTS_KEY,id, Commons.jsonPut(attrValue,attr,value));
     }
 
     @Override
@@ -230,7 +247,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         if(attr == null){
             throw new IllegalArgumentException("attribute name should not be null");
         }
-        Map<String,String> attrValue = Commons.jsonMap(jc.hget(OBJECT_KEY, id));
+        Map<String,String> attrValue = Commons.jsonMap(jc.hget(OBJECTS_KEY, id));
         return attrValue.get(attr);
     }
 
@@ -239,7 +256,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         if( id == null){
             throw new IllegalArgumentException("object id should not be null");
         }
-        Map<String,String> attrValue = Commons.jsonMap(jc.hget(OBJECT_KEY, id));
+        Map<String,String> attrValue = Commons.jsonMap(jc.hget(OBJECTS_KEY, id));
         return attrValue;
     }
 
@@ -301,6 +318,43 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
     @Override
     public Collection<DataPoint> queryData(String id, String metricName, String startTime, String endTime) {
         return ScanableAdapter.build(this,id,metricName,startTime,endTime);
+    }
+
+    @Override
+    public void clearMetrics() {
+        //remove
+        jc.del(METRICS_KEY);
+    }
+
+    @Override
+    public void clearData() {
+        //clean all data
+        Set<String> ids = jc.hkeys(OBJECTS_KEY);
+        for (String id: ids){
+            String m = getObjAttr(id,"metricNames");
+            String[] metricNames = StringUtils.split(m,",");
+            if(metricNames == null) return;
+            for(String metricName: metricNames){
+                String rowKey = Key.makeRowKey(id,metricName);
+                jc.del(rowKey); //del data
+            }
+        }
+
+        //clean meta
+        jc.del(OBJECTS_KEY);
+    }
+
+    private void refreshMeta(String id, String metricName)
+    {
+        String v = getObjAttr(id,"id");
+        if( v == null ){
+            setObjAttr(id,"id",id);
+        }
+        String m = getObjAttr(id,"metricNames");
+        String[] metricNames = StringUtils.split(m,",");
+        if(!Commons.contains(metricNames,metricName) ){
+            setObjAttr(id,"metricNames", StringUtils.isEmpty(m) ? metricName : m+","+metricName);
+        }
     }
 
     @Override

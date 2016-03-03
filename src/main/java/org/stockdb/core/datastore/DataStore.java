@@ -80,4 +80,9 @@ public interface DataStore {
      */
     Collection<DataPoint> queryData(String id, String metricName, String startTime, String endTime);
 
+    //
+    void clearMetrics();
+
+    void clearData();
+
 }

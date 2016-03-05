@@ -28,13 +28,15 @@ import java.util.List;
  */
 public abstract class TimeFunction implements Function {
 
-    DataPointComparator dataPointComparator = new DataPointComparator();
+    DataPointComparator timeComparator = new DataPointComparator();
+
+    DataPointComparator valueComparator = new DataPointComparator(1);
 
     //获取函数影响的时间访问
     public TimeScope getTimeScope(DataPoint... dataPoints) {
         assert (dataPoints != null);
         List<DataPoint> dataPointList = Arrays.asList(dataPoints);
-        Collections.sort(dataPointList, dataPointComparator);
+        Collections.sort(dataPointList, timeComparator);
 
         if (dataPointList.isEmpty()) return null;
         DataPoint dp = dataPointList.get(0);

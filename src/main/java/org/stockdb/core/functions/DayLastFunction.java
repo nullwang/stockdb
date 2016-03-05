@@ -22,10 +22,11 @@ import org.stockdb.core.util.DataPointUtil;
 
 import java.util.*;
 
+/**
+ * 将数据通过天进行分组，取每一天的最后一个值
+ */
 public class DayLastFunction extends TimeFunction {
-    public static final String NAME = "DAY_FIRST";
-
-    DataPointComparator dataPointComparator = new DataPointComparator();
+    public static final String NAME = "DAY_LAST";
 
     @Override
     public DataPoint[] call(DataPoint... dataPoints) {
@@ -33,8 +34,10 @@ public class DayLastFunction extends TimeFunction {
         List<DataPoint> pointsRet = new ArrayList<DataPoint>();
         Map<String,List<DataPoint>> result = DataPointUtil.groupByDay(dataPoints);
         for(List<DataPoint> points : result.values()){
-            if( ! points.isEmpty()) {
-                pointsRet.add(points.get(points.size()-1));
+            List<DataPoint> vs = new ArrayList(points);
+            Collections.sort(vs,Collections.reverseOrder(timeComparator));
+            if( ! vs.isEmpty()) {
+                pointsRet.add(vs.get(0));
             }
         }
         return pointsRet.toArray(new DataPoint[0]);

@@ -16,6 +16,7 @@ package org.stockdb.core.util;
  * limitations under the License.
  */
 
+import org.apache.commons.lang.ObjectUtils;
 import org.stockdb.core.datastore.DataPoint;
 
 import java.math.BigDecimal;
@@ -53,7 +54,7 @@ public class DataPointComparator implements Comparator<DataPoint> {
             return v1.compareTo(v2);
         }else{
             v1 = o1.getValue();
-            v2 = o1.getValue();
+            v2 = o2.getValue();
             BigDecimal bd1 = new BigDecimal(v1);
             BigDecimal bd2 = new BigDecimal(v2);
             return bd1.compareTo(bd2);

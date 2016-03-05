@@ -20,11 +20,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang.StringUtils;
 import org.stockdb.core.datastore.FunctionMetric;
 
+import java.util.Map;
+
 public class FunctionMetricImpl extends MetricImpl implements FunctionMetric {
 
-    private static final String FUNCTION_NAME="functionName";
-    private static final String BASE_METRICS="baseMetrics";
-    private static final String METRIC_SEPARATOR=",";
+    public FunctionMetricImpl() {
+    }
+
+    public FunctionMetricImpl(String name, Map<String, String> attrs) {
+        super(name, attrs);
+    }
 
     @JsonIgnore
     public String getFunctionName() {

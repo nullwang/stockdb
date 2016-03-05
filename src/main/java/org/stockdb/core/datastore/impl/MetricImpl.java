@@ -27,6 +27,15 @@ public class MetricImpl implements Metric {
     String name;
     Map<String,String> attrs = new HashMap();
 
+
+    public MetricImpl() {
+    }
+
+    public MetricImpl(String name, Map<String, String> attrs) {
+        this.name = name;
+        this.attrs = attrs;
+    }
+
     @Override
     public String getName() {
         return name;

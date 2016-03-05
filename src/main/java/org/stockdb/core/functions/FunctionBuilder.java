@@ -18,14 +18,32 @@ package org.stockdb.core.functions;
 
 import org.stockdb.core.exception.StockFunctionException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public abstract class FunctionBuilder {
 
-       public static Function build(String name) throws StockFunctionException{
-           if( DayFirstFunction.NAME.equals(name))
-               return new DayFirstFunction();
-           else if( DayLastFunction.NAME.equals(name) )
-               return new DayLastFunction();
+    static Map<String, Function> functionMap = new HashMap();
 
-            throw new StockFunctionException("function {0} not found", name);
-       }
+    public static Function build(String name) throws StockFunctionException {
+        Function function = functionMap.get(name);
+        if( function == null ) {
+            if (DayFirstFunction.NAME.equals(name)) {
+                function = new DayFirstFunction();
+            } else if (DayLastFunction.NAME.equals(name)) {
+                function = new DayLastFunction();
+            } else if (DayMaxFunction.NAME.equals(name)) {
+                function = new DayMaxFunction();
+            } else if (DayMinFunction.NAME.equals(name)) {
+                function = new DayMinFunction();
+            }
+            if ( function != null ) {
+                functionMap.put(name,function);
+                return function;
+            }else {
+                throw new StockFunctionException("function {0} not found", name);
+            }
+        }
+        return function;
+    }
 }

@@ -18,6 +18,10 @@ package org.stockdb.core.datastore;
 
 public interface FunctionMetric extends Metric {
 
+    static final String FUNCTION_NAME="functionName";
+    static final String BASE_METRICS="baseMetrics";
+    static final String METRIC_SEPARATOR=",";
+
     public String getFunctionName();
 
     public String[] getBaseMetrics();

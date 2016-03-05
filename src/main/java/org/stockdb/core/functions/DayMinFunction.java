@@ -19,16 +19,19 @@ package org.stockdb.core.functions;
 import org.stockdb.core.datastore.DataPoint;
 import org.stockdb.core.util.DataPointUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
- * 将数据通过天进行分组，取每一天的第一个值
+ * 将数据通过天进行分组，取每一天的最小值
  */
-public class DayFirstFunction extends TimeFunction {
+public class DayMinFunction extends TimeFunction {
 
-    public static final String NAME = "DAY_FIRST";
+    public static final String NAME = "DAY_MIN";
 
-    //将时间按照天进行分组，返回每组中最小元素,返回的值不一定按照时间排序
+    //将时间按照天进行分组，返回每组中最小值元素
     @Override
     public DataPoint[] call(DataPoint... dataPoints) {
         assert(dataPoints != null);
@@ -36,7 +39,7 @@ public class DayFirstFunction extends TimeFunction {
         Map<String,List<DataPoint>> result = DataPointUtil.groupByDay(dataPoints);
         for(List<DataPoint> points : result.values()){
             List<DataPoint> vs = new ArrayList(points);
-            Collections.sort(vs,timeComparator);
+            Collections.sort(vs,valueComparator);
             if( ! vs.isEmpty()) {
                 pointsRet.add(vs.get(0));
             }

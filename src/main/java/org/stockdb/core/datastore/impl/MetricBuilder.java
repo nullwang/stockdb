@@ -18,14 +18,19 @@ package org.stockdb.core.datastore.impl;
 
 import org.stockdb.core.datastore.Metric;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 public abstract class MetricBuilder {
 
     public static Metric build(String name, Map attrMap) {
-        MetricImpl metric = new MetricImpl();
-        metric.name = name;
-        metric.attrs = attrMap;
-        return metric;
+        if( attrMap == null || attrMap == Collections.emptyMap()){
+            attrMap = new HashMap();
+        }
+        if( attrMap.containsKey(FunctionMetricImpl.FUNCTION_NAME)){
+            return new FunctionMetricImpl(name,attrMap);
+        }
+        return new MetricImpl(name,attrMap);
     }
 }

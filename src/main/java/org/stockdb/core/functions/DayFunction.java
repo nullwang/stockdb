@@ -17,6 +17,7 @@ package org.stockdb.core.functions;
  */
 
 import org.stockdb.core.datastore.DataPoint;
+import org.stockdb.core.util.TimeFormatUtil;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,6 +34,8 @@ public abstract class DayFunction extends TimeFunction{
         if (dataPointList.isEmpty()) return null;
         DataPoint dp = dataPointList.get(0);
         DataPoint dpEnd = dataPointList.get(dataPointList.size() - 1);
-        return TimeScope.build(dp.getTimeStr(), dpEnd.getTimeStr());
+        String startTime = TimeFormatUtil.min(dp.getTimeStr(),TimeFormatUtil.YYMMDD);
+        String endTime = TimeFormatUtil.min(dpEnd.getTimeStr(),TimeFormatUtil.YYMMDD);
+        return TimeScope.build(startTime,endTime);
     }
 }

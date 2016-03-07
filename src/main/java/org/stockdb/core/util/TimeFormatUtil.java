@@ -48,7 +48,7 @@ public class TimeFormatUtil {
             "yy", "yyMM", "yyMMdd", "yyMMddHH", "yyMMddHHmm", "yyMMddHHmmss", "yyMMddHHmmsszzz"
     };
 
-    static public int getFormatLength(int i) {
+    static private  int getFormatLength(int i) {
         checkIndex(i);
         return formats[i].length() + 2;
     }
@@ -58,7 +58,7 @@ public class TimeFormatUtil {
         return formats[i];
     }
 
-    static void checkIndex(int i) {
+    private static void checkIndex(int i) {
         if (i < 0 || i > 6) throw new TimeFormatException(" time format index must between 0 - 6");
     }
 

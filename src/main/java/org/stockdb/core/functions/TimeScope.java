@@ -22,9 +22,6 @@ public abstract class TimeScope {
 
     abstract public String getEndTime();
 
-    //根据日期进行时间对齐
-    //TimeScope buildByDayAlign()
-
     static public TimeScope build(String startTime, String endTime) {
        return new TimeScopeImpl(startTime,endTime);
     }

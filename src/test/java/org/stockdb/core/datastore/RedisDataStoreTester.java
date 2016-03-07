@@ -77,6 +77,7 @@ public class RedisDataStoreTester {
         redisDataStore.putData("0001", "dayHighest", dataPoint);
         List<DataPoint> dataPoints =  redisDataStore.getData("0001", "dayHighest", null, null);
         assertFalse(dataPoints.isEmpty());
+        assertTrue(dataPoints.size() == 1);
 
         Assert.assertEquals(dataPoints.get(0),dataPoint);
     }

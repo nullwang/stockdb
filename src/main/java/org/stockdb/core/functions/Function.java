@@ -20,6 +20,8 @@ import org.stockdb.core.datastore.DataPoint;
 
 public interface Function {
 
+
+
     //针对对数据点集执行特定函数返回相应值
     DataPoint[] call(DataPoint... dataPoints);
 

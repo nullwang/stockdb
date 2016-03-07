@@ -1,7 +1,7 @@
 package org.stockdb.core.functions;
 /*
  * @author nullwang@hotmail.com
- * created at 2016/2/15
+ * created at 2016/3/7
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,12 @@ package org.stockdb.core.functions;
  */
 
 import org.stockdb.core.datastore.DataPoint;
-import org.stockdb.core.util.DataPointComparator;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * 时间相关函数
- */
-public abstract class TimeFunction implements Function {
-
-    DataPointComparator timeComparator = new DataPointComparator();
-
-    DataPointComparator valueComparator = new DataPointComparator(1);
+public abstract class DayFunction extends TimeFunction{
 
     //获取函数影响的时间访问
     public TimeScope getTimeScope(DataPoint... dataPoints) {

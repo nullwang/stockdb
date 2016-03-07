@@ -16,28 +16,44 @@ package org.stockdb.core.functions;
  * limitations under the License.
  */
 
-public class TimeScope {
-    String startTime;
-    String endTime;
+public abstract class TimeScope {
 
-    public TimeScope(String startTime, String endTime) {
-        this.startTime = startTime;
-        this.endTime = endTime;
+    abstract public String getStartTime();
+
+    abstract public String getEndTime();
+
+    //根据日期进行时间对齐
+    //TimeScope buildByDayAlign()
+
+    static public TimeScope build(String startTime, String endTime) {
+       return new TimeScopeImpl(startTime,endTime);
     }
 
-    public String getStartTime() {
-        return startTime;
+    private static  class TimeScopeImpl extends TimeScope{
+        String startTime;
+        String endTime;
+
+        private TimeScopeImpl(String startTime, String endTime) {
+            this.startTime = startTime;
+            this.endTime = endTime;
+        }
+
+        public String getStartTime() {
+            return startTime;
+        }
+
+        public void setStartTime(String startTime) {
+            this.startTime = startTime;
+        }
+
+        public String getEndTime() {
+            return endTime;
+        }
+
+        public void setEndTime(String endTime) {
+            this.endTime = endTime;
+        }
     }
 
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
-    }
 
-    public String getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
-    }
 }

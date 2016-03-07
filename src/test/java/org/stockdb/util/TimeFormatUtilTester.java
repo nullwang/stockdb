@@ -16,6 +16,7 @@ package org.stockdb.util;
  * limitations under the License.
  */
 
+import junit.framework.Assert;
 import org.junit.Test;
 import org.stockdb.core.util.TimeFormatUtil;
 
@@ -35,7 +36,6 @@ public class TimeFormatUtilTester {
         assertTrue(TimeFormatUtil.detectFormat("200601020305") == 4);
         assertTrue(TimeFormatUtil.detectFormat("20060102030506") == 5);
         assertTrue(TimeFormatUtil.detectFormat("20060102030506078") == 6);
-
     }
 
     @Test
@@ -44,6 +44,22 @@ public class TimeFormatUtilTester {
         assertEquals(TimeFormatUtil.convertFormat("20060102", TimeFormatUtil.YY), "2006");
         assertEquals(TimeFormatUtil.convertFormat("2006010203", TimeFormatUtil.YYMM), "200601");
         assertEquals(TimeFormatUtil.convertFormat("2006010203", TimeFormatUtil.YYMMDD), "20060102");
+    }
+
+    @Test
+    public void testMin()
+    {
+        Assert.assertEquals(TimeFormatUtil.max("201506010110",TimeFormatUtil.YYMMDD),"20150601235959999");
+        Assert.assertEquals(TimeFormatUtil.min("201506010110",TimeFormatUtil.YYMMDD),"20150601000000000");
+
+        Assert.assertEquals(TimeFormatUtil.max("201506010110",TimeFormatUtil.YYMMDDHH),"20150601015959999");
+        Assert.assertEquals(TimeFormatUtil.min("201506010110",TimeFormatUtil.YYMMDDHH),"20150601010000000");
+
+        Assert.assertEquals(TimeFormatUtil.max("201506010110",TimeFormatUtil.YYMMDDHHMM),"20150601011059999");
+        Assert.assertEquals(TimeFormatUtil.min("201506010110",TimeFormatUtil.YYMMDDHHMM),"20150601011000000");
+
+        Assert.assertEquals(TimeFormatUtil.max("201506010110",TimeFormatUtil.YYMMDDHHMMSS),"20150601011059999");
+        Assert.assertEquals(TimeFormatUtil.min("201506010110",TimeFormatUtil.YYMMDDHHMMSS),"20150601011000000");
     }
 
 

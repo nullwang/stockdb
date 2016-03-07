@@ -137,7 +137,9 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
                 } else {
                     int i = Integer.parseInt(index);
                     if (dataPointTimeIndex != i) {
-                        throw new StockDBException("Metric [" + metricName + "]" + "has two different time format[" + i + "," + dataPointTimeIndex + "]");
+                        throw new StockDBException("Metric [" + metricName + "]" + "has two different time format[" +
+                                TimeFormatUtil.getFormatStr(i) + "," +
+                                TimeFormatUtil.getFormatStr(dataPointTimeIndex) + "]");
                     }
                 }
             } catch (NumberFormatException e) {

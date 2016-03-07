@@ -27,6 +27,12 @@ public class FunctionMetricImpl extends MetricImpl implements FunctionMetric {
     public FunctionMetricImpl() {
     }
 
+    public FunctionMetricImpl(String name, String functionName, String baseMetrics ){
+        this.name = name;
+        this.setFunctionName(functionName);
+        this.setAttrValue(BASE_METRICS,baseMetrics);
+    }
+
     public FunctionMetricImpl(String name, Map<String, String> attrs) {
         super(name, attrs);
     }

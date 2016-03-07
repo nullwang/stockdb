@@ -15,6 +15,8 @@ package org.stockdb.core.util;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import org.apache.commons.lang.StringUtils;
 import org.stockdb.core.exception.TimeFormatException;
 
 import java.util.regex.Matcher;
@@ -22,7 +24,7 @@ import java.util.regex.Pattern;
 
 public class TimeFormatUtil {
 
-    public static int YY = 0, YYMM=1, YYMMDD=2, YYMMDDHH=3, YYMMDDHHMM=4, YYMMDDHHMMSS=5, YYMMDDHHMMSSZZZ=6 ;
+    public static int YY = 0, YYMM = 1, YYMMDD = 2, YYMMDDHH = 3, YYMMDDHHMM = 4, YYMMDDHHMMSS = 5, YYMMDDHHMMSSZZZ = 6;
 
     public static String PATTERN_YY = "((19|20|21|22)\\d\\d)";
     public static String PATTERN_YYMM = PATTERN_YY + "(0[1-9]|1[012])";
@@ -33,30 +35,47 @@ public class TimeFormatUtil {
     public static String PATTERN_YYMMDDHHMMSSZZZ = PATTERN_YYMMDDHHMMSS + "(\\d{3})";
 
     public static Pattern[] timeStrPatterns = {
-            Pattern.compile("^" + PATTERN_YY ),
-            Pattern.compile("^" + PATTERN_YYMM ),
+            Pattern.compile("^" + PATTERN_YY),
+            Pattern.compile("^" + PATTERN_YYMM),
             Pattern.compile("^" + PATTERN_YYMMDD),
-            Pattern.compile("^" + PATTERN_YYMMDDHH ),
-            Pattern.compile("^" + PATTERN_YYMMDDHHMM ),
+            Pattern.compile("^" + PATTERN_YYMMDDHH),
+            Pattern.compile("^" + PATTERN_YYMMDDHHMM),
             Pattern.compile("^" + PATTERN_YYMMDDHHMMSS),
             Pattern.compile("^" + PATTERN_YYMMDDHHMMSSZZZ),
     };
 
+    static String[] formats = {
+            "yy", "yyMM", "yyMMdd", "yyMMddHH", "yyMMddHHmm", "yyMMddHHmmss", "yyMMddHHmmsszzz"
+    };
+
+    static public int getFormatLength(int i) {
+        checkIndex(i);
+        return formats[i].length() + 2;
+    }
+
+    static public String getFormatStr(int i) {
+        checkIndex(i);
+        return formats[i];
+    }
+
+    static void checkIndex(int i) {
+        if (i < 0 || i > 6) throw new TimeFormatException(" time format index must between 0 - 6");
+    }
+
     /**
-     *  detectFormat(PATTERN_YY) = 0
-     *  detectFormat(PATTERN_YYMM) = 1
-     *  detectFormat(PATTERN_YYMMDD) = 2
-     *  detectFormat(PATTERN_YYMMDDHH) = 3
-     *  detectFormat(PATTERN_YYMMDDHHMM) = 4
-     *  detectFormat(PATTERN_YYMMDDHHMMSS) = 5
-     *  detectFormat(PATTERN_YYMMDDHHMMSSZZZ) = 6
+     * detectFormat(PATTERN_YY) = 0
+     * detectFormat(PATTERN_YYMM) = 1
+     * detectFormat(PATTERN_YYMMDD) = 2
+     * detectFormat(PATTERN_YYMMDDHH) = 3
+     * detectFormat(PATTERN_YYMMDDHHMM) = 4
+     * detectFormat(PATTERN_YYMMDDHHMMSS) = 5
+     * detectFormat(PATTERN_YYMMDDHHMMSSZZZ) = 6
      *
      * @param timeStr 时间格式串
      * @return 时间格式串所对应的值
      */
-    static public int detectFormat(String timeStr)
-    {
-        for(int i=0; i< timeStrPatterns.length; i++) {
+    static public int detectFormat(String timeStr) {
+        for (int i = 0; i < timeStrPatterns.length; i++) {
             if (TimeFormatUtil.timeStrPatterns[i].matcher(timeStr).matches())
                 return i;
         }
@@ -64,18 +83,60 @@ public class TimeFormatUtil {
         return -1;
     }
 
-    static public String convertFormat(String timeStr, int format ) throws TimeFormatException
-    {
+    static public String convertFormat(String timeStr, int format) throws TimeFormatException {
         int f = detectFormat(timeStr);
-        if( f < format ) throw new TimeFormatException("{0} can not convert to format {1}", timeStr ,timeStrPatterns[format]);
+        if (f < format)
+            throw new TimeFormatException("{0} can not convert to format {1}", timeStr, getFormatStr(format));
 
         Matcher matcher = timeStrPatterns[format].matcher(timeStr);
-        if( matcher.find()){
+        if (matcher.find()) {
             return matcher.group();
         }
 
-        throw new TimeFormatException("{0} can not convert to format {1}", timeStr ,timeStrPatterns[format]);
+        throw new TimeFormatException("{0} can not convert to format {1}", timeStr, getFormatStr(format));
+    }
 
+    static public String min(String dateStr, int formatIndex) throws TimeFormatException {
+        int len = getFormatLength(formatIndex);
+        String prefix = StringUtils.substring(dateStr,0,len);
+        return StringUtils.rightPad(prefix,17,'0');
+    }
+
+    static public String max(String dateStr, int formatIndex) throws TimeFormatException {
+        int len = getFormatLength(formatIndex);
+        String prefix = StringUtils.substring(dateStr,0,len);
+
+        int pad = formatIndex - StringUtils.length(dateStr); //补偿位数
+
+        StringBuilder sb = new StringBuilder();
+        int i = 17 - prefix.length();
+        if( pad > 0 ) i += pad;
+
+        if( i > 0 ) {
+            sb.insert(0,"999");
+            i -= 3;
+        }
+        if( i > 0){
+            sb.insert(0,"59");
+            i-=2;
+        }
+        if( i > 0){
+            sb.insert(0,"59");
+            i-=2;
+        }
+        if( i > 0){
+            sb.insert(0,"23");
+            i-=2;
+        }
+        if( i > 0){
+            sb.insert(0,"31");
+            i-=2;
+        }
+        if( i > 0){
+            sb.insert(0,"12");
+            i-=2;
+        }
+        return prefix + sb.toString();
     }
 
 }

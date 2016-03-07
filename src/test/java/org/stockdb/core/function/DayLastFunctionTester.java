@@ -18,7 +18,6 @@ package org.stockdb.core.function;
 
 import org.junit.Test;
 import org.stockdb.core.datastore.DataPoint;
-import org.stockdb.core.functions.DayFirstFunction;
 import org.stockdb.core.functions.DayLastFunction;
 
 import static junit.framework.Assert.assertTrue;

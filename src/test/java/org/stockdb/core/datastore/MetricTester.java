@@ -22,7 +22,6 @@ import org.stockdb.core.functions.DayLastFunction;
 import org.stockdb.core.functions.DayMaxFunction;
 import org.stockdb.core.functions.DayMinFunction;
 
-import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 public class MetricTester {
@@ -43,12 +42,8 @@ public class MetricTester {
         assertEquals(dayMin.getFunctionName(), DayMinFunction.NAME);
         assertEquals(dayMin.getBaseMetrics(), new String[]{"price"});
 
-
         FunctionMetric dayLast = MockObjectBuilder.getFunctionMetric("dayLastPrice", DayLastFunction.NAME,metric);
         assertEquals(dayLast.getFunctionName(), DayLastFunction.NAME);
         assertEquals(dayLast.getBaseMetrics(), new String[]{"price"});
-
-
-
     }
 }

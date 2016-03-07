@@ -51,7 +51,7 @@ public class Calculator implements MetricListener{
         this.redisDataStore.removeMetricListener(this);
         executorService.shutdown();
         try {
-            executorService.awaitTermination(30,TimeUnit.SECONDS);
+            executorService.awaitTermination(3,TimeUnit.MINUTES);
         } catch (InterruptedException e) {
             //log
         }

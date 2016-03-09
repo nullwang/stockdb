@@ -33,11 +33,22 @@ public interface DataStore {
      */
     void setMetricAttr(String name, String attr, String value) throws StockDBException;
 
-    String getMetricAttr(String name, String attr) throws StockDBException;
+    /**
+     * 获取名称为name 的 metric 的 指定属性 attr 的值
+     * @param name the name of metric
+     * @param attrName the name of attribute
+     * @return the value
+     * @throws StockDBException
+     */
+    String getMetricAttr(String name, String attrName) throws StockDBException;
+
+    void removeMetricAttr(String name, String attrName ) throws StockDBException;
 
     void setObjAttr(String id, String attr, String value) throws StockDBException;
 
     String getObjAttr(String id, String attr) throws StockDBException;
+
+    void removeObjAttr(String id, String attr) throws StockDBException;
 
     Map<String,String> getObjAttr(String id) throws StockDBException;
 
@@ -80,10 +91,11 @@ public interface DataStore {
      */
     Collection<DataPoint> queryData(String id, String metricName, String startTime, String endTime);
 
-    //
     void clearMetrics();
 
     void clearData();
+
+    void clearData(String id, String metricName);
 
     public Map getObjectMeta(String id);
 

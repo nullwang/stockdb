@@ -16,7 +16,7 @@ package org.stockdb.core.util;
  * limitations under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.stockdb.core.exception.TimeFormatException;
 
 import java.util.regex.Matcher;

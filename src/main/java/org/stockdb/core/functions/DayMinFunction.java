@@ -17,6 +17,7 @@ package org.stockdb.core.functions;
  */
 
 import org.stockdb.core.datastore.DataPoint;
+import org.stockdb.core.datastore.DataStore;
 import org.stockdb.core.util.DataPointUtil;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ import java.util.Map;
 /**
  * 将数据通过天进行分组，取每一天的最小值
  */
-public class DayMinFunction extends TimeFunction {
+public class DayMinFunction extends DayFunction {
 
     public static final String NAME = "DAY_MIN";
 
@@ -45,5 +46,10 @@ public class DayMinFunction extends TimeFunction {
             }
         }
         return pointsRet.toArray(new DataPoint[0]);
+    }
+
+    @Override
+    public void invoke(DataStore dataStore) {
+
     }
 }

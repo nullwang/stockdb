@@ -16,7 +16,7 @@ package org.stockdb.core.util;
  * limitations under the License.
  */
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.stockdb.core.datastore.DataPoint;
 
 import java.math.BigDecimal;

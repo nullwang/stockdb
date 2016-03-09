@@ -99,7 +99,7 @@ public class RedisDataStoreTester {
     }
 
     @Test
-    public void testGetMeta()
+    public void testGetAndRemoveMeta()
     {
         redisDataStore.putData("0001","metric1",new DataPoint("20010708","xsv") );
         Map map = redisDataStore.getObjectMeta("0001");
@@ -116,6 +116,30 @@ public class RedisDataStoreTester {
         map = redisDataStore.getObjectMeta("0001");
         Assert.assertEquals(map.get("id"),"0001");
         Assert.assertEquals(map.get("metricNames"),"metric1,metric2");
+
+
+
     }
+
+    @Test
+    public void testClearData()
+    {
+        redisDataStore.putData("0001","metric1",new DataPoint("20010708","xsv") );
+        Map map = redisDataStore.getObjectMeta("0001");
+        Assert.assertEquals(map.get("id"),"0001");
+
+        redisDataStore.clearData();
+        map = redisDataStore.getObjectMeta("0001");
+        assertTrue(map.isEmpty());
+
+        redisDataStore.putData("0001","metric1",new DataPoint("20010708","xsv") );
+        map = redisDataStore.getObjectMeta("0001");
+        Assert.assertEquals(map.get("id"),"0001");
+
+        redisDataStore.clearData("0001","metric1");
+        map = redisDataStore.getObjectMeta("0001");
+        assertTrue(map.isEmpty());
+    }
+
 
 }

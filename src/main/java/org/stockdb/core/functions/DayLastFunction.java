@@ -17,6 +17,7 @@ package org.stockdb.core.functions;
  */
 
 import org.stockdb.core.datastore.DataPoint;
+import org.stockdb.core.datastore.DataStore;
 import org.stockdb.core.util.DataPointComparator;
 import org.stockdb.core.util.DataPointUtil;
 
@@ -25,7 +26,7 @@ import java.util.*;
 /**
  * 将数据通过天进行分组，取每一天的最后一个值
  */
-public class DayLastFunction extends TimeFunction {
+public class DayLastFunction extends DayFunction {
     public static final String NAME = "DAY_LAST";
 
     @Override
@@ -41,5 +42,10 @@ public class DayLastFunction extends TimeFunction {
             }
         }
         return pointsRet.toArray(new DataPoint[0]);
+    }
+
+    @Override
+    public void invoke(DataStore dataStore) {
+
     }
 }

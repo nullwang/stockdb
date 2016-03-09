@@ -17,11 +17,12 @@ package org.stockdb.util;
  */
 
 import com.google.gson.Gson;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class Commons {
 
@@ -117,15 +118,74 @@ public class Commons {
 
     public static <T> T fromJson(String json, Class<T> tClass){
         Gson gson = new Gson();
-        return gson.fromJson(json,tClass);
+        return gson.fromJson(json, tClass);
     }
 
+    /**
+     * <pre>
+     * contains(null,null)          = true
+     * contains(null,anyObject)     = false
+     *
+     * </pre>
+     * @param container
+     * @param element
+     * @return
+     */
     static public boolean contains(Object[] container, Object element){
         if( container == null) return element == null;
         for(Object object: container){
-            if(ObjectUtils.equals(object,element))
+            if(Objects.equals(object, element))
                 return true;
         }
+        return false;
+    }
+
+    /**
+     * <pre>
+     * remove(null,anyObject)        = null
+     * remove([],anyObject)          = []
+     * remove([1,2],null     )       = [1,2]
+     * remove([1,2],1)               = [2]
+     * remove([1,2],3)               = [1,2]
+     *
+     * </pre>
+     *
+     * @param container 元素集合
+     * @param element 元素
+     * @return
+     */
+    static public <T>  T[] remove(T[] container, T element){
+        if( container == null ) return null;
+        if( element == null ) return container;
+        int index = -1;
+
+        for(int i=0;i<container.length; i++){
+            if(Objects.equals(container[i],element)){
+                index = i;
+            }
+        }
+
+        int len = index == -1 ? container.length: container.length -1;
+        T[] objs =  (T[])Array.newInstance(element.getClass(),len);
+        for(int i=0,j=0; i<container.length; i++){
+            if( i != index){
+                objs[j++] = container[i];
+            }
+        }
+
+        return objs;
+    }
+
+    public static boolean isEmpty(Object object){
+        if( object == null ) return true;
+        if( object instanceof String && StringUtils.isEmpty((String)object)) return true;
+        if( object.getClass().isArray()){
+            return Array.getLength(object) == 0;
+        }
+        if( object instanceof Collection){
+            return ((Collection) object).isEmpty();
+        }
+
         return false;
     }
 }

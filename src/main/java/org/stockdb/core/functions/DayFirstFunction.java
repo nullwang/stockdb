@@ -17,6 +17,7 @@ package org.stockdb.core.functions;
  */
 
 import org.stockdb.core.datastore.DataPoint;
+import org.stockdb.core.datastore.DataStore;
 import org.stockdb.core.util.DataPointUtil;
 
 import java.util.*;
@@ -24,7 +25,7 @@ import java.util.*;
 /**
  * 将数据通过天进行分组，取每一天的第一个值
  */
-public class DayFirstFunction extends TimeFunction {
+public class DayFirstFunction extends DayFunction {
 
     public static final String NAME = "DAY_FIRST";
 
@@ -42,5 +43,10 @@ public class DayFirstFunction extends TimeFunction {
             }
         }
         return pointsRet.toArray(new DataPoint[0]);
+    }
+
+    @Override
+    public void invoke(DataStore dataStore) {
+
     }
 }

@@ -25,7 +25,6 @@ import org.stockdb.core.datastore.impl.FunctionMetricImpl;
 import org.stockdb.core.event.MetricListener;
 import org.stockdb.core.functions.DayFirstFunction;
 
-import java.util.Collection;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -37,6 +36,8 @@ public class CalculatorTester {
     private static RedisDataStore redisDataStore;
 
     private static Env env = new EnvMock();
+
+    private MetricListenerMock metricListener = new MetricListenerMock();
 
     @BeforeClass
     public static void startup() {
@@ -59,6 +60,8 @@ public class CalculatorTester {
     @Test
     public void testCalc()
     {
+        redisDataStore.addMetricListener(metricListener);
+
         FunctionMetric functionMetric = new FunctionMetricImpl("dayOpeningPrice", DayFirstFunction.NAME,"price");
         redisDataStore.putMetric(functionMetric);
 
@@ -76,25 +79,19 @@ public class CalculatorTester {
         dataPoint.setTimeStr("200101010405");
         dataPoint.setValue("1.92");
         redisDataStore.putData("000001", "price", dataPoint);
+
+        //wait calc to finish
         try {
             Thread.sleep(1000);
-            //wait calc finished
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        redisDataStore.addMetricListener(new MetricListener() {
-            @Override
-            public void dataPointChange(String id, String metric, DataPoint... dataPoints) {
-                if( id.equals("000001") && "dayOpeningPrice".equals(metric)){
-                    List<DataPoint> points = redisDataStore.getData("000001","dayOpeningPrice",null,null);
-                    assertTrue(points.size() == 1);
-                    assertEquals(points.get(0), new DataPoint("200101011201", "13.8"));
-                }
-            }
-        });
+        assertTrue(metricListener.has("000001", "dayOpeningPrice"));
+        List<DataPoint> points = redisDataStore.getData("000001","dayOpeningPrice",null,null);
+        assertTrue(points.size() == 1);
+        assertEquals(points.get(0), new DataPoint("200101010405", "1.92"));
 
-        redisDataStore.stop();
     }
 
 }

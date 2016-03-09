@@ -25,7 +25,7 @@ import java.util.List;
 
 public abstract class DayFunction extends TimeFunction{
 
-    //获取函数影响的时间访问
+    //获取函数影响的时间访问-基于天
     public TimeScope getTimeScope(DataPoint... dataPoints) {
         assert (dataPoints != null);
         List<DataPoint> dataPointList = Arrays.asList(dataPoints);
@@ -35,7 +35,7 @@ public abstract class DayFunction extends TimeFunction{
         DataPoint dp = dataPointList.get(0);
         DataPoint dpEnd = dataPointList.get(dataPointList.size() - 1);
         String startTime = TimeFormatUtil.min(dp.getTimeStr(),TimeFormatUtil.YYMMDD);
-        String endTime = TimeFormatUtil.min(dpEnd.getTimeStr(),TimeFormatUtil.YYMMDD);
+        String endTime = TimeFormatUtil.max(dpEnd.getTimeStr(),TimeFormatUtil.YYMMDD);
         return TimeScope.build(startTime,endTime);
     }
 }

@@ -1,7 +1,7 @@
-package org.stockdb.core.functions;
+package org.stockdb.util;
 /*
  * @author nullwang@hotmail.com
- * created at 2016/2/6
+ * created at 2016/3/9
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,21 @@ package org.stockdb.core.functions;
  * limitations under the License.
  */
 
-import org.stockdb.core.datastore.DataPoint;
-import org.stockdb.core.datastore.DataStore;
+import org.junit.Test;
+import java.util.ArrayList;
+import static junit.framework.Assert.assertTrue;
 
-public interface Function {
+public class CommonsTester {
 
-    //针对对数据点集执行特定函数返回相应值
-    DataPoint[] call(DataPoint... dataPoints);
+    @Test
+    public void testEmpty() {
+        int a[] = {};
 
-    //
-    void invoke(DataStore dataStore);
-
+        assertTrue(Commons.isEmpty(null));
+        assertTrue(Commons.isEmpty(""));
+        assertTrue(Commons.isEmpty(a));
+        assertTrue(Commons.isEmpty(new Object[0]));
+        assertTrue(Commons.isEmpty(new String[0]));
+        assertTrue(Commons.isEmpty(new ArrayList()));
+    }
 }

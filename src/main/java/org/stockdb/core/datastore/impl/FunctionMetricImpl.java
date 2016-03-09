@@ -17,7 +17,7 @@ package org.stockdb.core.datastore.impl;
  */
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.stockdb.core.datastore.FunctionMetric;
 
 import java.util.Map;

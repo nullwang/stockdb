@@ -16,7 +16,7 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 public class DataPoint {
 

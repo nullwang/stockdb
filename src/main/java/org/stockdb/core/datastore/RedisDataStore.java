@@ -16,7 +16,7 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.stockdb.startup.StockDBService;
@@ -42,8 +42,8 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
 
     /*
    "metrics": {
-       "metricName":{  "attrName":"attrValue"  },
-       "metricName2":{}
+       "metricName":{  "attrName":"attrValue", "attrName2":"attrValue"  },
+       "metricName2":{ "attrName":"attrValue", "attrName2":"attrValue"  }
        ...
    }
    */
@@ -52,11 +52,14 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
     final static String OBJECTS_KEY ="objects";
     /*
     "objects": {
-        "objectId":{"attrName":"attrValue"},
+        "objectId":{"id":"idValue", "metricNames":"metricName1,metricName2,metricNameN", "attrName":"attrValue", "attrName2":"attrValue"  },
         "objectId2":{ }
+        "objectId3":{}
         ...
     }
     */
+
+    final static String METRIC_NAME_SEPARATOR=",";
 
     JedisWrapper jc ;
     ValueProcess valueProcess;
@@ -150,7 +153,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
             String v = filterValue(dataPoint.getValue());
             jc.hset(rowKey,dataPoint.getTimeStr(),v);
         }
-        refreshMeta(id,metricName);
+        addObjectMeta(id, metricName);
         notifyListener(id, metricName, dataPoints);
     }
 
@@ -179,6 +182,18 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         jc.hset(METRICS_KEY,name, Commons.jsonPut(attrValue,attr,value));
     }
 
+    @Override
+    public void removeMetricAttr(String name, String attrName) throws StockDBException {
+        if( name == null){
+            throw new IllegalArgumentException("metric name should not be null");
+        }
+        if(attrName == null){
+            throw new IllegalArgumentException("attribute name should not be null");
+        }
+
+        String attrValue = jc.hget(METRICS_KEY,name);
+        jc.hset(METRICS_KEY,name, Commons.jsonRemove(attrValue,attrName));
+    }
 
     @Override
     public String getMetricAttr(String name, String attr) {
@@ -203,6 +218,19 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
 
         String attrValue = jc.hget(OBJECTS_KEY,id);
         jc.hset(OBJECTS_KEY,id, Commons.jsonPut(attrValue,attr,value));
+    }
+
+    @Override
+    public void removeObjAttr(String id, String attr) throws StockDBException {
+        if( id == null){
+            throw new StockDBException("object id should not be null");
+        }
+        if(attr == null){
+            throw new StockDBException("attribute name should not be null");
+        }
+
+        String attrValue = jc.hget(OBJECTS_KEY,id);
+        jc.hset(OBJECTS_KEY,id, Commons.jsonRemove(attrValue,attr));
     }
 
     @Override
@@ -298,7 +326,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         Set<String> ids = jc.hkeys(OBJECTS_KEY);
         for (String id: ids){
             String m = getObjAttr(id,"metricNames");
-            String[] metricNames = StringUtils.split(m,",");
+            String[] metricNames = StringUtils.split(m,METRIC_NAME_SEPARATOR);
             if(metricNames == null) return;
             for(String metricName: metricNames){
                 String rowKey = Key.makeRowKey(id,metricName);
@@ -311,20 +339,40 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
     }
 
     @Override
+    public void clearData(String id, String metricName) {
+        String rowKey = Key.makeRowKey(id,metricName);
+        jc.del(rowKey); //del data
+        removeObjectMeta(id,metricName);
+    }
+
+    @Override
     public Map getObjectMeta(String id) {
         return Commons.jsonMap(jc.hget(OBJECTS_KEY,id));
     }
 
-    private void refreshMeta(String id, String metricName)
+    private void addObjectMeta(String id, String metricName)
     {
         String v = getObjAttr(id,"id");
         if( v == null ){
             setObjAttr(id,"id",id);
         }
         String m = getObjAttr(id,"metricNames");
-        String[] metricNames = StringUtils.split(m,",");
+        String[] metricNames = StringUtils.split(m,METRIC_NAME_SEPARATOR);
         if(!Commons.contains(metricNames,metricName) ){
             setObjAttr(id,"metricNames", StringUtils.isEmpty(m) ? metricName : m+","+metricName);
+        }
+    }
+
+    private void removeObjectMeta(String id, String metricName)
+    {
+        String m = getObjAttr(id,"metricNames");
+        String[] metricNames = StringUtils.split(m,METRIC_NAME_SEPARATOR);
+        metricNames = Commons.remove(metricNames,metricName);
+        if( Commons.isEmpty(metricNames) ){
+            removeObjAttr(id,"id");
+            removeObjAttr(id,"metricNames");
+        }else{
+            setObjAttr(id,"metricNames",StringUtils.join(metricNames,","));
         }
     }
 
@@ -336,7 +384,6 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
     private final String filterValue(String v){
         return valueProcess.filter(v);
     }
-
 
     @ExceptionHandler(JedisException.class)
     private void handlerJedisException(JedisException e) throws StockDBException{

@@ -22,7 +22,7 @@ import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.stockdb.startup.config.StockPropertyConfigurer;
 import org.stockdb.core.exception.StockDBException;

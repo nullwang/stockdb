@@ -16,7 +16,7 @@ package org.stockdb.core.datastore.impl;
  * limitations under the License.
  */
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.stockdb.core.datastore.Attribute;
 import org.stockdb.core.datastore.Metric;
 

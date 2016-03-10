@@ -58,6 +58,13 @@ public abstract class AbstractDataStore implements DataStore {
     }
 
     @Override
+    public List<DataPoint> removeData(String id, String metricName, String startTime, String endTime) {
+        List<DataPoint> points = getData(id,metricName,startTime,endTime);
+        removeData(id,metricName,points.toArray(new DataPoint[0]));
+        return points;
+    }
+
+    @Override
     /**
      * 获取依赖指定 metricName 的 functionMetric
      */

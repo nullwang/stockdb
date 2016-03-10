@@ -17,7 +17,7 @@ package org.stockdb.core.datastore;
  */
 
 import org.stockdb.core.exception.StockDBException;
-
+import org.stockdb.core.functions.Function;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +73,19 @@ public interface DataStore {
      */
     List<DataPoint> getData(String id, String metricName, String startTime, String endTime);
 
+    /**
+     * 移除指定时间段内的数据
+     * @param id
+     * @param metricName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    List<DataPoint> removeData(String id, String metricName, String startTime, String endTime);
+
     void putData(String id, String metricName, DataPoint... dataPoints) throws StockDBException;
+
+    void removeData(String id,String metricName, DataPoint... dataPoints);
 
     void putData(ObjectMetricDataSet objectMetricDataSet) throws StockDBException;
 
@@ -95,8 +107,15 @@ public interface DataStore {
 
     void clearData();
 
-    void clearData(String id, String metricName);
+    void removeData(String id, String metricName);
 
-    public Map getObjectMeta(String id);
+    Map getObjectMeta(String id);
+
+    /**
+     * 使用指定参数进行函数调用，返回结果又函数进行处理
+     * @param function
+     * @param parameters
+     */
+    void invoke(Function function, Map parameters);
 
 }

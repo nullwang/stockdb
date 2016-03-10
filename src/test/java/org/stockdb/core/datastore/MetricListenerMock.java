@@ -39,4 +39,9 @@ public class MetricListenerMock implements MetricListener {
     public void dataPointChange(String id, String metric, DataPoint... dataPoints) {
            map.put(new MutablePair(id,metric),dataPoints );
     }
+
+    @Override
+    public void dataPointRemove(String id, String metric, DataPoint... dataPoints) {
+        //map.remove()
+    }
 }

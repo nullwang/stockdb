@@ -22,5 +22,13 @@ import java.util.EventListener;
 
 public interface MetricListener extends EventListener {
 
+    /**
+     * 数据集发生变更
+     * @param id
+     * @param metric
+     * @param dataPoints
+     */
     public void dataPointChange(String id, String metric, DataPoint... dataPoints);
+
+    public void dataPointRemove(String id, String metric, DataPoint... dataPoints);
 }

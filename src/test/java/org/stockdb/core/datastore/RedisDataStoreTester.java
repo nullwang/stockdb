@@ -25,6 +25,7 @@ import org.stockdb.core.datastore.impl.MetricImpl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertEquals;
@@ -101,10 +102,29 @@ public class RedisDataStoreTester {
     @Test
     public void testGetAndRemoveMeta()
     {
+        redisDataStore.addObjectMeta("0001","price");
+        redisDataStore.addObjectMeta("0001","dayHighestPrice");
+
+        Map map = redisDataStore.getObjectMeta("0001");
+        assertTrue(map.get(redisDataStore.META_ID_KEY).equals("0001"));
+        assertTrue(map.get(redisDataStore.META_METRIC_NAMES_KEY).equals("price,dayHighestPrice"));
+
+        redisDataStore.removeObjectMeta("0001","dayHighestPrice");
+        map = redisDataStore.getObjectMeta("0001");
+        assertTrue(map.get(redisDataStore.META_METRIC_NAMES_KEY).equals("price"));
+        assertTrue(map.get(redisDataStore.META_ID_KEY).equals("0001"));
+
+        redisDataStore.removeObjectMeta("0001","price");
+        map = redisDataStore.getObjectMeta("0001");
+        assertTrue(map.isEmpty());
+    }
+
+    @Test
+    public void testGetAndRemoveMetaByChangeData()
+    {
         redisDataStore.putData("0001","metric1",new DataPoint("20010708","xsv") );
         Map map = redisDataStore.getObjectMeta("0001");
         Assert.assertEquals(map.get("id"),"0001");
-
         Assert.assertEquals(map.get("metricNames"),"metric1");
 
         redisDataStore.putData("0001","metric2",new DataPoint("20010708","xsv") );
@@ -117,8 +137,38 @@ public class RedisDataStoreTester {
         Assert.assertEquals(map.get("id"),"0001");
         Assert.assertEquals(map.get("metricNames"),"metric1,metric2");
 
+        //remove data, no data will be removed
+        redisDataStore.removeData("0001","metric1",new DataPoint("2001070809","xsv"));
+        map = redisDataStore.getObjectMeta("0001");
+        Assert.assertEquals(map.get("id"),"0001");
+        Assert.assertEquals(map.get("metricNames"),"metric1,metric2");
 
+        redisDataStore.removeData("0001","metric1",new DataPoint("20010708","xsv"));
+        map = redisDataStore.getObjectMeta("0001");
+        Assert.assertEquals(map.get("id"),"0001");
+        Assert.assertEquals(map.get("metricNames"),"metric2");
 
+        redisDataStore.removeData("0001","metric2",new DataPoint("20010708","xsv"));
+        map = redisDataStore.getObjectMeta("0001");
+        assertTrue(map.isEmpty());
+    }
+
+    @Test
+    public void testRemoveData(){
+        redisDataStore.putData("0001","metric1",new DataPoint("20010708","xsv") );
+        redisDataStore.putData("0001","metric1",new DataPoint("2001070809","xsv1") );
+
+        List<DataPoint> points = redisDataStore.getData("0001"," metric1","20010708","2001070809");
+        Assert.assertTrue(Objects.equals(points.get(0),new DataPoint("20010708","xsv")));
+        Assert.assertTrue(Objects.equals(points.get(1),new DataPoint("2001070809","xsv1")));
+
+        redisDataStore.removeData("0001","metric1",new DataPoint("20010708","xsv"));
+        points = redisDataStore.getData("0001"," metric1","20010708","2001070809");
+        Assert.assertTrue(Objects.equals(points.get(0),new DataPoint("2001070809","xsv1")));
+
+        redisDataStore.removeData("0001","metric1",new DataPoint("2001070809","xsv1"));
+        points = redisDataStore.getData("0001"," metric1","20010708","2001070809");
+        assertTrue(points.isEmpty());
     }
 
     @Test
@@ -136,10 +186,9 @@ public class RedisDataStoreTester {
         map = redisDataStore.getObjectMeta("0001");
         Assert.assertEquals(map.get("id"),"0001");
 
-        redisDataStore.clearData("0001","metric1");
+        redisDataStore.removeData("0001", "metric1");
         map = redisDataStore.getObjectMeta("0001");
         assertTrue(map.isEmpty());
     }
-
 
 }

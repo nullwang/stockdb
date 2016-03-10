@@ -19,6 +19,7 @@ package org.stockdb.core.datastore;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.stockdb.core.functions.Function;
 import org.stockdb.startup.StockDBService;
 import org.stockdb.core.datastore.value.NormalProcess;
 import org.stockdb.core.datastore.value.SeparatorProcess;
@@ -50,6 +51,10 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
     final static String METRICS_KEY="metrics";
     //作为key 保存 对象的属性,当对象保存metric的数据时，会默认增加 两个 属性： id 属性 其值为 对象的id,metricNames 属性 其值为 metricName通过逗号分隔
     final static String OBJECTS_KEY ="objects";
+
+    final static String META_ID_KEY="id";
+    final static String META_METRIC_NAMES_KEY="metricNames";
+
     /*
     "objects": {
         "objectId":{"id":"idValue", "metricNames":"metricName1,metricName2,metricNameN", "attrName":"attrValue", "attrName2":"attrValue"  },
@@ -158,6 +163,19 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
     }
 
     @Override
+    public void removeData(String id, String metricName, DataPoint... dataPoints) {
+        assert(dataPoints != null);
+        String rowKey = Key.makeRowKey(id,metricName);
+        for(DataPoint dataPoint: dataPoints){
+            jc.hdel(rowKey,dataPoint.getTimeStr());
+        }
+        //check if change meta, 如果没有数据
+        if( jc.hlen(rowKey) <= 0 ){
+            removeObjectMeta(id, metricName);
+        }
+    }
+
+    @Override
     public void putMetric(String name) throws StockDBException
     {
         if( StringUtils.isEmpty(name)){
@@ -191,8 +209,8 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
             throw new IllegalArgumentException("attribute name should not be null");
         }
 
-        String attrValue = jc.hget(METRICS_KEY,name);
-        jc.hset(METRICS_KEY,name, Commons.jsonRemove(attrValue,attrName));
+        String attrValue = jc.hget(METRICS_KEY, name);
+        jc.hset(METRICS_KEY,name, Commons.jsonRemove(attrValue, attrName));
     }
 
     @Override
@@ -230,7 +248,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         }
 
         String attrValue = jc.hget(OBJECTS_KEY,id);
-        jc.hset(OBJECTS_KEY,id, Commons.jsonRemove(attrValue,attr));
+        jc.hset(OBJECTS_KEY,id, Commons.jsonRemove(attrValue, attr));
     }
 
     @Override
@@ -325,7 +343,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         //clean all data
         Set<String> ids = jc.hkeys(OBJECTS_KEY);
         for (String id: ids){
-            String m = getObjAttr(id,"metricNames");
+            String m = getObjAttr(id,META_METRIC_NAMES_KEY);
             String[] metricNames = StringUtils.split(m,METRIC_NAME_SEPARATOR);
             if(metricNames == null) return;
             for(String metricName: metricNames){
@@ -339,7 +357,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
     }
 
     @Override
-    public void clearData(String id, String metricName) {
+    public void removeData(String id, String metricName) {
         String rowKey = Key.makeRowKey(id,metricName);
         jc.del(rowKey); //del data
         removeObjectMeta(id,metricName);
@@ -350,29 +368,35 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         return Commons.jsonMap(jc.hget(OBJECTS_KEY,id));
     }
 
-    private void addObjectMeta(String id, String metricName)
+    @Override
+    public void invoke(Function function, Map parameters) {
+        assert(function != null);
+        function.invoke(this,parameters);
+    }
+
+    void addObjectMeta(String id, String metricName)
     {
-        String v = getObjAttr(id,"id");
+        String v = getObjAttr(id,META_ID_KEY);
         if( v == null ){
-            setObjAttr(id,"id",id);
+            setObjAttr(id,META_ID_KEY,id);
         }
-        String m = getObjAttr(id,"metricNames");
+        String m = getObjAttr(id,META_METRIC_NAMES_KEY);
         String[] metricNames = StringUtils.split(m,METRIC_NAME_SEPARATOR);
         if(!Commons.contains(metricNames,metricName) ){
-            setObjAttr(id,"metricNames", StringUtils.isEmpty(m) ? metricName : m+","+metricName);
+            setObjAttr(id,META_METRIC_NAMES_KEY, StringUtils.isEmpty(m) ? metricName : m+","+metricName);
         }
     }
 
-    private void removeObjectMeta(String id, String metricName)
+    void removeObjectMeta(String id, String metricName)
     {
-        String m = getObjAttr(id,"metricNames");
+        String m = getObjAttr(id,META_METRIC_NAMES_KEY);
         String[] metricNames = StringUtils.split(m,METRIC_NAME_SEPARATOR);
         metricNames = Commons.remove(metricNames,metricName);
         if( Commons.isEmpty(metricNames) ){
-            removeObjAttr(id,"id");
-            removeObjAttr(id,"metricNames");
+            removeObjAttr(id,META_ID_KEY);
+            removeObjAttr(id,META_METRIC_NAMES_KEY);
         }else{
-            setObjAttr(id,"metricNames",StringUtils.join(metricNames,","));
+            setObjAttr(id,META_METRIC_NAMES_KEY,StringUtils.join(metricNames,","));
         }
     }
 

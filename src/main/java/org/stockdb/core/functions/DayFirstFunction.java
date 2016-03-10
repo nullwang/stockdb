@@ -19,6 +19,7 @@ package org.stockdb.core.functions;
 import org.stockdb.core.datastore.DataPoint;
 import org.stockdb.core.datastore.DataStore;
 import org.stockdb.core.util.DataPointUtil;
+import org.stockdb.core.util.TimeFormatUtil;
 
 import java.util.*;
 
@@ -46,7 +47,25 @@ public class DayFirstFunction extends DayFunction {
     }
 
     @Override
-    public void invoke(DataStore dataStore) {
+    public void invoke(DataStore dataStore,DataPoint ... dataPoints) {
+        assert(dataPoints != null);
+        Map<String,List<DataPoint>> result = DataPointUtil.groupByDay(dataPoints);
+        //分别取每组的最大最小时间
+        for(List<DataPoint> points : result.values()){
+            List<DataPoint> vs = new ArrayList(points);
+            Collections.sort(vs,timeComparator);
+            DataPoint fp = vs.get(0); //第一个点
+            DataPoint lp = vs.get(vs.size()-1);//最后一个点
+            //获取每组点最小及最大时间范围
+            String minStr = TimeFormatUtil.min(fp.getTimeStr(),TimeFormatUtil.YYMMDD);
+            String maxStr = TimeFormatUtil.max(lp.getTimeStr(),TimeFormatUtil.YYMMDD);
+
+
+
+
+
+
+        }
 
     }
 }

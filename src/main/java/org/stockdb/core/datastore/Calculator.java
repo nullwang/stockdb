@@ -100,4 +100,11 @@ public class Calculator implements MetricListener{
         //提交依赖指标计算任务
         submitCalcMetricTask(id,metric,dataPoints);
     }
+
+    @Override
+    public void dataPointRemove(String id, String metric, DataPoint... dataPoints) {
+
+    }
+
+
 }

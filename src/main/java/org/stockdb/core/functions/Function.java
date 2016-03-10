@@ -19,12 +19,14 @@ package org.stockdb.core.functions;
 import org.stockdb.core.datastore.DataPoint;
 import org.stockdb.core.datastore.DataStore;
 
+import java.util.Map;
+
 public interface Function {
 
     //针对对数据点集执行特定函数返回相应值
     DataPoint[] call(DataPoint... dataPoints);
 
-    //
-    void invoke(DataStore dataStore);
+    //针对变更的数据在DataStore 进行计算，结果存入 dataStore
+    void invoke(DataStore dataStore,Map map);
 
 }

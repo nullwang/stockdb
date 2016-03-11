@@ -18,13 +18,12 @@ package org.stockdb.util;
 
 import junit.framework.Assert;
 import org.junit.Test;
+import org.stockdb.core.exception.TimeFormatException;
 import org.stockdb.core.util.TimeFormatUtil;
-
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 
 public class TimeFormatUtilTester {
-
     @Test
     public void testFormat()
     {
@@ -44,6 +43,13 @@ public class TimeFormatUtilTester {
         assertEquals(TimeFormatUtil.convertFormat("20060102", TimeFormatUtil.YY), "2006");
         assertEquals(TimeFormatUtil.convertFormat("2006010203", TimeFormatUtil.YYMM), "200601");
         assertEquals(TimeFormatUtil.convertFormat("2006010203", TimeFormatUtil.YYMMDD), "20060102");
+
+        try {
+            TimeFormatUtil.convertFormat("20060", TimeFormatUtil.YYMMDD);
+            Assert.assertTrue("should throw TimeFormatException",false);
+        }catch (TimeFormatException tfe){
+            Assert.assertTrue("should throw TimeFormatException",true);
+        }
     }
 
     @Test
@@ -61,6 +67,4 @@ public class TimeFormatUtilTester {
         Assert.assertEquals(TimeFormatUtil.max("201506010110",TimeFormatUtil.YYMMDDHHMMSS),"20150601011059999");
         Assert.assertEquals(TimeFormatUtil.min("201506010110",TimeFormatUtil.YYMMDDHHMMSS),"20150601011000000");
     }
-
-
 }

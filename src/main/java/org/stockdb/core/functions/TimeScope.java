@@ -16,14 +16,33 @@ package org.stockdb.core.functions;
  * limitations under the License.
  */
 
+import org.stockdb.core.exception.TimeFormatException;
+import org.stockdb.core.util.TimeFormatUtil;
+
+import java.util.Objects;
+
 public abstract class TimeScope {
 
     abstract public String getStartTime();
 
     abstract public String getEndTime();
 
+    abstract boolean isInSameDay();
+
+    abstract boolean isInSameMonth();
+
+    abstract boolean isInSameHour();
+
+    abstract boolean isInSameMinute();
+
     static public TimeScope build(String startTime, String endTime) {
        return new TimeScopeImpl(startTime,endTime);
+    }
+
+    static public TimeScope buildByDay(String day){
+        String st = TimeFormatUtil.min(day, TimeFormatUtil.YYMMDD);
+        String et = TimeFormatUtil.max(day, TimeFormatUtil.YYMMDD);
+        return new TimeScopeImpl(st,et);
     }
 
     private static  class TimeScopeImpl extends TimeScope{
@@ -50,7 +69,70 @@ public abstract class TimeScope {
         public void setEndTime(String endTime) {
             this.endTime = endTime;
         }
-    }
 
+        @Override
+        boolean isInSameDay() {
+            try {
+                String st = TimeFormatUtil.convertFormat(startTime, TimeFormatUtil.YYMMDD);
+                String et = TimeFormatUtil.convertFormat(startTime, TimeFormatUtil.YYMMDD);
+                return st != null && st.equals(et);
+            }catch (TimeFormatException te){
+                return false;
+            }
+        }
+
+        @Override
+        boolean isInSameMonth() {
+            try {
+                String st = TimeFormatUtil.convertFormat(startTime, TimeFormatUtil.YYMM);
+                String et = TimeFormatUtil.convertFormat(startTime, TimeFormatUtil.YYMM);
+                return st != null && st.equals(et);
+            }catch (TimeFormatException te){
+                return false;
+            }
+        }
+
+        @Override
+        boolean isInSameHour() {
+            try {
+                String st = TimeFormatUtil.convertFormat(startTime, TimeFormatUtil.YYMMDDHH);
+                String et = TimeFormatUtil.convertFormat(startTime, TimeFormatUtil.YYMMDDHH);
+                return st != null && st.equals(et);
+            }catch (TimeFormatException te){
+                return false;
+            }
+        }
+
+        @Override
+        boolean isInSameMinute() {
+            try {
+                String st = TimeFormatUtil.convertFormat(startTime, TimeFormatUtil.YYMMDDHHMM);
+                String et = TimeFormatUtil.convertFormat(startTime, TimeFormatUtil.YYMMDDHHMM);
+                return st != null && st.equals(et);
+            }catch (TimeFormatException te){
+                return false;
+            }
+        }
+
+        @Override
+        public String toString(){
+            return "startTime="+ startTime + ",endTime=" + endTime;
+        }
+
+        @Override
+        public int hashCode(){
+            return Objects.hashCode(startTime) + Objects.hashCode(endTime);
+        }
+
+        @Override
+        public boolean equals( Object o){
+            if( o instanceof TimeScopeImpl){
+                TimeScopeImpl ts = (TimeScopeImpl) o;
+                return Objects.equals(ts.startTime,startTime) &&
+                        Objects.equals(ts.endTime, endTime);
+            }
+            return false;
+        }
+    }
 
 }

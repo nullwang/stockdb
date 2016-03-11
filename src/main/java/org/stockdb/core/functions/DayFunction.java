@@ -17,6 +17,7 @@ package org.stockdb.core.functions;
  */
 
 import org.stockdb.core.datastore.DataPoint;
+import org.stockdb.core.datastore.DataStore;
 import org.stockdb.core.util.TimeFormatUtil;
 
 import java.util.Arrays;
@@ -24,6 +25,16 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class DayFunction extends TimeFunction{
+
+    /**
+     * 对 id ,metricName 指定时间范围内进行函数计算
+     * @param dataStore
+     * @param id
+     * @param metricName
+     * @param timeScope
+     * @return
+     */
+    public abstract DataPoint invoke(DataStore dataStore, String id, String metricName, TimeScope timeScope);
 
     //获取函数影响的时间访问-基于天
     public TimeScope getTimeScope(DataPoint... dataPoints) {
@@ -38,4 +49,6 @@ public abstract class DayFunction extends TimeFunction{
         String endTime = TimeFormatUtil.max(dpEnd.getTimeStr(),TimeFormatUtil.YYMMDD);
         return TimeScope.build(startTime,endTime);
     }
+
+
 }

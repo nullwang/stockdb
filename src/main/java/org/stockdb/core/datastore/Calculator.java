@@ -21,8 +21,12 @@ import org.slf4j.LoggerFactory;
 import org.stockdb.core.event.MetricListener;
 import org.stockdb.core.exception.StockDBException;
 import org.stockdb.core.functions.*;
+import org.stockdb.core.util.DataPointUtil;
+import org.stockdb.core.util.TimeFormatUtil;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 
 /**
@@ -72,20 +76,20 @@ public class Calculator implements MetricListener{
                     //calc every function metric
                     for(FunctionMetric functionMetric:metricList){
                         Function function = FunctionBuilder.build(functionMetric.getFunctionName());
-
-                        //dayFirst, dayLast
-                        if(function instanceof TimeFunction){
-                            TimeFunction timeFunction = (TimeFunction) function;
-                            TimeScope timeScope = timeFunction.getTimeScope(dataPoints);
-
-                            String startTime = timeScope.getStartTime();
-                            String endTime = timeScope.getEndTime();
-
-                            //受影响的数据
-                            List<DataPoint> effectedData = redisDataStore.getData(id,metricName,startTime,endTime);
-                            DataPoint[] points = timeFunction.call(effectedData.toArray(new DataPoint[0]));
-                            //保存计算结果
-                            redisDataStore.putData(id,functionMetric.getName(),points);
+                        //day series function
+                        if(function instanceof DayFunction){
+                            DayFunction dayFunction = (DayFunction) function;
+                            Map<String,List<DataPoint>> groupData =  DataPointUtil.groupByDay(dataPoints);
+                            //calc every group
+                            for(String day: groupData.keySet()){
+                                TimeScope ts = TimeScope.buildByDay(day);
+                                DataPoint value = dayFunction.invoke(redisDataStore,id,metricName,ts);
+                                if( value != null){
+                                    //update functionMetric value,remove old data
+                                    redisDataStore.removeData(id,functionMetric.getName(),ts.getStartTime(),ts.getEndTime());
+                                    redisDataStore.putData(id,functionMetric.getName(),value);
+                                }
+                            }
                         }
                     }
                 }catch (StockDBException e){
@@ -97,13 +101,16 @@ public class Calculator implements MetricListener{
 
     @Override
     public void dataPointChange(String id, String metric, DataPoint... dataPoints) {
+        assert(dataPoints != null);
+        assert(dataPoints.length != 0);
+
         //提交依赖指标计算任务
         submitCalcMetricTask(id,metric,dataPoints);
     }
 
     @Override
     public void dataPointRemove(String id, String metric, DataPoint... dataPoints) {
-
+        dataPointChange(id,metric,dataPoints);
     }
 
 

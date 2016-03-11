@@ -19,6 +19,7 @@ package org.stockdb.core.datastore;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.stockdb.core.event.MetricEvent;
 import org.stockdb.core.functions.Function;
 import org.stockdb.startup.StockDBService;
 import org.stockdb.core.datastore.value.NormalProcess;
@@ -132,7 +133,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
     @Override
     public void putData(String id,String metricName, DataPoint... dataPoints) throws StockDBException{
         assert(dataPoints != null);
-        String index = getMetricAttr(metricName,Constants.METRIC_SAMPLE_INTERVAL);
+        String index = getMetricAttr(metricName, Constants.METRIC_SAMPLE_INTERVAL);
         String rowKey = Key.makeRowKey(id,metricName);
         for(DataPoint dataPoint:dataPoints) {
             try {
@@ -159,7 +160,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
             jc.hset(rowKey,dataPoint.getTimeStr(),v);
         }
         addObjectMeta(id, metricName);
-        notifyListener(id, metricName, dataPoints);
+        fireEvent(new MetricEvent(MetricEvent.POINTS_PUT,id, metricName, dataPoints));
     }
 
     @Override
@@ -173,6 +174,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         if( jc.hlen(rowKey) <= 0 ){
             removeObjectMeta(id, metricName);
         }
+        fireEvent(new MetricEvent(MetricEvent.POINTS_REMOVE,id,metricName,dataPoints));
     }
 
     @Override
@@ -197,7 +199,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         }
 
         String attrValue = jc.hget(METRICS_KEY,name);
-        jc.hset(METRICS_KEY,name, Commons.jsonPut(attrValue,attr,value));
+        jc.hset(METRICS_KEY,name, Commons.jsonPut(attrValue, attr, value));
     }
 
     @Override
@@ -235,7 +237,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         }
 
         String attrValue = jc.hget(OBJECTS_KEY,id);
-        jc.hset(OBJECTS_KEY,id, Commons.jsonPut(attrValue,attr,value));
+        jc.hset(OBJECTS_KEY,id, Commons.jsonPut(attrValue, attr, value));
     }
 
     @Override
@@ -247,7 +249,7 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
             throw new StockDBException("attribute name should not be null");
         }
 
-        String attrValue = jc.hget(OBJECTS_KEY,id);
+        String attrValue = jc.hget(OBJECTS_KEY, id);
         jc.hset(OBJECTS_KEY,id, Commons.jsonRemove(attrValue, attr));
     }
 
@@ -319,11 +321,12 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         metricListeners.remove(metricListener);
     }
 
-    private void notifyListener(String id, String metricName, DataPoint... dataPoints)
-    {
+    protected void fireEvent(MetricEvent event){
         List<MetricListener> listeners = new ArrayList<MetricListener>(metricListeners);
         for(MetricListener listener: listeners){
-            listener.dataPointChange(id, metricName,dataPoints);
+            if( event.getType() == MetricEvent.POINTS_PUT) {
+                listener.dataPointChange(event.getId(), event.getMetricName(), event.getPoints());
+            }
         }
     }
 
@@ -347,20 +350,27 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
             String[] metricNames = StringUtils.split(m,METRIC_NAME_SEPARATOR);
             if(metricNames == null) return;
             for(String metricName: metricNames){
-                String rowKey = Key.makeRowKey(id,metricName);
-                jc.del(rowKey); //del data
+                removeData(id,metricName);
             }
         }
 
-        //clean meta
+        //clean object meta
         jc.del(OBJECTS_KEY);
     }
 
     @Override
     public void removeData(String id, String metricName) {
         String rowKey = Key.makeRowKey(id,metricName);
+
+        Map<String,String> datas = jc.hgetAll(Key.makeRowKey(id,metricName));
+        List<DataPoint> points = new ArrayList<DataPoint> ();
+        for(Map.Entry<String,String> entry: datas.entrySet()){
+            points.add(new DataPoint(entry.getKey(),entry.getValue()));
+        }
         jc.del(rowKey); //del data
         removeObjectMeta(id,metricName);
+
+        fireEvent(new MetricEvent(MetricEvent.POINTS_REMOVE,id,metricName,points.toArray(new DataPoint[0])));
     }
 
     @Override

@@ -19,6 +19,7 @@ package org.stockdb.core.functions;
 import org.stockdb.core.datastore.DataPoint;
 import org.stockdb.core.datastore.DataStore;
 import org.stockdb.core.util.DataPointUtil;
+import org.stockdb.core.util.TimeFormatUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,7 +50,24 @@ public class DayMaxFunction extends DayFunction {
     }
 
     @Override
-    public void invoke(DataStore dataStore) {
+    public void invoke(DataStore dataStore, Map map) {
 
+    }
+
+    @Override
+    public DataPoint invoke(DataStore dataStore,String id, String metricName, TimeScope timeScope) {
+        assert(timeScope!=null);
+        if( !timeScope.isInSameDay()){
+            throw new IllegalArgumentException(" Not in same day " + timeScope.toString());
+        }
+        String str = timeScope.getStartTime();
+        String maxDay = TimeFormatUtil.max(str, TimeFormatUtil.YYMMDD);
+        String minDay = TimeFormatUtil.min(str,TimeFormatUtil.YYMMDD);
+
+        List<DataPoint> points = dataStore.getData(id,metricName,minDay,maxDay);
+        if(points.isEmpty()) return null;
+
+        Collections.sort(points,timeComparator);
+        return points.get(points.size()-1);
     }
 }

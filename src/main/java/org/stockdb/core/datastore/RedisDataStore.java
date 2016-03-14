@@ -125,6 +125,10 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
         }
     }
 
+    public Calculator getCalculator() {
+        return calculator;
+    }
+
     @Override
     public int getLevel() {
         return 0;

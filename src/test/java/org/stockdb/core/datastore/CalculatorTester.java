@@ -16,19 +16,20 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
-import junit.framework.Assert;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.stockdb.core.datastore.impl.FunctionMetricImpl;
-import org.stockdb.core.event.MetricListener;
 import org.stockdb.core.functions.DayFirstFunction;
+import org.stockdb.core.functions.DayLastFunction;
+import org.stockdb.core.functions.DayMaxFunction;
+import org.stockdb.core.functions.DayMinFunction;
 
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 
 public class CalculatorTester {
@@ -62,7 +63,16 @@ public class CalculatorTester {
     {
         redisDataStore.addMetricListener(metricListener);
 
-        FunctionMetric functionMetric = new FunctionMetricImpl("dayOpeningPrice", DayFirstFunction.NAME,"price");
+        FunctionMetric functionMetric = new FunctionMetricImpl("dayOpenPrice", DayFirstFunction.NAME,"price");
+        redisDataStore.putMetric(functionMetric);
+
+        functionMetric = new FunctionMetricImpl("dayClosePrice", DayLastFunction.NAME,"price");
+        redisDataStore.putMetric(functionMetric);
+
+        functionMetric = new FunctionMetricImpl("dayHighPrice", DayMaxFunction.NAME,"price");
+        redisDataStore.putMetric(functionMetric);
+
+        functionMetric = new FunctionMetricImpl("dayLowPrice", DayMinFunction.NAME,"price");
         redisDataStore.putMetric(functionMetric);
 
         DataPoint dataPoint= new DataPoint();
@@ -71,8 +81,8 @@ public class CalculatorTester {
         redisDataStore.putData("000001", "price", dataPoint);
 
         dataPoint= new DataPoint();
-        dataPoint.setTimeStr("200101011202");
-        dataPoint.setValue("13.7");
+        dataPoint.setTimeStr("200101010602");
+        dataPoint.setValue("13.9");
         redisDataStore.putData("000001", "price", dataPoint);
 
         dataPoint= new DataPoint();
@@ -80,18 +90,42 @@ public class CalculatorTester {
         dataPoint.setValue("1.92");
         redisDataStore.putData("000001", "price", dataPoint);
 
+        dataPoint= new DataPoint();
+        dataPoint.setTimeStr("200101011105");
+        dataPoint.setValue("3.87");
+        redisDataStore.putData("000001", "price", dataPoint);
+
+        dataPoint= new DataPoint();
+        dataPoint.setTimeStr("200101012305");
+        dataPoint.setValue("13.654");
+        redisDataStore.putData("000001", "price", dataPoint);
+
         //wait calc to finish
         try {
-            Thread.sleep(1000);
+            Calculator calculator = redisDataStore.getCalculator();
+            calculator.waitCalcFinish(1000*3);
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
             e.printStackTrace();
         }
 
-        assertTrue(metricListener.has("000001", "dayOpeningPrice"));
-        List<DataPoint> points = redisDataStore.getData("000001","dayOpeningPrice",null,null);
+        List<DataPoint> points = redisDataStore.getData("000001","dayOpenPrice",null,null);
         assertTrue(points.size() == 1);
         assertEquals(points.get(0), new DataPoint("200101010405", "1.92"));
 
-    }
+        points = redisDataStore.getData("000001","dayClosePrice",null,null);
+        assertTrue(points.size() == 1);
+        assertEquals(points.get(0), new DataPoint("200101012305", "13.654"));
 
+        points = redisDataStore.getData("000001","dayHighPrice",null,null);
+        assertTrue(points.size() == 1);
+        assertEquals(points.get(0), new DataPoint("200101010602", "13.9"));
+
+        points = redisDataStore.getData("000001","dayLowPrice",null,null);
+        assertTrue(points.size() == 1);
+        assertEquals(points.get(0), new DataPoint("200101010405", "1.92"));
+
+        redisDataStore.removeMetricListener(metricListener);
+    }
 }

@@ -16,17 +16,15 @@ package org.stockdb.core.datastore;
  * limitations under the License.
  */
 
+import org.apache.commons.collections.iterators.ArrayListIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.stockdb.core.event.MetricListener;
 import org.stockdb.core.exception.StockDBException;
 import org.stockdb.core.functions.*;
 import org.stockdb.core.util.DataPointUtil;
-import org.stockdb.core.util.TimeFormatUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -39,6 +37,8 @@ public class Calculator implements MetricListener{
 
     private Logger logger = LoggerFactory.getLogger(Calculator.class);
 
+    private List<Future> calcFuture = new ArrayList<Future>();
+
     protected Calculator(RedisDataStore redisDataStore, int number){
         assert(number > 0);
         this.number = number;
@@ -49,6 +49,24 @@ public class Calculator implements MetricListener{
     {
         executorService = Executors.newFixedThreadPool(number);
         this.redisDataStore.addMetricListener(this);
+        //check every 3 minutes
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                clean();
+            }
+        },500,1000*60*180); //every 3minutes
+    }
+
+    private synchronized void clean(){
+        Iterator<Future> iterator = calcFuture.iterator();
+        while (iterator.hasNext()){
+            Future f = iterator.next();
+            if( f.isCancelled() || f.isDone()){
+                iterator.remove();
+            }
+        }
     }
 
     public void stop() {
@@ -61,42 +79,57 @@ public class Calculator implements MetricListener{
         }
     }
 
+    //ms
+    public void waitCalcFinish(long ms) throws TimeoutException,InterruptedException{
+        long remainMs = ms;
+        ArrayList<Future> lst = new ArrayList(calcFuture);
+        for(Future f:lst){
+            try {
+                long currentTimeMillis = System.currentTimeMillis();
+                f.get(remainMs,TimeUnit.MILLISECONDS);
+                remainMs-= System.currentTimeMillis() - currentTimeMillis;
+            } catch (ExecutionException e) {
+                //ignore
+            }
+        }
+    }
+
     /**
      * 提交计算指定的指标的任务
      * @param id 对象id
      * @param metricName 指标名称
      */
-    protected void submitCalcMetricTask(final String id, final String metricName,final DataPoint... dataPoints)
+    protected synchronized void submitCalcMetricTask(final String id, final String metricName,final DataPoint... dataPoints)
     {
-        executorService.submit(new Runnable() {
+        calcFuture.add(executorService.submit(new Runnable() {
             @Override
             public void run() {
                 try {
                     List<FunctionMetric> metricList = redisDataStore.getFunctionMetrics(metricName);
                     //calc every function metric
-                    for(FunctionMetric functionMetric:metricList){
+                    for (FunctionMetric functionMetric : metricList) {
                         Function function = FunctionBuilder.build(functionMetric.getFunctionName());
                         //day series function
-                        if(function instanceof DayFunction){
+                        if (function instanceof DayFunction) {
                             DayFunction dayFunction = (DayFunction) function;
-                            Map<String,List<DataPoint>> groupData =  DataPointUtil.groupByDay(dataPoints);
+                            Map<String, List<DataPoint>> groupData = DataPointUtil.groupByDay(dataPoints);
                             //calc every group
-                            for(String day: groupData.keySet()){
+                            for (String day : groupData.keySet()) {
                                 TimeScope ts = TimeScope.buildByDay(day);
-                                DataPoint value = dayFunction.invoke(redisDataStore,id,metricName,ts);
-                                if( value != null){
+                                DataPoint value = dayFunction.invoke(redisDataStore, id, metricName, ts);
+                                if (value != null) {
                                     //update functionMetric value,remove old data
-                                    redisDataStore.removeData(id,functionMetric.getName(),ts.getStartTime(),ts.getEndTime());
-                                    redisDataStore.putData(id,functionMetric.getName(),value);
+                                    redisDataStore.removeData(id, functionMetric.getName(), ts.getStartTime(), ts.getEndTime());
+                                    redisDataStore.putData(id, functionMetric.getName(), value);
                                 }
                             }
                         }
                     }
-                }catch (StockDBException e){
+                } catch (StockDBException e) {
                     //log
                 }
             }
-        });
+        }));
     }
 
     @Override
@@ -112,6 +145,4 @@ public class Calculator implements MetricListener{
     public void dataPointRemove(String id, String metric, DataPoint... dataPoints) {
         dataPointChange(id,metric,dataPoints);
     }
-
-
 }

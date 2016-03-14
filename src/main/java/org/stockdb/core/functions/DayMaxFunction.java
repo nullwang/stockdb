@@ -67,7 +67,7 @@ public class DayMaxFunction extends DayFunction {
         List<DataPoint> points = dataStore.getData(id,metricName,minDay,maxDay);
         if(points.isEmpty()) return null;
 
-        Collections.sort(points,timeComparator);
+        Collections.sort(points,valueComparator);
         return points.get(points.size()-1);
     }
 }

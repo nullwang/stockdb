@@ -19,6 +19,9 @@ package org.stockdb.core.util;
 import org.apache.commons.lang3.StringUtils;
 import org.stockdb.core.exception.TimeFormatException;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,12 +48,12 @@ public class TimeFormatUtil {
     };
 
     static String[] formats = {
-            "yy", "yyMM", "yyMMdd", "yyMMddHH", "yyMMddHHmm", "yyMMddHHmmss", "yyMMddHHmmsszzz"
+            "yyyy", "yyyyMM", "yyyyMMdd", "yyyyMMddHH", "yyyyMMddHHmm", "yyyyMMddHHmmss", "yyyyMMddHHmmsszzz"
     };
 
     static private  int getFormatLength(int i) {
         checkIndex(i);
-        return formats[i].length() + 2;
+        return formats[i].length();
     }
 
     static public String getFormatStr(int i) {
@@ -100,6 +103,22 @@ public class TimeFormatUtil {
         int len = getFormatLength(formatIndex);
         String prefix = StringUtils.substring(dateStr,0,len);
         return StringUtils.rightPad(prefix,17,'0');
+    }
+
+    static public long toMills(String timeStr) throws TimeFormatException
+    {
+        int f = detectFormat(timeStr);
+        if (f < 0 || f > 6)
+            throw new TimeFormatException("invalidate time format str {0}", timeStr);
+
+        String format = formats[f];
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+        try {
+            Date d = simpleDateFormat.parse(timeStr);
+            return d.getTime();
+        } catch (ParseException e) {
+            throw new TimeFormatException("invalidate time format str {0}, format {1}", timeStr, format);
+        }
     }
 
     static public String max(String dateStr, int formatIndex) throws TimeFormatException {

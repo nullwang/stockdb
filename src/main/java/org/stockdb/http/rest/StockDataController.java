@@ -11,6 +11,7 @@ import org.stockdb.core.datastore.DataStore;
 import org.stockdb.core.datastore.ObjectMetricDataSet;
 import org.stockdb.core.exception.StockDBException;
 import org.stockdb.http.rest.model.DataQueryReq;
+import org.stockdb.http.rest.model.KlineReq;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,11 +39,30 @@ public class StockDataController {
     @Autowired
     private DataStore dataStore;
 
+    private String[] K_METRIC_NAMES={"day_lowest_price","day_highest_price","day_open_price","day_close_price"};
+
     /**
      *k 线接口
      */
     @RequestMapping(value = "/kline", method = RequestMethod.POST )
     public @ResponseBody
+    List<ObjectMetricDataSet> klineData(@RequestBody KlineReq req) throws StockDBException {
+        String startTime = req.getStartTime();
+        String endTime = req.getEndTime();
+        String objId = req.getId();
+        List<ObjectMetricDataSet> objectMetricDataSets = new ArrayList<ObjectMetricDataSet>();
+        for(String metricName: K_METRIC_NAMES){
+            ObjectMetricDataSet objectMetricDataSet= new ObjectMetricDataSet();
+            List<DataPoint> points = dataStore.getData(objId,metricName,startTime,endTime);
+
+            objectMetricDataSet.setId(objId);
+            objectMetricDataSet.setMetricName(metricName);
+            objectMetricDataSet.setDataPoints(points.toArray(new DataPoint[points.size()]));
+            objectMetricDataSets.add(objectMetricDataSet);
+        }
+        return objectMetricDataSets;
+    }
+
     List<ObjectMetricDataSet> queryDataPoints(@RequestBody DataQueryReq dataQueryReq) throws StockDBException {
         dataQueryReq.getObjectMetrics();
 

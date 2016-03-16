@@ -20,6 +20,11 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.stockdb.core.exception.TimeFormatException;
 import org.stockdb.core.util.TimeFormatUtil;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 
@@ -66,5 +71,14 @@ public class TimeFormatUtilTester {
 
         Assert.assertEquals(TimeFormatUtil.max("201506010110",TimeFormatUtil.YYMMDDHHMMSS),"20150601011059999");
         Assert.assertEquals(TimeFormatUtil.min("201506010110",TimeFormatUtil.YYMMDDHHMMSS),"20150601011000000");
+    }
+
+    @Test
+    public void testToMills() throws ParseException {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmm");
+        Date d = simpleDateFormat.parse("201506010110");
+        long t = TimeFormatUtil.toMills("201506010110");
+        assertTrue(d.getTime() == t);
+        TimeFormatUtil.toMills("20150601011046");
     }
 }

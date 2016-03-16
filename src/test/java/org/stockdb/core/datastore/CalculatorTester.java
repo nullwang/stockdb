@@ -100,6 +100,16 @@ public class CalculatorTester {
         dataPoint.setValue("13.654");
         redisDataStore.putData("000001", "price", dataPoint);
 
+        dataPoint= new DataPoint();
+        dataPoint.setTimeStr("200101012305");
+        dataPoint.setValue("19.478");
+        redisDataStore.putData("000002", "price", dataPoint);
+
+        dataPoint= new DataPoint();
+        dataPoint.setTimeStr("200301012305");
+        dataPoint.setValue("180.124");
+        redisDataStore.putData("000003", "price", dataPoint);
+
         //wait calc to finish
         try {
             Calculator calculator = redisDataStore.getCalculator();
@@ -125,6 +135,14 @@ public class CalculatorTester {
         points = redisDataStore.getData("000001","dayLowPrice",null,null);
         assertTrue(points.size() == 1);
         assertEquals(points.get(0), new DataPoint("200101010405", "1.92"));
+
+        points = redisDataStore.getData("000002","dayLowPrice",null,null);
+        assertTrue(points.size() == 1);
+        assertEquals(points.get(0), new DataPoint("200101012305", "19.478"));
+
+        points = redisDataStore.getData("000003","dayClosePrice",null,null);
+        assertTrue(points.size() == 1);
+        assertEquals(points.get(0), new DataPoint("200301012305", "180.124"));
 
         redisDataStore.removeMetricListener(metricListener);
     }

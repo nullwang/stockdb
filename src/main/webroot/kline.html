@@ -1,0 +1,134 @@
+<html xmlns="http://www.w3.org/1999/html">
+
+<head profile="http://www.w3.org/2005/10/profile">
+	<link rel="icon"
+		type="image/png"
+		href="img/favicon.png"/>
+    <meta charset="UTF-8">
+    <link href="css/cupertino/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
+	<link href="css/combobox.css" rel="stylesheet">
+	<link href="css/jquery.dropdown.css" rel="stylesheet">
+
+	<script src="js/jquery.1.9.0.min.js"></script>
+	<script src="js/stockdb.js"></script>
+	<script src="js/stockdb-query.js"></script>
+	<script src="js/stockdb-flot.js"></script>
+	<script src="js/stockdb-highcharts.js"></script>
+    <script src="js/highstock.src.js"></script>
+    <script src="js/modules/exporting.js"></script>
+	<script src="js/jquery-ui-1.10.0.custom.min.js"></script>
+	<script src="js/graph.js"></script>
+	<script src="js/jquery.flot.min.js"></script>
+	<script src="js/jquery.flot.time.js"></script>
+	<script src="js/jquery.flot.selection.js"></script>
+	<script src="js/jquery.flot.resize.js"></script>
+	<script src="js/jquery.dropdown.min.js"></script>
+    <script src="js/blob.js"></script>
+    <script src="js/fileSaver.js"></script>
+    <script src="js/dataExporter.js"></script>
+	<script src="js/combobox.js"></script>
+	<script src="js/numeral.min.js"></script>
+
+	<script>
+		$(function () {
+			if(!window.console){ window.console = {log: function(){} }; } // If not console, don't log
+            $("#btn30DaysQuery").button().click(function(){
+                $("#queryDaysTxt").val("1");
+                queryStockItem();
+            });
+            $("#btn60DaysQuery").button().click(function(){
+                $("#queryDaysTxt").val("2");
+                queryStockItem();
+            });
+            $("#btn90DaysQuery").button().click(function(){
+                $("#queryDaysTxt").val("3");
+                queryStockItem();
+            });
+            $("#btn180DaysQuery").button().click(function(){
+                $("#queryDaysTxt").val("6");
+                queryStockItem();
+            });
+            $("#btn1yearQuery").button().click(function(){
+                $("#queryDaysTxt").val("12");
+                queryStockItem();
+            });
+            $("#btn2yearsQuery").button().click(function(){
+                $("#queryDaysTxt").val("24");
+                queryStockItem();
+            });
+            $("#btnCustomizedQuery").button().click(function(){
+                //queryStockItem();
+            });
+		});
+
+        queryStockItem = function(){
+            //build query condition
+            var stockId = $('#txtStockId').val();
+            //calc startTime & endTime
+            //startTime = currTime - 1 month
+            //endTime = currentTime
+            //time format yyyyMMddHHmmss
+            var startTime = new Date();
+            var endTime = new Date();
+            var monthDiff = Number($("#queryDaysTxt").val());
+            startTime.setMonth(startTime.getMonth()-monthDiff);
+
+            var strStartTime = startTime.Format("yyyyMMddhhmmss");
+            var strEndTime = endTime.Format("yyyyMMddhhmmss");
+            stockdb.queryBaseFourMetricDataPoints(stockId,strStartTime,strEndTime,loadData);
+        };
+
+        //获取stock id
+        var stockId = getParameterByName("id");
+        var stockName = stockdb.getName(stockId);
+
+        //using data to show graph
+        loadData = function(data){
+            // Create the chart
+            $('#container').highcharts('StockChart', {
+                rangeSelector : {
+                    selected : 1,
+                    enabled: false
+                },
+                title : {
+                    text : stockName
+                },
+
+                credits:{
+                    enabled: false
+                },
+
+                series : [{
+                    name : 'AAPL',
+                    data : data,
+                    tooltip: {
+                        valueDecimals: 2
+                    }
+                }]
+            });
+        };
+
+	</script>
+</head>
+
+<body>
+<div>
+<span class="ui-widget">股票代码：</span>
+<input id="txtStockId" class="ui-widget" style="width:120px;" type="text"/>
+    <button id="btn30DaysQuery">一月</button>
+    <button id="btn60DaysQuery">二月</button>
+    <button id="btn90DaysQuery">三月</button>
+    <button id="btn180DaysQuery">半年</button>
+    <button id="btn1yearQuery">一年</button>
+    <button id="btn2yearsQuery">二年</button>
+<button id="btnCustomizedQuery">自定义查询</button>
+</div>
+<div>
+<input type="hidden" id="queryDaysTxt"/>
+</div>
+<!--graph show-->
+<div id="stockGraph" style="height: 400px; min-width: 310px"></div>
+
+</body>
+</html>

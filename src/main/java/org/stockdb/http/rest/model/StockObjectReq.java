@@ -16,14 +16,8 @@ package org.stockdb.http.rest.model;
  * limitations under the License.
  */
 
-/**
- * k 线 默认查询 day_lowest_price
- *              day_highest_price
- *              day_open_price
- *              day_close_price
- * 4个metric ， 默认查询所有时间范围内数据
- */
-public class KlineReq {
+
+public class StockObjectReq {
     String id;
 
     String startTime = "0000";

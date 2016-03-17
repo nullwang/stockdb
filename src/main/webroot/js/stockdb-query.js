@@ -1,36 +1,64 @@
+//用于查询 stock db 获取相应数据
+
 if (stockdb === undefined)
 {
 	var stockdb = {};
 }
 
-stockdb.StatusCallback = function(){
-    var starting = function(){
+stockdb.statusCallback = function(){
+    starting = function(){
+        var exeStartTime = new Date();
         $status.html("<i>正在查询...</i>");
+        return exeStartTime;
     }
 
     //回调时会传入话费时间，毫秒单位
-    var doing = function(costTime){
+    doing = function(startTime){
         $status.html("<i>正在处理...</i>");
-        var $queryTime = $("#queryTime");
-        var costMs = numeral(costTime).format('0,0') + " ms"
-        $queryTime.html(costMs);
+        $queryTime.html(numeral(new Date().getTime() - startTime.getTime()).format('0,0') + " ms");
     };
 
-    var completed = function(costTime){
-
+    completed = function(startTime){
+        $status.html("<i>处理完成</i>");
+        $queryTime.html(numeral(new Date().getTime() - startTime.getTime()).format('0,0') + " ms");
     };
 
-    var error = function(){
-        $status.html("");
-        $queryTime.html(numeral(new Date().getTime() - exeStartTime.getTime()).format('0,0') + " ms");
+    error = function(errMsg, startTime){
+        $status.html(errMsg);
+        $queryTime.html(numeral(new Date().getTime() - startTime.getTime()).format('0,0') + " ms");
     };
+}
+
+
+//用了查询k 线图
+stockdb.kline = function(id, dataCallback)
+{
+    var startTime= stockdb.statusCallback.starting();
+    $.ajax({
+        type: "GET",
+        url: "stock/kline/"+id,
+        headers: { 'Content-Type': ['application/json']},
+        dataType: 'json',
+        success: function (data, textStatus, jqXHR) {
+            stockdb.statusCallback.doing(startTime);
+            setTimeout(function(){
+                dataCallback(data);
+            }, 0);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            var $errorContainer = new String();
+            $errorContainer.append("Status Code: " +  jqXHR.status + "</br>");
+            $errorContainer.append("Status: " +  jqXHR.statusText + "<br>");
+            $errorContainer.append("Return Value: " +  jqXHR.responseText);
+            stockdb.statusCallback.error($errorContainer,startTime);
+        }
+    });
 }
 
 //根据[startTime,endTime] 查询指定 id， 指定 metricName的数据点集
 stockdb.listDataPoints = function (id, metricName, startTime, endTime,
                                    dataCallback,statusCallback) {
     var exeStartTime = new Date();
-
     if( statusCallback) statusCallback.starting();
 
     $.ajax({
@@ -79,8 +107,7 @@ stockdb.queryMetricsDataPoints = function(id, metricNames, startTime, endTime, c
 
 
 /**对象属性查询**/
-stockdb.queryObjectAttribute= function()
-{
+stockdb.queryObjectAttribute= function(){
     var exeStartTime = new Date();
 
     var $status = $('#status');

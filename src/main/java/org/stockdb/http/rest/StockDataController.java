@@ -9,7 +9,6 @@ import org.stockdb.core.datastore.ObjectMetricDataSet;
 import org.stockdb.core.exception.StockDBException;
 import org.stockdb.core.exception.TimeFormatException;
 import org.stockdb.core.util.TimeFormatUtil;
-import org.stockdb.http.rest.model.DataQueryReq;
 import org.stockdb.http.rest.model.StockObjectReq;
 
 import java.util.ArrayList;
@@ -40,6 +39,7 @@ public class StockDataController {
 
     private String[] K_METRIC_NAMES={"day_lowest_price","day_highest_price","day_open_price","day_close_price"};
     private String[] TIME_INDEX_METRIC_NAMES={"price","volume"};
+    private String DEFAULT_STOCK_ID="0A0A0A"; //缺省代码
 
     /**
      *k 线接口

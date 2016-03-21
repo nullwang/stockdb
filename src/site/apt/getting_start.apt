@@ -1,0 +1,9 @@
+安装
+
+
+
+访问 主页
+  http://localhost:7070
+访问 分时图页面, stockId 为股票代码，如果不指定默认为0A0A0A
+  http://localhost:7070/time-index.html?id=stockId
+

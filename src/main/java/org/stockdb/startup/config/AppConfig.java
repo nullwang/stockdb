@@ -20,6 +20,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ComponentScan(basePackages = {"org.stockdb.http.rest","org.stockdb.core.datastore"})
+@ComponentScan(basePackages = {"org.stockdb.http.rest",
+        "org.stockdb.core.biz","org.stockdb.core.datastore"})
 public class AppConfig {
 }

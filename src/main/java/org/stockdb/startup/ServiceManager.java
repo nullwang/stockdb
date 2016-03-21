@@ -30,6 +30,7 @@ import org.stockdb.startup.config.StockPropertyConfigurer;
 
 import java.util.*;
 
+//服务管理，用户根据优先级进行服务启动
 @Component
 public class ServiceManager implements ApplicationListener<ApplicationContextEvent> {
 

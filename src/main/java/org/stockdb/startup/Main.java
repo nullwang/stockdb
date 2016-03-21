@@ -176,7 +176,7 @@ public class Main {
          * start is identical to run except that logging data only goes to the log file
          * and not to standard out as well
          */
-        @Parameter(names = "-c", description = "Command to run: export, import, run, start.")
-        private String operationCommand;
+        @Parameter(names = "-c", description = "Command to run: export, import, run, start, default run")
+        private String operationCommand = "run";
     }
 }

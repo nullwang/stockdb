@@ -57,6 +57,8 @@ public class Calculator implements MetricListener{
                 clean();
             }
         },500,1000*60*180); //every 3minutes
+
+        logger.info(" service [Calculator] started ");
     }
 
     private synchronized void clean(){

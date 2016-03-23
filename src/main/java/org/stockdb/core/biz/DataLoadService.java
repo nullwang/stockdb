@@ -28,6 +28,7 @@ import org.stockdb.core.datastore.DataStore;
 import org.stockdb.core.datastore.Env;
 import org.stockdb.core.exception.StockDBException;
 import org.stockdb.startup.StockDBService;
+import org.stockdb.util.Commons;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -47,6 +48,7 @@ public class DataLoadService implements StockDBService {
     @Override
     public void start(Env env) throws StockDBException {
         List<URL> resources = new ArrayList();
+        resources.add(this.getClass().getResource("/stock_0A0A0A.dat"));
         String dir = env.get("init_data_dir");
         if( StringUtils.isEmpty(dir)){
             Collection<File> files = FileUtils.listFiles(new File(dir), new AbstractFileFilter() {
@@ -60,7 +62,17 @@ public class DataLoadService implements StockDBService {
                     }
                 }
             }, null);
+            for(File file:files){
+                try {
+                    resources.add(file.toURL());
+                } catch (MalformedURLException e) {
+                    //e.printStackTrace();
+                }
+            }
         }
+        loadFromResource(resources.toArray(new URL[resources.size()]));
+
+        logger.info(" service [DATA_LOAD] started ");
     }
 
     private void loadFromResource(URL... urls) {
@@ -81,8 +93,9 @@ public class DataLoadService implements StockDBService {
                     String id= getId(url);
                     dataStore.putData(id, data[0],new DataPoint(data[1],data[2]));
                 }
+                logger.info("load data from resource {} ok", url.toString());
             }catch (IOException e) {
-                logger.error("error load resource" + url.toString(),e);
+                logger.error("load data from resource" + url.toString() + " error ",e);
             }finally {
                 IOUtils.closeQuietly(bufferedReader);
                 IOUtils.closeQuietly(inputStreamReader);
@@ -101,9 +114,17 @@ public class DataLoadService implements StockDBService {
         return 999;
     }
 
-    private String getId (URL url){
+    String getId (URL url){
         String path = url.getPath();
-        String name = StringUtils.substringAfter(path, File.separator);
+        String name = StringUtils.substringAfterLast(path, "/");
         return StringUtils.substringBetween(name,"_",".");
+    }
+
+    public DataStore getDataStore() {
+        return dataStore;
+    }
+
+    public void setDataStore(DataStore dataStore) {
+        this.dataStore = dataStore;
     }
 }

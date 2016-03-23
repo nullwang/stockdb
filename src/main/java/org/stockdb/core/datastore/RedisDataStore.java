@@ -17,6 +17,8 @@ package org.stockdb.core.datastore;
  */
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.stockdb.core.event.MetricEvent;
@@ -73,6 +75,8 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
     List<MetricListener> metricListeners = new ArrayList<MetricListener>();
     Env env;
 
+    private Logger logger = LoggerFactory.getLogger(RedisDataStore.class);
+
     @Override
     public void start(Env env) throws StockDBException {
         this.env = env;
@@ -113,6 +117,8 @@ public class RedisDataStore extends AbstractDataStore implements Scanable,StockD
 
         calculator = new Calculator(this,5);
         calculator.start();
+
+        logger.info(" service [REDIS_STORE] started ");
     }
 
     @Override

@@ -28,7 +28,6 @@ import org.stockdb.core.datastore.DataStore;
 import org.stockdb.core.datastore.Env;
 import org.stockdb.core.exception.StockDBException;
 import org.stockdb.startup.StockDBService;
-import org.stockdb.util.Commons;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -87,7 +86,7 @@ public class DataLoadService implements StockDBService {
                 bufferedReader = new BufferedReader(inputStreamReader);
                 String line;
                 while( (line = bufferedReader.readLine()) != null){
-                    if(StringUtils.startsWith(line,"//"))continue;
+                    if(StringUtils.startsWith(line,"//") || StringUtils.isEmpty(line))continue;
                     String[] data = StringUtils.split(line,",");
                     if( data.length < 3) throw new IOException("error format");
                     String id= getId(url);

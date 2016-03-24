@@ -34,6 +34,5 @@ public class DataLoadServiceTester {
         File f = new File("stock_0001.dat");
         assertTrue("0A0A0A".equals(dataLoadService.getId(url)));
         assertTrue("0001".equals(dataLoadService.getId(f.toURL())));
-
     }
 }

@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.stockdb.core.datastore.DataPoint;
 import org.stockdb.core.datastore.DataStore;
 import org.stockdb.core.datastore.Env;
@@ -37,6 +38,8 @@ import java.util.Collection;
 import java.util.List;
 
 //用于提供案例数据，在服务器启动时启动
+
+@Service
 public class DataLoadService implements StockDBService {
 
     @Autowired
@@ -46,9 +49,17 @@ public class DataLoadService implements StockDBService {
 
     @Override
     public void start(Env env) throws StockDBException {
+        String dir = env.get("init_data_dir");
+        List<URL> urlList = collectResource(dir);
+        loadFromResource(urlList.toArray(new URL[urlList.size()]));
+        logger.info(" service [DATA_LOAD] started ");
+    }
+
+    private List<URL> collectResource(String rootDir)
+    {
+        String dir = rootDir;
         List<URL> resources = new ArrayList();
         resources.add(this.getClass().getResource("/stock_0A0A0A.dat"));
-        String dir = env.get("init_data_dir");
         if( !StringUtils.isEmpty(dir)){
             Collection<File> files = FileUtils.listFiles(new File(dir), new AbstractFileFilter() {
                 @Override
@@ -69,9 +80,7 @@ public class DataLoadService implements StockDBService {
                 }
             }
         }
-        loadFromResource(resources.toArray(new URL[resources.size()]));
-
-        logger.info(" service [DATA_LOAD] started ");
+        return resources;
     }
 
     private void loadFromResource(URL... urls) {
@@ -80,6 +89,7 @@ public class DataLoadService implements StockDBService {
             BufferedReader bufferedReader = null;
             InputStreamReader inputStreamReader = null;
             InputStream inputStream = null;
+            int i=0;
             try {
                 inputStream = url.openStream();
                 inputStreamReader = new InputStreamReader(inputStream,"utf-8");
@@ -91,8 +101,9 @@ public class DataLoadService implements StockDBService {
                     if( data.length < 3) throw new IOException("error format");
                     String id= getId(url);
                     dataStore.putData(id, data[0],new DataPoint(data[1],data[2]));
+                    i++;
                 }
-                logger.info("load data from resource {} ok", url.toString());
+                logger.info("load data from resource {} total {} ok", url.toString(),i);
             }catch (IOException e) {
                 logger.error("load data from resource" + url.toString() + " error ",e);
             }finally {

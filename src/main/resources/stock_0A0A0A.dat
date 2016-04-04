@@ -306,80 +306,80 @@ day_highest_price,20150812,3937.77
 day_lowest_price,20150812,3871.14
 day_close_price,20150812,3886.32
 
-{"id":"000001","metricName":"day_change","value":"-41.59","timeStr":"20150812"},
-{"id":"000001","metricName":"day_%chg","value":"-1.06","timeStr":"20150812"},
-{"id":"000001","metricName":"day_volume","value":"442,688,278.00","timeStr":"20150812"},
-{"id":"000001","metricName":"day_turnover","value":"597,050,259,293.00","timeStr":"20150812"},
+//{"id":"000001","metricName":"day_change","value":"-41.59","timeStr":"20150812"},
+//{"id":"000001","metricName":"day_%chg","value":"-1.06","timeStr":"20150812"},
+//{"id":"000001","metricName":"day_volume","value":"442,688,278.00","timeStr":"20150812"},
+//{"id":"000001","metricName":"day_turnover","value":"597,050,259,293.00","timeStr":"20150812"},
 
 day_open_price,20150813,3869.91
 day_highest_price,20150813,3955.79
 day_lowest_price,20150813,3838.16
 day_close_price,20150813,3954.56
 
-{"id":"000001","metricName":"day_change","value":"68.24","timeStr":"20150813"},
-{"id":"000001","metricName":"day_%chg","value":"1.76","timeStr":"20150813"},
-{"id":"000001","metricName":"day_volume","value":"430,073,303.00","timeStr":"20150813"},
-{"id":"000001","metricName":"day_turnover","value":"578,685,519,561.00","timeStr":"20150813"},
+//{"id":"000001","metricName":"day_change","value":"68.24","timeStr":"20150813"},
+//{"id":"000001","metricName":"day_%chg","value":"1.76","timeStr":"20150813"},
+//{"id":"000001","metricName":"day_volume","value":"430,073,303.00","timeStr":"20150813"},
+//{"id":"000001","metricName":"day_turnover","value":"578,685,519,561.00","timeStr":"20150813"},
 
 day_open_price,20150814,3976.41
 day_highest_price,20150814,4000.68
 day_lowest_price,20150814,3939.84
 day_close_price,20150814,3965.34
 
-{"id":"000001","metricName":"day_change","value":"10.78","timeStr":"20150814"},
-{"id":"000001","metricName":"day_%chg","value":"0.27","timeStr":"20150814"},
-{"id":"000001","metricName":"day_volume","value":"467,988,217.00","timeStr":"20150814"},
-{"id":"000001","metricName":"day_turnover","value":"647,466,472,559.00","timeStr":"20150814"},
+//{"id":"000001","metricName":"day_change","value":"10.78","timeStr":"20150814"},
+//{"id":"000001","metricName":"day_%chg","value":"0.27","timeStr":"20150814"},
+//{"id":"000001","metricName":"day_volume","value":"467,988,217.00","timeStr":"20150814"},
+//{"id":"000001","metricName":"day_turnover","value":"647,466,472,559.00","timeStr":"20150814"},
 
 day_open_price,20150817,3947.84
 day_highest_price,20150817,3994.54
 day_lowest_price,20150817,3907.40
 day_close_price,20150817,3993.67
 
-{"id":"000001","metricName":"day_change","value":"28.33","timeStr":"20150817"},
-{"id":"000001","metricName":"day_%chg","value":"0.71","timeStr":"20150817"},
-{"id":"000001","metricName":"day_volume","value":"460,432,060.00","timeStr":"20150817"},
-{"id":"000001","metricName":"day_turnover","value":"626,327,680,299.00","timeStr":"20150817"},
+//{"id":"000001","metricName":"day_change","value":"28.33","timeStr":"20150817"},
+//{"id":"000001","metricName":"day_%chg","value":"0.71","timeStr":"20150817"},
+//{"id":"000001","metricName":"day_volume","value":"460,432,060.00","timeStr":"20150817"},
+//{"id":"000001","metricName":"day_turnover","value":"626,327,680,299.00","timeStr":"20150817"},
 
 day_open_price,20150818,3999.13
 day_highest_price,20150818,4006.34
 day_lowest_price,20150818,3743.39
 day_close_price,20150818,3748.16
 
-{"id":"000001","metricName":"day_change","value":"-245.50","timeStr":"20150818"},
-{"id":"000001","metricName":"day_%chg","value":"-6.15","timeStr":"20150818"},
-{"id":"000001","metricName":"day_volume","value":"543,770,822.00","timeStr":"20150818"},
-{"id":"000001","metricName":"day_turnover","value":"722,467,247,365.00","timeStr":"20150818"},
+//{"id":"000001","metricName":"day_change","value":"-245.50","timeStr":"20150818"},
+//{"id":"000001","metricName":"day_%chg","value":"-6.15","timeStr":"20150818"},
+//{"id":"000001","metricName":"day_volume","value":"543,770,822.00","timeStr":"20150818"},
+//{"id":"000001","metricName":"day_turnover","value":"722,467,247,365.00","timeStr":"20150818"},
 
 day_open_price,20150819,3646.80
 day_highest_price,20150819,3811.43
 day_lowest_price,20150819,3558.38
 day_close_price,20150819,3794.11
 
-{"id":"000001","metricName":"day_change","value":"45.95","timeStr":"20150819"},
-{"id":"000001","metricName":"day_%chg","value":"1.23","timeStr":"20150819"},
-{"id":"000001","metricName":"day_volume","value":"475,396,239.00","timeStr":"20150819"},
-{"id":"000001","metricName":"day_turnover","value":"599,513,277,258.00","timeStr":"20150819"},
+//{"id":"000001","metricName":"day_change","value":"45.95","timeStr":"20150819"},
+//{"id":"000001","metricName":"day_%chg","value":"1.23","timeStr":"20150819"},
+//{"id":"000001","metricName":"day_volume","value":"475,396,239.00","timeStr":"20150819"},
+//{"id":"000001","metricName":"day_turnover","value":"599,513,277,258.00","timeStr":"20150819"},
 
 day_open_price,20150820,3754.57
 day_highest_price,20150820,3788.01
 day_lowest_price,20150820,3663.61
 day_close_price,20150820,3664.29
 
-{"id":"000001","metricName":"day_change","value":"-129.82","timeStr":"20150820"},
-{"id":"000001","metricName":"day_%chg","value":"-3.42","timeStr":"20150820"},
-{"id":"000001","metricName":"day_volume","value":"390,063,057.00","timeStr":"20150820"},
-{"id":"000001","metricName":"day_turnover","value":"501,194,992,628.00","timeStr":"20150820"},
+//{"id":"000001","metricName":"day_change","value":"-129.82","timeStr":"20150820"},
+//{"id":"000001","metricName":"day_%chg","value":"-3.42","timeStr":"20150820"},
+//{"id":"000001","metricName":"day_volume","value":"390,063,057.00","timeStr":"20150820"},
+//{"id":"000001","metricName":"day_turnover","value":"501,194,992,628.00","timeStr":"20150820"},
 
 day_open_price,20150821,3609.96
 day_highest_price,20150821,3652.84
 day_lowest_price,20150821,3490.54
 day_close_price,20150821,3507.74
 
-{"id":"000001","metricName":"day_change","value":"-156.55","timeStr":"20150821"},
-{"id":"000001","metricName":"day_%chg","value":"-4.27","timeStr":"20150821"},
-{"id":"000001","metricName":"day_volume","value":"369,920,479.00","timeStr":"20150821"},
-{"id":"000001","metricName":"day_turnover","value":"450,616,485,183.00","timeStr":"20150821"},
+//{"id":"000001","metricName":"day_change","value":"-156.55","timeStr":"20150821"},
+//{"id":"000001","metricName":"day_%chg","value":"-4.27","timeStr":"20150821"},
+//{"id":"000001","metricName":"day_volume","value":"369,920,479.00","timeStr":"20150821"},
+//{"id":"000001","metricName":"day_turnover","value":"450,616,485,183.00","timeStr":"20150821"},
 
 day_open_price,20150824,3373.48
 day_highest_price,20150824,3388.36

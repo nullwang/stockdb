@@ -25,7 +25,7 @@ public class SeparatorProcess implements ValueProcess{
         //remove all not digit character
         for(int i=0; i<value.length();i++){
             Character c = value.charAt(i);
-            if( c >= 0 && c <= 9 || c =='.' ){
+            if( c >= '0' && c <= '9' || c =='.' ){
                 sb.append(c);
             }
         }

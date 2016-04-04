@@ -74,4 +74,10 @@ public class DataPoint {
         return ObjectUtils.equals(dp.timeStr,timeStr) &&
                 ObjectUtils.equals(dp.value, value);
     }
+
+    @Override
+    public String toString()
+    {
+        return "{" + timeStr + "," +value +"}";
+    }
 }

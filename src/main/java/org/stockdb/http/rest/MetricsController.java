@@ -31,10 +31,25 @@ public class MetricsController {
     @Autowired
     private DataStore dataStore;
 
+    @Autowired
+    private Env env;
+
     @RequestMapping(value = "/version", method = RequestMethod.GET )
     public @ResponseBody String version() throws StockDBException
     {
         return "{\"version\":\"1.0\"}";
+    }
+
+
+    @RequestMapping(value = "/clean", method = RequestMethod.GET )
+    public @ResponseBody String clean(){
+        if( "true".equals(env.get("stockdb.debug"))){
+            dataStore.clearMetrics();
+            dataStore.clearData();
+
+            return "clean metrics & data ok";
+        }
+        return "sockdb.debug is disable";
     }
 
     /**

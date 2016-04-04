@@ -16,6 +16,7 @@ package org.stockdb.core.biz;
  * limitations under the License.
  */
 
+import org.springframework.stereotype.Service;
 import org.stockdb.core.datastore.DataStore;
 import org.stockdb.core.datastore.ObjectMetricDataSet;
 import org.stockdb.core.exception.StockDBException;

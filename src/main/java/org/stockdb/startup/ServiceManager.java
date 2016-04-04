@@ -45,12 +45,12 @@ public class ServiceManager implements ApplicationListener<ApplicationContextEve
         if (services != null) return services;
         else {
             Map<String, StockDBService> serviceMap = ap.getBeansOfType(StockDBService.class);
-            //sort level
+            //sort level, level小的先启动
             List<StockDBService> serviceList = new ArrayList(serviceMap.values());
             Collections.sort(serviceList, new Comparator<StockDBService>() {
                 @Override
                 public int compare(StockDBService o1, StockDBService o2) {
-                    return o2.getLevel() - o1.getLevel();
+                    return o1.getLevel() - o2.getLevel();
                 }
             });
             return services = serviceList;

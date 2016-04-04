@@ -49,7 +49,7 @@ public class DataLoadService implements StockDBService {
         List<URL> resources = new ArrayList();
         resources.add(this.getClass().getResource("/stock_0A0A0A.dat"));
         String dir = env.get("init_data_dir");
-        if( StringUtils.isEmpty(dir)){
+        if( !StringUtils.isEmpty(dir)){
             Collection<File> files = FileUtils.listFiles(new File(dir), new AbstractFileFilter() {
                 @Override
                 public boolean accept(File file) {

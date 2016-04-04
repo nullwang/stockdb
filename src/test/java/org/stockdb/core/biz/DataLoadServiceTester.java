@@ -16,17 +16,32 @@ package org.stockdb.core.biz;
  * limitations under the License.
  */
 
+import org.junit.Before;
 import org.junit.Test;
+import org.stockdb.core.datastore.*;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 
 public class DataLoadServiceTester {
 
     DataLoadService dataLoadService = new DataLoadService();
+    DataStore dataStore = new DataStoreMock();
+    Env envMock = new EnvMock();
+
+    public DataLoadServiceTester(){
+        dataLoadService.setDataStore(dataStore);
+    }
+
+    @Before
+    public void clean(){
+        dataStore.clearData();
+    }
 
     @Test
     public void testGetId() throws MalformedURLException {
@@ -34,5 +49,18 @@ public class DataLoadServiceTester {
         File f = new File("stock_0001.dat");
         assertTrue("0A0A0A".equals(dataLoadService.getId(url)));
         assertTrue("0001".equals(dataLoadService.getId(f.toURL())));
+    }
+
+    @Test
+    public void testStart() {
+        dataLoadService.start(envMock);
+
+        List<DataPoint> dataPointList = dataStore.getData("0A0A0A", "day_open_price", "20150828", "20150828");
+        assertEquals(dataPointList.get(0),new DataPoint("20150828","3125.26"));
+        dataPointList = dataStore.getData("0A0A0A", "day_open_price", "20150701", "20150701");
+        assertEquals(dataPointList.get(0),new DataPoint("20150701","4214.15"));
+
+        dataPointList = dataStore.getData("0A0A0A", "day_lowest_price", "20150803", "20150803");
+        assertEquals(dataPointList.get(0),new DataPoint("20150803","3549.50"));
     }
 }

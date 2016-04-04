@@ -49,8 +49,8 @@ public class JettyServer {
 
     private String keyStorePassword;
 
-    private static final String CONTEXT_PATH = "/";
-    private static final String MAPPING_URL = "/api/*";
+    private static final String CONTEXT_PATH = "/api";
+    private static final String MAPPING_URL = "/";
 
     JettyServer(int jettyPort, String jettyWebRoot){
         this.jettyPort = jettyPort;
@@ -83,7 +83,7 @@ public class JettyServer {
             }
 
             AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-            context.setConfigLocation("org.stockdb.core.config");
+            context.setConfigLocation("org.stockdb.startup.config");
             context.getEnvironment().setDefaultProfiles("prod");
 
             ServletContextHandler servletContextHandler =

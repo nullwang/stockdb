@@ -32,8 +32,7 @@ public class MetricsController {
     private DataStore dataStore;
 
     @RequestMapping(value = "/version", method = RequestMethod.GET )
-    @ResponseBody
-    public String version() throws StockDBException
+    public @ResponseBody String version() throws StockDBException
     {
         return "{\"version\":\"1.0\"}";
     }

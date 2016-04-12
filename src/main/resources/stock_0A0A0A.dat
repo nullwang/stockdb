@@ -1,5 +1,10 @@
 //证指数 http://quotes.money.163.com/trade/lsjysj_zhishu_000001.html
+//数据文件由多个区组成， 第一个为object区为对象属性，第二个为metric区为指标属性。第三个为data区为数据
+//对象属性
+#object
+{"name":"陨石智慧"}
 
+#data
 day_open_price,20150701,4214.15
 day_highest_price,20150701,4317.05
 day_lowest_price,20150701,4043.37

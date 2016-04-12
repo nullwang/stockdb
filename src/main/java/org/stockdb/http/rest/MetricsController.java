@@ -157,18 +157,37 @@ public class MetricsController {
         return map;
     }
 
-    @RequestMapping(value = "/metrics/{metricName}", method = RequestMethod.GET )
+    //指标属性列表
+    @RequestMapping(value = "/metric/{metricName}", method = RequestMethod.GET )
     public @ResponseBody
     Map<String,String> getMetrics(@PathVariable("metricName") String metricName) throws StockDBException
     {
         return dataStore.getMetricAttr(metricName);
     }
 
-    @RequestMapping(value = "/metrics/{metricName}/{attrName}", method = RequestMethod.GET )
+    //指标属性查询
+    @RequestMapping(value = "/metric/{metricName}/{attrName}", method = RequestMethod.GET )
     public @ResponseBody
     String getMetricAttr(@PathVariable("metricName") String metricName,
                          @PathVariable("attrName") String attrName) throws StockDBException
     {
         return dataStore.getMetricAttr(metricName,attrName);
+    }
+
+    //对象属性列表
+    @RequestMapping(value = "/object/{objId}", method = RequestMethod.GET )
+    public @ResponseBody
+    Map<String,String> getObject(@PathVariable("objId") String objectId) throws StockDBException
+    {
+        return dataStore.getObjAttr(objectId);
+    }
+
+    //对象属性查询
+    @RequestMapping(value = "/object/{objId}/{attrName}", method = RequestMethod.GET )
+    public @ResponseBody
+    String getObjectAttr(@PathVariable("objId") String objectId,
+                                     @PathVariable("attrName") String attrName) throws StockDBException
+    {
+        return dataStore.getObjAttr(objectId,attrName);
     }
 }

@@ -97,7 +97,7 @@ public class StockDataController {
             DataPoint dataPoint = new DataPoint();
             dataPoint.setTimeStr(String.valueOf(TimeFormatUtil.toMills(dp.getTimeStr())));
             dataPoint.setValue(dp.getValue());
-            dataPointList.add(dp);
+            dataPointList.add(dataPoint);
         }
         return dataPointList;
     }

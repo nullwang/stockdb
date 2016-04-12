@@ -31,8 +31,9 @@ function getParameterByName(name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
-if (stockdb === undefined) {
-	var stockdb = {};
+if (!stockdb) {
+    var stockdb ={};
+    stockdb.rootUrl="http://localhost:7070/";
     stockdb.baseFourMetrics=["day_opening_price","day_highest_price","day_lowest_price","day_closing_price"];
     stockdb.baseEightMetrics = [];
     for(ele in stockdb.baseFourMetrics){
@@ -69,6 +70,8 @@ stockdb.MetricQuery = function(){
         return this;
     }
 }
+
+stockdb.
 
 stockdb.MetricException = function (message) {
 	this.message = message;

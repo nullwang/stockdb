@@ -16,10 +16,18 @@ package org.stockdb.startup.config;
  * limitations under the License.
  */
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @EnableWebMvc
 @Configuration
@@ -30,6 +38,20 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         //registry.addResourceHandler("img/**").addResourceLocations("classpath:/img/");
         //registry.addResourceHandler("css/**").addResourceLocations("classpath:/css/");
         //registry.addResourceHandler("js/**").addResourceLocations("classpath:/js/");
+    }
+
+    @Bean
+    public RequestMappingHandlerAdapter requestMappingHandlerAdapter(){
+        RequestMappingHandlerAdapter requestMappingHandlerAdapter = new RequestMappingHandlerAdapter();
+        List messageConverterList = new ArrayList();
+        MappingJackson2HttpMessageConverter mappingJacksonHttpMessageConverter = new MappingJackson2HttpMessageConverter();
+        MediaType mediaType = MediaType.valueOf("application/json; charset=UTF-8");
+
+        mappingJacksonHttpMessageConverter.setSupportedMediaTypes(Arrays.asList(mediaType));
+        messageConverterList.add(mappingJacksonHttpMessageConverter);
+
+        requestMappingHandlerAdapter.setMessageConverters(messageConverterList);
+        return requestMappingHandlerAdapter;
     }
 
 }

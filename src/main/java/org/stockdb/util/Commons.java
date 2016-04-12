@@ -116,7 +116,7 @@ public class Commons {
         return gson.toJson(object);
     }
 
-    public static <T> T fromJson(String json, Class<T> tClass){
+    public static <T> T toObject(String json, Class<T> tClass){
         Gson gson = new Gson();
         return gson.fromJson(json, tClass);
     }

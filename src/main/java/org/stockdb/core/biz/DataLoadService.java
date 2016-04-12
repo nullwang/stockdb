@@ -16,6 +16,7 @@ package org.stockdb.core.biz;
  * limitations under the License.
  */
 
+import com.google.gson.JsonSyntaxException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
@@ -29,6 +30,7 @@ import org.stockdb.core.datastore.DataStore;
 import org.stockdb.core.datastore.Env;
 import org.stockdb.core.exception.StockDBException;
 import org.stockdb.startup.StockDBService;
+import org.stockdb.util.Commons;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -36,6 +38,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 //用于提供案例数据，在服务器启动时启动
 
@@ -89,22 +92,52 @@ public class DataLoadService implements StockDBService {
             BufferedReader bufferedReader = null;
             InputStreamReader inputStreamReader = null;
             InputStream inputStream = null;
-            int i=0;
+            int dataCnt=0, objAttrCnt= 0, metricAttrCnt = 0, section = 2 ,lineNo =0;
             try {
+                String id = getId(url);
                 inputStream = url.openStream();
                 inputStreamReader = new InputStreamReader(inputStream,"utf-8");
                 bufferedReader = new BufferedReader(inputStreamReader);
-                String line;
+                String line,metricName=null;
                 while( (line = bufferedReader.readLine()) != null){
+                    lineNo ++;
                     if(StringUtils.startsWith(line,"//") || StringUtils.isEmpty(line))continue;
-                    String[] data = StringUtils.split(line,",");
-                    if( data.length < 3) throw new IOException("error format");
-                    String id= getId(url);
-                    dataStore.putData(id, data[0],new DataPoint(data[1],data[2]));
-                    i++;
+                    if( StringUtils.startsWith(line,"#object")) {
+                        section = 1; // 对象区
+                        continue;
+                    }
+                    else if( StringUtils.startsWith(line,"#data")) {
+                        section = 2; // 数据区
+                        continue;
+                    }else if( StringUtils.startsWith(line,"#")){
+                        section = 3; // 指标区
+                        metricName = StringUtils.substringAfter(line,"#");
+                        continue;
+                    }
+                    if( section == 2) {
+                        String[] data = StringUtils.split(line, ",");
+                        if (data.length < 3) throw new IOException(" error format of {"+lineNo + "} in {" + url.getFile() + " }");
+                        dataStore.putData(id, data[0], new DataPoint(data[1], data[2]));
+                        dataCnt++;
+                    }
+                    else {
+                        try {
+                            Map<String,String> attrMap = Commons.jsonMap(line);
+                            for(Map.Entry<String,String> entry: attrMap.entrySet()){
+                                if( section == 1) {
+                                    dataStore.setObjAttr(id, entry.getKey(), entry.getValue());
+                                }
+                                if(section == 3){
+                                    dataStore.setMetricAttr(metricName, entry.getKey(),entry.getValue());
+                                }
+                            }
+                        }catch (JsonSyntaxException e){
+                            throw new IOException(" error format of {"+lineNo + "} in {" + url.getFile() + " }");
+                        }
+                    }
                 }
-                logger.info("load data from resource {} total {} ok", url.toString(),i);
-            }catch (IOException e) {
+                logger.info("load data from resource {} total {} ok", url.toString(),dataCnt);
+            }catch (Exception e) {
                 logger.error("load data from resource" + url.toString() + " error ",e);
             }finally {
                 IOUtils.closeQuietly(bufferedReader);

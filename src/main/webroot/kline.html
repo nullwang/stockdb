@@ -31,60 +31,21 @@
 	<script src="js/numeral.min.js"></script>
 
 	<script>
-		$(function () {
-			if(!window.console){ window.console = {log: function(){} }; } // If not console, don't log
-            $("#btn30DaysQuery").button().click(function(){
-                $("#queryDaysTxt").val("1");
-                queryStockItem();
-            });
-            $("#btn60DaysQuery").button().click(function(){
-                $("#queryDaysTxt").val("2");
-                queryStockItem();
-            });
-            $("#btn90DaysQuery").button().click(function(){
-                $("#queryDaysTxt").val("3");
-                queryStockItem();
-            });
-            $("#btn180DaysQuery").button().click(function(){
-                $("#queryDaysTxt").val("6");
-                queryStockItem();
-            });
-            $("#btn1yearQuery").button().click(function(){
-                $("#queryDaysTxt").val("12");
-                queryStockItem();
-            });
-            $("#btn2yearsQuery").button().click(function(){
-                $("#queryDaysTxt").val("24");
-                queryStockItem();
-            });
-            $("#btnCustomizedQuery").button().click(function(){
-                //queryStockItem();
-            });
-		});
-
-        queryStockItem = function(){
-            //build query condition
-            var stockId = $('#txtStockId').val();
-            //calc startTime & endTime
-            //startTime = currTime - 1 month
-            //endTime = currentTime
-            //time format yyyyMMddHHmmss
-            var startTime = new Date();
-            var endTime = new Date();
-            var monthDiff = Number($("#queryDaysTxt").val());
-            startTime.setMonth(startTime.getMonth()-monthDiff);
-
-            var strStartTime = startTime.Format("yyyyMMddhhmmss");
-            var strEndTime = endTime.Format("yyyyMMddhhmmss");
-            stockdb.queryBaseFourMetricDataPoints(stockId,strStartTime,strEndTime,loadData);
-        };
-
         //获取stock id
         var stockId = getParameterByName("id");
-        var stockName = stockdb.getName(stockId);
+        if( !stockId) stockId = "0A0A0A"; //default demo stock
+        var stockName = stockdb.queryObjName(stockId);
+
+        //获取stock 指定的数据
+        stockdb.kline(stockId,loadChart());
 
         //using data to show graph
-        loadData = function(data){
+        loadChart = function(data){
+            //数据处理
+            jsonData = JSON.parse(data);
+            jsonData.dataPoints
+
+
             // Create the chart
             $('#container').highcharts('StockChart', {
                 rangeSelector : {
@@ -92,7 +53,7 @@
                     enabled: false
                 },
                 title : {
-                    text : stockName
+                    text : 'K线图'
                 },
 
                 credits:{
@@ -100,7 +61,7 @@
                 },
 
                 series : [{
-                    name : 'AAPL',
+                    name : stockName,
                     data : data,
                     tooltip: {
                         valueDecimals: 2
@@ -113,20 +74,6 @@
 </head>
 
 <body>
-<div>
-<span class="ui-widget">股票代码：</span>
-<input id="txtStockId" class="ui-widget" style="width:120px;" type="text"/>
-    <button id="btn30DaysQuery">一月</button>
-    <button id="btn60DaysQuery">二月</button>
-    <button id="btn90DaysQuery">三月</button>
-    <button id="btn180DaysQuery">半年</button>
-    <button id="btn1yearQuery">一年</button>
-    <button id="btn2yearsQuery">二年</button>
-<button id="btnCustomizedQuery">自定义查询</button>
-</div>
-<div>
-<input type="hidden" id="queryDaysTxt"/>
-</div>
 <!--graph show-->
 <div id="stockGraph" style="height: 400px; min-width: 310px"></div>
 

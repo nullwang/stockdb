@@ -1,0 +1,11 @@
+系统预值：
+Stock 类接口： http://localhost:7070/api/stock
+
+K线   http://localhost:7070/api/stock/kline/0A0A0A
+
+通用类接口：
+
+
+
+界面操作
+
